@@ -1,0 +1,54 @@
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+// custom font declarations
+@font-face {
+  font-family: 'EarthKid';
+  src: asset-url('EarthKid.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: asset-url('Roboto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: asset-url('Roboto-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Roboto';
+  src: asset-url('Roboto-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+// add borders around everything!
+// * {
+//   border: 1px dashed black;
+// }
+
+body {
+  font-family: roboto;
+  padding-top: 60px;
+}
+
+// header
+header {
+  padding-top: 5px;
+}
+#logo {
+  padding-top: 5px;
+  float: left;
+  font-family: EarthKid;
+  font-size: 2em;
+  color: $brand-primary;
+  &:hover {
+    color: $brand-info;
+    text-decoration: none;
+  }
+}

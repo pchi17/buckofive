@@ -25,7 +25,7 @@ module Buckofive
 
     unless Rails.env.production?
       config.before_configuration do
-        env_file = File.join(Rails.root, '.env.json')
+        env_file = Rails.root.join('.env.json')
         if File.exist?(env_file)
           JSON.parse(File.read(env_file)).each { |k, v| ENV[k] = v }
         else
