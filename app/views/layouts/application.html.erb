@@ -8,10 +8,15 @@
 </head>
 <body>
   <%= render 'layouts/header' %>
+
   <div class="container">
+    <% flash.each do |type, msg| %>
+      <div class="alert alert-<%= type %>"><%= msg %></div>
+    <% end %>
+    
     <div class="row">
       <div class="col-md-3">
-        The User Panel
+        <%= render 'layouts/user_panel' %>
       </div>
       <div class="col-md-9">
         <%= yield %>

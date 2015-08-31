@@ -30,6 +30,7 @@ ActiveRecord::Migration.maintain_test_schema!
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include ApplicationHelper
+  config.include SessionsHelper
 
   config.use_transactional_fixtures = false
 
@@ -51,6 +52,10 @@ RSpec.configure do |config|
 
   config.after(:each) do
     DatabaseCleaner.clean
+  end
+
+  config.after(:all) do
+    DatabaseCleaner.clean_with(:truncation)
   end
 
   config.infer_spec_type_from_file_location!
