@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:edit, :update, :destroy]
   before_action :correct_user,   only: [:edit, :update]
+  
   def new
     @user = User.new
   end
@@ -10,7 +11,8 @@ class UsersController < ApplicationController
     if @user.save
       login(@user)
       remember(@user) if params[:user][:remember_me] == '1'
-      flash[:success]   = 'Sign Up Successful!'
+      @user.send_activation_email
+      flash[:info]   = 'please check your email to activate your account'
       redirect_to root_path
     else
       render :new

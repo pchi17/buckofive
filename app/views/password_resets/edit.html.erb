@@ -1,0 +1,15 @@
+<%= form_for @user, url: password_reset_path(params[:id]) do |f| %>
+  <%= render 'shared/error_messages' if @user.errors.any? %>
+  <%= hidden_field_tag :email, @user.email %>
+  <div class="form-group">
+    <%= f.label :password, class: 'sr-only' %>
+    <%= f.password_field :password, class: 'form-control', placeholder: 'New Password' %>
+  </div>
+  <div class="form-group">
+    <%= f.label :password_confirmation, class: 'sr-only' %>
+    <%= f.password_field :password_confirmation, class: 'form-control', placeholder: 'Password Confirmation' %>
+  </div>
+  <div class="form-group">
+    <%= f.submit 'Reset Password', class: 'btn btn-success' %>
+  </div>
+<% end %>

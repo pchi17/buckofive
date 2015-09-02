@@ -31,6 +31,11 @@ RSpec.describe UsersController, type: :controller do
           post :create, user: attributes_for(:user)
         }.to change(User, :count).by(1)
       end
+      it 'sends an account activation email' do
+        expect {
+          post :create, user: attributes_for(:user)
+        }.to change(ActionMailer::Base.deliveries, :size).by(1)
+      end
     end
 
     context 'with invalid attributes' do
@@ -38,6 +43,11 @@ RSpec.describe UsersController, type: :controller do
         expect {
           post :create, user: attributes_for(:user, :invalid_email)
         }.to_not change(User, :count)
+      end
+      it 'does not send an account activation email' do
+        expect {
+          post :create, user: attributes_for(:user, :invalid_email)
+        }.to_not change(ActionMailer::Base.deliveries, :size)
       end
     end
 
@@ -50,8 +60,8 @@ RSpec.describe UsersController, type: :controller do
       it 'sets a session[:user_id]' do
         expect(session[:user_id]).to_not be_nil
       end
-      it 'sets a flash[:success] message' do
-        expect(flash[:success]).to_not be_nil
+      it 'sets a flash[:info] message' do
+        expect(flash[:info]).to_not be_nil
       end
       it 'redirect_to root_path' do
         expect(response).to redirect_to root_path

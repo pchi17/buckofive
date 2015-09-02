@@ -1,0 +1,11 @@
+<div class="col-md-8 col-md-offset-2">
+  <%= form_for :password_reset, url: password_resets_path, html: { class: 'form-inline' } do |f| %>
+    <div class="form-group">
+      <%= f.label :email, class: 'sr-only' %>
+      <%= f.email_field :email, class: 'form-control', placeholder: 'please enter your email', autofocus: true %>
+    </div>
+    <div class="form-group">
+      <%= f.submit 'Submit', class: 'btn btn-success' %>
+    </div>
+  <% end %>
+</div>

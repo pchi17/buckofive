@@ -12,7 +12,7 @@ module SessionsHelper
       @current_user ||= User.find_by(id: user_id)
     elsif user_id = cookies.signed[:user_id]
       user = User.find_by(id: user_id)
-      if user.is_remember_digest?(cookies[:remember_token])
+      if user.is_digest?(:remember, cookies[:remember_token])
         login(user)
         @current_user = user
       end

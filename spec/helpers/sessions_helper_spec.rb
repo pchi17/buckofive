@@ -54,7 +54,7 @@ RSpec.describe SessionsHelper, type: :helper do
     end
     it 'sets the @user.remember_token in cookies' do
       remember(@user)
-      expect(@user.is_remember_digest?(cookies[:remember_token])).to be true
+      expect(@user.is_digest?(:remember, cookies[:remember_token])).to be true
     end
   end
 end

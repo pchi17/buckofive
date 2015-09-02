@@ -206,7 +206,7 @@ RSpec.describe User, type: :model do
     context 'when #remember_me is called' do
       create_new_user
       before(:all) { @user.remember_me }
-      it 'has the remember_me transient attribute' do
+      it 'has the remember_token transient attribute' do
         expect(@user.remember_token).to_not be_nil
       end
       it 'has the remember_digest attribute' do
@@ -228,6 +228,30 @@ RSpec.describe User, type: :model do
       it 'sets remember_digest to nil' do
         @user.forget_me
         expect(@user.remember_digest).to be_nil
+      end
+    end
+  end
+
+  describe '#create_activation_digest' do
+    context 'when the user is created' do
+      build_new_user
+      it 'does not have the activation_token transient attribute' do
+        expect(@user.activation_token).to be_nil
+      end
+      it 'does not have the activation_digest attribute' do
+        @user.save
+        expect(@user.activation_digest).to be_nil
+      end
+    end
+
+    context 'when #create_activation_digest is called' do
+      create_new_user
+      before(:all) { @user.create_activation_digest }
+      it 'has the activation_token transient attribute' do
+        expect(@user.activation_token).to_not be_nil
+      end
+      it 'has the activation_digest attribute' do
+        expect(@user.activation_digest).to_not be_nil
       end
     end
   end

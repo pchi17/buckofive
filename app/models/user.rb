@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  attr_accessor :remember_token
+  attr_accessor :remember_token, :activation_token, :reset_token
 
   before_save { email.downcase! }
 
@@ -27,6 +27,8 @@ class User < ActiveRecord::Base
   end
 
   # instance methods
+
+  # login, logout
   def remember_me
     self.remember_token = User.new_token
     update_columns(remember_digest: User.digest(remember_token))
@@ -36,7 +38,46 @@ class User < ActiveRecord::Base
     update_columns(remember_digest: nil)
   end
 
-  def is_remember_digest?(token)
-    BCrypt::Password.new(remember_digest).is_password?(token)
+  # account activation
+  def create_activation_digest
+    self.activation_token = User.new_token
+    update_columns(activation_digest: User.digest(activation_token))
+  end
+
+  def send_activation_email
+    create_activation_digest
+    UserMailer.account_activation(self).deliver_now
+  end
+
+  def activate_account
+    update_columns(activated: true, activated_at: Time.now)
+  end
+
+  # password reset
+  def create_reset_digest
+    self.reset_token = User.new_token
+    self.update_columns(
+      reset_digest:  User.digest(reset_token),
+      reset_sent_at: Time.now
+    )
+  end
+
+  def send_reset_email
+    create_reset_digest
+    UserMailer.password_reset(self).deliver_now
+  end
+
+  def is_reset_expired?
+    # password reset links expire in 2 hours
+    reset_sent_at < 2.hours.ago
+  end
+
+  # check digest
+  def is_digest?(attribute, token)
+    if digest = send("#{attribute}_digest")
+      BCrypt::Password.new(digest).is_password?(token)
+    else
+      return false
+    end
   end
 end

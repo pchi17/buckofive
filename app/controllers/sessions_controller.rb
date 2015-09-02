@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
         remember(@user) if params[:session][:remember_me] == '1'
         redirect_back_or(root_path)
       else
-        flash.now[:danger] = 'Password is incorrect'
+        flash.now[:danger] = 'password is incorrect'
         render :new
       end
     else
