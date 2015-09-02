@@ -34,6 +34,7 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     if @user.id == session[:user_id]
+      flash[:info] = 'your account has been deleted :('
       @user.destroy
     elsif current_user.admin?
       @user.destroy
