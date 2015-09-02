@@ -55,7 +55,7 @@ RSpec.configure do |config|
   end
 
   config.after(:all) do
-    DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.clean_with(:deletion)
   end
 
   config.infer_spec_type_from_file_location!

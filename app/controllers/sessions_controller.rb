@@ -7,6 +7,7 @@ class SessionsController < ApplicationController
     if @user
       if @user.authenticate(params[:session][:password])
         login(@user)
+        remember(@user) if params[:session][:remember_me] == '1'
         redirect_to root_path
       else
         flash.now[:danger] = 'Password is incorrect'
@@ -19,7 +20,7 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    session.delete(:user_id)
+    forget(current_user) if logged_in?
     redirect_to root_path
   end
 end

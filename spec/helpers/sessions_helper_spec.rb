@@ -11,56 +11,50 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe SessionsHelper, type: :helper do
-  before(:all) { @test_user = create(:user) }
+  before(:all)  { @user = create(:user) }
   before(:each) { session.delete(:user_id) }
 
   describe '#login' do
     it 'sets the session[:user_id] to the id of a user' do
-      expect(session[:user_id]).to be_nil
-      login(@test_user)
-      expect(session[:user_id]).to eq(@test_user.id)
+      login(@user)
+      expect(session[:user_id]).to eq(@user.id)
     end
   end
 
   describe '#logged_in?' do
     it 'returns false when no one is logged in' do
-      expect(session[:user_id]).to be_nil
       expect(logged_in?).to be false
     end
     it 'returns true when a user is logged in' do
-      login(@test_user)
+      login(@user)
       expect(logged_in?).to be true
     end
   end
 
   describe '#current_user' do
     it 'returns nil when no one is logged in' do
-      expect(session[:user_id]).to be_nil
       expect(current_user).to be_nil
     end
     it 'returns the logged in user if a user is logged in' do
-      login(@test_user)
-      expect(current_user).to eq(@test_user)
+      login(@user)
+      expect(current_user).to eq(@user)
+    end
+    context 'when remembered' do
+      it 'returns the remembered user if the user is not logged in' do
+        remember(@user)
+        expect(current_user).to eq(@user)
+      end
     end
   end
 
-  describe '#logged_in_and_activated?' do
-    it 'returns false when no one is logged in' do
-      expect(session[:user_id]).to be_nil
-      expect(logged_in_and_activated?).to be false
+  describe '#remember' do
+    it 'sets a signed :user_id in cookies' do
+      remember(@user)
+      expect(cookies.signed[:user_id]).to eq(@user.id)
     end
-    it 'returns false when logged in user is not activated' do
-      @test_user.activated = false
-      login(@test_user)
-      expect(session[:user_id]).to_not be_nil
-      expect(logged_in_and_activated?).to be false
-    end
-    it 'returns true when current user is activated' do
-      @test_user.activated = true
-      @test_user.save!
-      login(@test_user)
-      expect(session[:user_id]).to_not be_nil
-      expect(logged_in_and_activated?).to be true
+    it 'sets the @user.remember_token in cookies' do
+      remember(@user)
+      expect(@user.is_remember_digest?(cookies[:remember_token])).to be true
     end
   end
 end

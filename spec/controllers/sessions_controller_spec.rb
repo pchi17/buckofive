@@ -77,22 +77,50 @@ RSpec.describe SessionsController, type: :controller do
         expect(response).to render_template :new
       end
     end
+
+    context 'with remember_me checked' do
+      it 'sets :user_id in cookies' do
+        post :create, session: { email: @user.email, password: @user.password, remember_me: '1'}
+        expect(cookies.signed[:user_id]).to eq(@user.id)
+      end
+    end
+
+    context 'with remember_me not checked' do
+      it 'does not set :user_id in the cookies' do
+        post :create, session: { email: @user.email, password: @user.password, remember_me: '0'}
+        expect(cookies.signed[:user_id]).to be_nil
+      end
+    end
   end
 
   describe 'DELETE #destroy' do
     before(:each) do
-      session.delete(:user_id)
       login(@user)
     end
-
     it 'deletes session[user_id]' do
-      expect(session[:user_id]).to_not be_nil
       delete :destroy
       expect(session[:user_id]).to be_nil
+    end
+    it 'sets current_user to nil' do
+      delete :destroy
+      expect(current_user).to be_nil
     end
     it 'redirect_to root_path' do
       delete :destroy
       expect(response).to redirect_to root_path
+    end
+
+    context 'when remember_me is enabled' do
+      it 'deletes the :user_id stored in cookies' do
+        remember(@user)
+        delete :destroy
+        expect(cookies.signed[:user_id]).to be_nil
+      end
+      it 'deletes the :remember_token in cookies' do
+        remember(@user)
+        delete :destroy
+        expect(cookies[:remember_token]).to be_nil
+      end
     end
   end
 end

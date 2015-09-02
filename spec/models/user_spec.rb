@@ -1,10 +1,6 @@
 require 'rails_helper'
 
-shared_context 'user model shared methods' do
-  def self.build_new_user
-    before(:all) { @user = build(:user) }
-  end
-
+shared_context 'check presence' do
   def self.check_presence(accessor)
     it 'is not valid when nil' do
       @user.send(accessor, nil)
@@ -23,8 +19,20 @@ shared_context 'user model shared methods' do
   end
 end
 
+shared_context 'user model methods' do
+  def self.build_new_user
+    before(:all) { @user = build(:user) }
+  end
+
+  def self.create_new_user
+    before(:all) { @user = create(:user) }
+    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
+  end
+end
+
 RSpec.describe User, type: :model do
-  include_context 'user model shared methods'
+  include_context 'check presence'
+  include_context 'user model methods'
 
   describe 'factory' do
     build_new_user
@@ -76,11 +84,8 @@ RSpec.describe User, type: :model do
     end
 
     context 'with duplicate email' do
-      before :all do
-        @valid_email = 'user@example.com'
-        @user.email  = @valid_email
-        @user.save
-      end
+      create_new_user
+      before(:all) { @valid_email = @user.email }
 
       it 'is not valid' do
         another_user = build(:user, email: @valid_email)
@@ -96,7 +101,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'when saved' do
-      it 'saved email in all lower case letters' do
+      it 'saves email in all lower case letters' do
         valid_email = 'USER@Example.com'
         @user.email = valid_email
         @user.save
@@ -150,24 +155,79 @@ RSpec.describe User, type: :model do
         end
       end
     end
+  end
 
-    describe '#authentication' do
-      before :all do
-        @password = 'superfoobar'
-        @user.password              = @password
-        @user.password_confirmation = @password
+  describe '#authentication' do
+    create_new_user
+    before :all do
+      @password       = @user.password
+      @wrong_password = @password + 'xxx'
+    end
+
+    context 'when supplying a non matching password' do
+      it 'is not authenticated' do
+        expect(@user.authenticate(@wrong_password)).to be false
+      end
+    end
+
+    context 'when supplying the matching password' do
+      it 'returns the user' do
+        expect(@user.authenticate(@password)).to eq(@user)
+      end
+    end
+  end
+
+  describe '::new_token' do
+    it 'generates a new token' do
+      expect(User.new_token).to_not be_nil
+    end
+  end
+
+  describe '::digest' do
+    it 'generates a digest for a given password' do
+      password      = 'foobar'
+      password_hash = User.digest(password)
+      expect(BCrypt::Password.new(password_hash).is_password?(password)).to be true
+    end
+  end
+
+  describe '#remember_me' do
+    context 'when the user is created' do
+      build_new_user
+      it 'does not have the remember_token transient attribute' do
+        expect(@user.remember_token).to be_nil
+      end
+      it 'does not have the remember_digest attribute' do
         @user.save
+        expect(@user.remember_digest).to be_nil
       end
-      context 'when supplying a non matching password' do
-        it 'is not authenticated' do
-          expect(@user.authenticate('notsofoobar')).to be false
-        end
-      end
+    end
 
-      context 'when supplying the matching password' do
-        it 'returns the user' do
-          expect(@user.authenticate(@password)).to eq(@user)
-        end
+    context 'when #remember_me is called' do
+      create_new_user
+      before(:all) { @user.remember_me }
+      it 'has the remember_me transient attribute' do
+        expect(@user.remember_token).to_not be_nil
+      end
+      it 'has the remember_digest attribute' do
+        expect(@user.remember_digest).to_not be_nil
+      end
+    end
+  end
+
+  describe '#forget_me' do
+    create_new_user
+    context 'when user is remembered' do
+      it 'sets remember_digest to nil' do
+        @user.remember_me
+        @user.forget_me
+        expect(@user.remember_digest).to be_nil
+      end
+    end
+    context 'when user is not remembered' do
+      it 'sets remember_digest to nil' do
+        @user.forget_me
+        expect(@user.remember_digest).to be_nil
       end
     end
   end
