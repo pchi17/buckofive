@@ -1,9 +1,10 @@
+<% content_for :title, 'Password Reset' %>
 <%= form_for @user, url: password_reset_path(params[:id]) do |f| %>
   <%= render 'shared/error_messages' if @user.errors.any? %>
   <%= hidden_field_tag :email, @user.email %>
   <div class="form-group">
     <%= f.label :password, class: 'sr-only' %>
-    <%= f.password_field :password, class: 'form-control', placeholder: 'New Password' %>
+    <%= f.password_field :password, class: 'form-control', placeholder: 'New Password', autofocus: true %>
   </div>
   <div class="form-group">
     <%= f.label :password_confirmation, class: 'sr-only' %>

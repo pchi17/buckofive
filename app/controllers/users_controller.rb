@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :logged_in_user, only: [:edit, :update, :destroy]
   before_action :correct_user,   only: [:edit, :update]
-  
+
   def new
     @user = User.new
   end
@@ -20,11 +20,9 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
   end
 
   def update
-    @user = User.find(params[:id])
     if @user.update_attributes(user_params)
       flash[:success] = 'profile updated'
       redirect_to root_path
@@ -36,8 +34,8 @@ class UsersController < ApplicationController
   def destroy
     @user = User.find(params[:id])
     if @user.id == session[:user_id]
-      flash[:info] = 'your account has been deleted :('
       @user.destroy
+      flash[:info] = 'your account has been deleted :('
     elsif current_user.admin?
       @user.destroy
     end
@@ -52,18 +50,5 @@ class UsersController < ApplicationController
         :password,
         :password_confirmation
       )
-    end
-
-    def logged_in_user
-      unless logged_in?
-        store_location
-        flash[:info] = 'please log in first'
-        redirect_to login_path
-      end
-    end
-
-    def correct_user
-      @user = User.find(params[:id])
-      redirect_to root_path unless @user.id == session[:user_id]
     end
 end

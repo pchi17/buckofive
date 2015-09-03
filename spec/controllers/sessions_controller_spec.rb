@@ -34,6 +34,22 @@ RSpec.describe SessionsController, type: :controller do
       end
     end
 
+    context 'with valid email and password' do
+      context 'with remember_me checked' do
+        it 'sets :user_id in cookies' do
+          post :create, session: { email: @user.email, password: @user.password, remember_me: '1'}
+          expect(cookies.signed[:user_id]).to eq(assigns(:user).id)
+        end
+      end
+
+      context 'with remember_me not checked' do
+        it 'does not set :user_id in the cookies' do
+          post :create, session: { email: @user.email, password: @user.password, remember_me: '0'}
+          expect(cookies.signed[:user_id]).to be_nil
+        end
+      end
+    end
+
     context 'with non-existent email' do
       before(:all) do
         @attrs = { email: @user.email + 'xxx', password: @user.password }
@@ -77,26 +93,11 @@ RSpec.describe SessionsController, type: :controller do
         expect(response).to render_template :new
       end
     end
-
-    context 'with remember_me checked' do
-      it 'sets :user_id in cookies' do
-        post :create, session: { email: @user.email, password: @user.password, remember_me: '1'}
-        expect(cookies.signed[:user_id]).to eq(@user.id)
-      end
-    end
-
-    context 'with remember_me not checked' do
-      it 'does not set :user_id in the cookies' do
-        post :create, session: { email: @user.email, password: @user.password, remember_me: '0'}
-        expect(cookies.signed[:user_id]).to be_nil
-      end
-    end
   end
 
   describe 'DELETE #destroy' do
-    before(:each) do
-      login(@user)
-    end
+    before(:each) { login(@user) }
+
     it 'deletes session[user_id]' do
       delete :destroy
       expect(session[:user_id]).to be_nil
@@ -111,14 +112,15 @@ RSpec.describe SessionsController, type: :controller do
     end
 
     context 'when remember_me is enabled' do
-      it 'deletes the :user_id stored in cookies' do
+      before(:each) do
         remember(@user)
         delete :destroy
+      end
+
+      it 'deletes the :user_id stored in cookies' do
         expect(cookies.signed[:user_id]).to be_nil
       end
       it 'deletes the :remember_token in cookies' do
-        remember(@user)
-        delete :destroy
         expect(cookies[:remember_token]).to be_nil
       end
     end

@@ -56,10 +56,14 @@ class User < ActiveRecord::Base
   # password reset
   def create_reset_digest
     self.reset_token = User.new_token
-    self.update_columns(
+    update_columns(
       reset_digest:  User.digest(reset_token),
       reset_sent_at: Time.now
     )
+  end
+
+  def clear_reset_digest
+    update_columns(reset_digest: nil, reset_sent_at: nil)
   end
 
   def send_reset_email

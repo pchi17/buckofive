@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-shared_context 'static pages' do
+feature 'static pages' do
   def self.check_title(page_name)
     scenario 'has the correct title' do
       expect(page).to have_title(page_title(page_name))
@@ -25,10 +25,6 @@ shared_context 'static pages' do
       expect(page).to have_link('Contact', href: '/contact')
     end
   end
-end
-
-feature 'static pages' do
-  include_context 'static pages'
 
   feature 'Home Page' do
     before(:each) { visit '/' }

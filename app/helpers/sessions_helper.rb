@@ -34,11 +34,29 @@ module SessionsHelper
 
   # friendly forwarding
   def store_location
-    session[:forwading_url] = request.url if request.get?
+    session[:forwarding_url] = request.url if request.get?
   end
 
-  def redirect_back_or(default)
-    redirect_to(session[:forwading_url] || default)
-    session.delete(:forwading_url)
+  def friendly_forward_or(default)
+    redirect_to(session.delete(:forwarding_url) || default)
   end
+
+  # redirect back
+  def redirect_back_or(default)
+    redirect_to (request.env['HTTP_REFERER'] || default)
+  end
+
+  private
+    def logged_in_user
+      unless logged_in?
+        store_location
+        flash[:info] = 'please log in first'
+        redirect_to login_path
+      end
+    end
+
+    def correct_user
+      @user = User.find(params[:id])
+      redirect_to root_path unless @user.id == session[:user_id]
+    end
 end

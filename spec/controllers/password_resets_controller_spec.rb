@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe PasswordResetsController, type: :controller do
+  before :all do
+    @user = create(:user)
+    @user.create_reset_digest
+    @old_password = @user.password
+    @new_password = @old_password + 'xxx'
+  end
+
   describe 'GET #new' do
     it 'renders the :new view' do
       get :new
@@ -9,17 +16,17 @@ RSpec.describe PasswordResetsController, type: :controller do
   end
 
   describe 'POST #create' do
-    before(:all) { @user = create(:user) }
-    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
-
     context 'with a registered email' do
       before(:each) { post :create, password_reset: { email: @user.email } }
+
       it 'returns the correct @user' do
         expect(assigns(:user)).to eq(@user)
       end
+
       it 'sets a flash[:info] message' do
         expect(flash[:info]).to_not be_nil
       end
+
       it 'redirect_to login_path' do
         expect(response).to redirect_to login_path
       end
@@ -35,9 +42,15 @@ RSpec.describe PasswordResetsController, type: :controller do
 
     context 'with a non registered email' do
       before(:each) { post :create, password_reset: { email: @user.email + 'xxx' } }
+
+      it 'returns nil for @user' do
+        expect(assigns(:user)).to be_nil
+      end
+
       it 'sets a flash[:danger] message' do
         expect(flash[:danger]).to_not be_nil
       end
+
       it 're-renders the :new template' do
         expect(response).to render_template :new
       end
@@ -53,12 +66,6 @@ RSpec.describe PasswordResetsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    before :all do
-       @user = create(:user)
-       @user.create_reset_digest
-     end
-    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
-
     def self.it_sets_flash_danger_message
       it 'sets a flash[:danger] message' do
         expect(flash[:danger]).to_not be_nil
@@ -72,22 +79,25 @@ RSpec.describe PasswordResetsController, type: :controller do
     end
 
     context 'with valid reset_token and email' do
-      before :each do
-        get :edit, id: @user.reset_token, email: @user.email
-      end
-
       it 'finds the correct user' do
+        get :edit, id: @user.reset_token, email: @user.email
         expect(assigns(:user)).to eq(@user)
       end
+    end
 
+    context 'with valid reset_token and email' do
       context 'with link not expired' do
         it 'renders the edit template' do
+          get :edit, id: @user.reset_token, email: @user.email
           expect(response).to render_template :edit
         end
       end
 
       context 'with link expired' do
-        before(:all) { @user.update_columns(reset_sent_at: 3.hour.ago) }
+        before(:each) do
+          @user.update_columns(reset_sent_at: 3.hour.ago)
+          get :edit, id: @user.reset_token, email: @user.email
+        end
 
         it 'sets flash[:warning] message' do
           expect(flash[:warning]).to_not be_nil
@@ -119,18 +129,9 @@ RSpec.describe PasswordResetsController, type: :controller do
   end
 
   describe 'PATCH #update' do
-    before :all do
-       @user = create(:user)
-       @user.create_reset_digest
-       @old_password = @user.password
-       @new_password = @old_password + 'xxx'
-     end
-    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
-
     def self.it_does_not_reset_password
       it 'does not reset password' do
-        @user.reload
-        expect(@user.authenticate(@old_password)).to eq(@user)
+        expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
       end
     end
 
@@ -154,8 +155,7 @@ RSpec.describe PasswordResetsController, type: :controller do
               user: { password: @new_password, password_confirmation: @new_password }
           end
           it 'updates the password' do
-            @user.reload
-            expect(@user.authenticate(@new_password)).to eq(@user)
+            expect(assigns(:user).reload.authenticate(@new_password)).to eq(@user)
           end
           it 'logs in the user' do
             expect(session[:user_id]).to eq(@user.id)
@@ -220,8 +220,8 @@ RSpec.describe PasswordResetsController, type: :controller do
       end
 
       context 'when reset link is expired' do
-        before(:all) { @user.update_columns(reset_sent_at: 3.hour.ago) }
         before :each do
+          @user.update_columns(reset_sent_at: 3.hour.ago)
           patch :update, id: @user.reset_token, email: @user.email,
             user: { password: @new_password, password_confirmation: @new_password }
         end
@@ -249,6 +249,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         patch :update, id: @user.reset_token, email: @user.email + 'xxx',
           user: { password: @new_password, password_confirmation: @new_password }
       end
+      
       it_sets_flash_danger_message
     end
   end

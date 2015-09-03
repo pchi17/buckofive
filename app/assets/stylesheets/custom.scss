@@ -33,7 +33,7 @@
 // }
 
 body {
-  font-family: roboto;
+  font-family: Roboto;
   padding-top: 60px;
 }
 
@@ -51,11 +51,6 @@ header {
     color: $brand-info;
     text-decoration: none;
   }
-}
-
-// user panel
-#user-controls {
-  margin-top: 10px;
 }
 
 // flash messages

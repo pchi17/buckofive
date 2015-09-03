@@ -1,48 +1,122 @@
 require 'rails_helper'
 
 RSpec.describe AccountActivationsController, type: :controller do
-  def self.setup
-    before :all do
-      @user = create(:user)
-      @user.create_activation_digest
+  before :all do
+    @user  = create(:user)
+    @other = create(:user, :another_user)
+    @user.create_activation_digest
+  end
+
+  describe 'POST #create' do
+    context 'when not logged in' do
+      it 'does not send an activation email' do
+        expect {
+          post :create, id: @user
+        }.to_not change(ActionMailer::Base.deliveries, :size)
+      end
+
+      it 'sets a flash[:info] message' do
+        post :create, id: @user
+        expect(flash[:info]).to_not be_nil
+      end
+
+      it 'redirect_to login_path' do
+        post :create, id: @user
+        expect(response).to redirect_to login_path
+      end
     end
-    after :all do
-      DatabaseCleaner.clean_with(:deletion)
+
+    context 'when logged in' do
+      before(:each) { login(@user) }
+
+      context 'when posting to self' do
+        before(:each) { request.env['HTTP_REFERER'] = edit_user_url(@user) }
+
+        it 'sends an activation email' do
+          expect {
+            post :create, id: @user
+          }.to change(ActionMailer::Base.deliveries, :size).by(1)
+        end
+
+        it 'sets a flash[:info] message' do
+          post :create, id: @user
+          expect(flash[:info]).to_not be_nil
+        end
+
+        it 'redirect_to :back' do
+          post :create, id: @user
+          expect(response).to redirect_back_or(edit_user_path(@user))
+        end
+      end
+
+      context 'when posting to other' do
+        it 'does not send an activation email' do
+          expect {
+            post :create, id: @other
+          }.to_not change(ActionMailer::Base.deliveries, :size)
+        end
+
+        it 'redirect_to root_path' do
+          post :create, id: @other
+          expect(response).to redirect_to root_path
+        end
+      end
     end
   end
 
-  describe '#edit' do
+  describe 'GET #edit' do
     context 'when @user is created' do
       it 'checks that @user is not activated' do
-        user = create(:user)
-        expect(user.activated?).to be false
+        expect(@user.activated?).to be false
       end
     end
 
     context 'with valid activation_token and email' do
-      setup
-      before(:each) { get :edit, id: @user.activation_token, email: @user.email }
+      context 'when the user is already activated' do
+        before(:each) do
+          @user.activate_account
+          get :edit, id: @user.activation_token, email: @user.email
+        end
 
-      it 'activates the user' do
-        @user.reload
-        expect(@user.activated?).to be true
+        it 'finds the correct @user' do
+          expect(assigns(:user)).to eq(@user)
+        end
+
+        it 'sets a flash[:info] message' do
+          expect(flash[:info]).to_not be_nil
+        end
+
+        it 'redirect_to root_path' do
+          expect(response).to redirect_to root_path
+        end
       end
 
-      it 'sets a flash[:success] message' do
-        expect(flash[:success]).to_not be_nil
-      end
+      context 'when the user is not activated' do
+        before(:each) { get :edit, id: @user.activation_token, email: @user.email }
 
-      it 'redirect_to root_path' do
-        expect(response).to redirect_to root_path
+        it 'finds the correct @user' do
+          expect(assigns(:user)).to eq(@user)
+        end
+
+        it 'activates the user' do
+          expect(assigns(:user).reload.activated?).to be true
+        end
+
+        it 'sets a flash[:success] message' do
+          expect(flash[:success]).to_not be_nil
+        end
+
+        it 'redirect_to root_path' do
+          expect(response).to redirect_to root_path
+        end
       end
     end
 
     context 'with invalid activation_token' do
-      setup
       before(:each) { get :edit, id: @user.activation_token + 'xxx', email: @user.email }
 
       it 'does not activate the user' do
-        expect(@user.activated?).to be false
+        expect(assigns(:user).reload.activated?).to be false
       end
 
       it 'redirect_to root_path' do
@@ -51,11 +125,10 @@ RSpec.describe AccountActivationsController, type: :controller do
     end
 
     context 'with invalid email' do
-      setup
       before(:each) { get :edit, id: @user.activation_token, email: @user.email + 'xxx' }
 
-      it 'does not activate the user' do
-        expect(@user.activated?).to be false
+      it 'returns nil for @user' do
+        expect(assigns(:user)).to be_nil
       end
 
       it 'redirect_to root_path' do

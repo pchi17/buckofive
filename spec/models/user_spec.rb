@@ -1,6 +1,15 @@
 require 'rails_helper'
 
-shared_context 'check presence' do
+RSpec.describe User, type: :model do
+  def self.build_user
+    before(:all) { @user = build(:user) }
+  end
+
+  def self.create_user
+    before(:all) { @user = create(:user) }
+    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
+  end
+
   def self.check_presence(accessor)
     it 'is not valid when nil' do
       @user.send(accessor, nil)
@@ -17,37 +26,20 @@ shared_context 'check presence' do
       expect(@user).to_not be_valid
     end
   end
-end
-
-shared_context 'user model methods' do
-  def self.build_new_user
-    before(:all) { @user = build(:user) }
-  end
-
-  def self.create_new_user
-    before(:all) { @user = create(:user) }
-    after(:all)  { DatabaseCleaner.clean_with(:deletion) }
-  end
-end
-
-RSpec.describe User, type: :model do
-  include_context 'check presence'
-  include_context 'user model methods'
 
   describe 'factory' do
-    build_new_user
     it 'is valid' do
-      expect(@user).to be_valid
+      expect(build(:user)).to be_valid
     end
   end
 
   describe '#name' do
-    build_new_user
+    build_user
     check_presence(:name=)
   end
 
   describe '#email' do
-    build_new_user
+    build_user
     check_presence(:email=)
 
     context 'with valid email address' do
@@ -84,18 +76,19 @@ RSpec.describe User, type: :model do
     end
 
     context 'with duplicate email' do
-      create_new_user
-      before(:all) { @valid_email = @user.email }
+      before :all do
+        @user.save
+        @valid_email = @user.email
+      end
 
       it 'is not valid' do
-        another_user = build(:user, email: @valid_email)
+        another_user = build(:user, :another_user, email: @valid_email)
         expect(another_user).to_not be_valid
       end
 
       it 'is not valid regardless of case sensitivity' do
         upcase_email = @valid_email.upcase
-        expect(upcase_email).to_not eq(@valid_email)
-        another_user = build(:user, email: upcase_email)
+        another_user = build(:user, :another_user, email: upcase_email)
         expect(another_user).to_not be_valid
       end
     end
@@ -103,15 +96,14 @@ RSpec.describe User, type: :model do
     context 'when saved' do
       it 'saves email in all lower case letters' do
         valid_email = 'USER@Example.com'
-        @user.email = valid_email
-        @user.save
-        expect(@user.reload.email).to eq(valid_email.downcase)
+        user = create(:user, email: valid_email)
+        expect(user.reload.email).to eq(valid_email.downcase)
       end
     end
   end
 
   describe '#password' do
-    build_new_user
+    build_user
 
     it 'is not valid when nil' do
       @user.password              = nil
@@ -139,14 +131,6 @@ RSpec.describe User, type: :model do
     end
 
     describe '#password_confirmation' do
-      context 'when nil' do
-        it 'is valid when not nil or empty' do
-          @user.password_confirmation = nil
-          @user.password = 'anything not nil or empty'
-          expect(@user).to be_valid
-        end
-      end
-
       context 'when not matching password' do
         it 'is not valid' do
           @user.password              = 'something'
@@ -158,7 +142,8 @@ RSpec.describe User, type: :model do
   end
 
   describe '#authentication' do
-    create_new_user
+    create_user
+
     before :all do
       @password       = @user.password
       @wrong_password = @password + 'xxx'
@@ -177,35 +162,12 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '::new_token' do
-    it 'generates a new token' do
-      expect(User.new_token).to_not be_nil
-    end
-  end
-
-  describe '::digest' do
-    it 'generates a digest for a given password' do
-      password      = 'foobar'
-      password_hash = User.digest(password)
-      expect(BCrypt::Password.new(password_hash).is_password?(password)).to be true
-    end
-  end
-
   describe '#remember_me' do
-    context 'when the user is created' do
-      build_new_user
-      it 'does not have the remember_token transient attribute' do
-        expect(@user.remember_token).to be_nil
-      end
-      it 'does not have the remember_digest attribute' do
-        @user.save
-        expect(@user.remember_digest).to be_nil
-      end
-    end
+    create_user
 
     context 'when #remember_me is called' do
-      create_new_user
       before(:all) { @user.remember_me }
+
       it 'has the remember_token transient attribute' do
         expect(@user.remember_token).to_not be_nil
       end
@@ -216,7 +178,7 @@ RSpec.describe User, type: :model do
   end
 
   describe '#forget_me' do
-    create_new_user
+    create_user
     context 'when user is remembered' do
       it 'sets remember_digest to nil' do
         @user.remember_me
@@ -233,26 +195,138 @@ RSpec.describe User, type: :model do
   end
 
   describe '#create_activation_digest' do
-    context 'when the user is created' do
-      build_new_user
-      it 'does not have the activation_token transient attribute' do
-        expect(@user.activation_token).to be_nil
+    create_user
+
+    before(:all) { @user.create_activation_digest }
+
+    it 'has the activation_token transient attribute' do
+      expect(@user.activation_token).to_not be_nil
+    end
+    it 'has the activation_digest attribute' do
+      expect(@user.activation_digest).to_not be_nil
+    end
+  end
+
+  describe '#send_activation_email' do
+    create_user
+    it 'creates and saves an activation_digest' do
+      @user.send_activation_email
+      expect(@user.activation_digest).to_not be_nil
+    end
+    it 'sends an activation_email' do
+      expect {
+        @user.send_activation_email
+      }.to change(ActionMailer::Base.deliveries, :size).by(1)
+    end
+  end
+
+  describe '#activate_account' do
+    create_user
+    it 'sets the activated to true' do
+      expect(@user.activated?).to be false
+      @user.activate_account
+      expect(@user.activated?).to be true
+    end
+  end
+
+  describe '#create_reset_digest' do
+    create_user
+    before(:all) { @user.create_reset_digest }
+
+    it 'has the reset_token transient attribute' do
+      expect(@user.reset_token).to_not be_nil
+    end
+    it 'has the reset_digest attribute' do
+      expect(@user.reset_digest).to_not be_nil
+    end
+    it 'has the reset_sent_at timestamp' do
+      expect(@user.reset_sent_at).to_not be_nil
+    end
+  end
+
+  describe '#clear_reset_digest' do
+    create_user
+    before :all do
+      @user.create_reset_digest
+      @user.clear_reset_digest
+    end
+
+    it 'sets reset_digest to nil' do
+      expect(@user.reset_digest).to be_nil
+    end
+    it 'sets reset_sent_at to nil' do
+      expect(@user.reset_sent_at).to be_nil
+    end
+  end
+
+  describe '#send_reset_email' do
+    create_user
+    it 'creates and saves an reset_digest' do
+      @user.send_reset_email
+      expect(@user.reset_digest).to_not be_nil
+    end
+    it 'sends a password reset email' do
+      expect {
+        @user.send_reset_email
+      }.to change(ActionMailer::Base.deliveries, :size).by(1)
+    end
+  end
+
+  describe '#is_reset_expired?' do
+    create_user
+    context 'when reset email was sent less than 2 hours ago' do
+      it 'returns false' do
+        @user.update_columns(reset_sent_at: 1.hour.ago)
+        expect(@user.is_reset_expired?).to be false
       end
-      it 'does not have the activation_digest attribute' do
-        @user.save
-        expect(@user.activation_digest).to be_nil
+    end
+    context 'when reset email was sent more than 2 hours ago' do
+      it 'returns true' do
+        @user.update_columns(reset_sent_at: 3.hour.ago)
+        expect(@user.is_reset_expired?).to be true
+      end
+    end
+  end
+
+  describe '#is_digest?' do
+    create_user
+    before :all do
+      @user.remember_me
+      @user.create_activation_digest
+      @user.create_reset_digest
+    end
+
+    context 'when passed in :remember' do
+      it 'authenticates the :remember_token' do
+        expect(@user.is_digest?(:remember, @user.remember_token)).to be true
       end
     end
 
-    context 'when #create_activation_digest is called' do
-      create_new_user
-      before(:all) { @user.create_activation_digest }
-      it 'has the activation_token transient attribute' do
-        expect(@user.activation_token).to_not be_nil
+    context 'when passed in :activation' do
+      it 'authenticates the :activation_token' do
+        expect(@user.is_digest?(:activation, @user.activation_token)).to be true
       end
-      it 'has the activation_digest attribute' do
-        expect(@user.activation_digest).to_not be_nil
+    end
+
+    context 'when passed in :reset' do
+      it 'authenticates the :reset_token' do
+        expect(@user.is_digest?(:reset, @user.reset_token)).to be true
       end
+    end
+  end
+
+  # class methods
+  describe '::new_token' do
+    it 'generates a new token' do
+      expect(User.new_token).to_not be_nil
+    end
+  end
+
+  describe '::digest' do
+    it 'generates a digest for a given password' do
+      password      = 'foobar'
+      password_hash = User.digest(password)
+      expect(BCrypt::Password.new(password_hash).is_password?(password)).to be true
     end
   end
 end

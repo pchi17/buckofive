@@ -12,7 +12,6 @@ require 'rails_helper'
 # end
 RSpec.describe SessionsHelper, type: :helper do
   before(:all)  { @user = create(:user) }
-  before(:each) { session.delete(:user_id) }
 
   describe '#login' do
     it 'sets the session[:user_id] to the id of a user' do
@@ -48,13 +47,32 @@ RSpec.describe SessionsHelper, type: :helper do
   end
 
   describe '#remember' do
+    before(:each) { remember(@user) }
+    it 'stores a remember_digest in the database' do
+      expect(@user.remember_digest).to_not be_nil
+    end
     it 'sets a signed :user_id in cookies' do
-      remember(@user)
       expect(cookies.signed[:user_id]).to eq(@user.id)
     end
     it 'sets the @user.remember_token in cookies' do
-      remember(@user)
       expect(@user.is_digest?(:remember, cookies[:remember_token])).to be true
+    end
+  end
+
+  describe '#forget' do
+    before :each do
+      remember(@user)
+      forget(@user)
+    end
+
+    it 'resets remember_digest to nil in the database' do
+      expect(@user.remember_digest).to be_nil
+    end
+    it 'deletes cookies[:user_id]' do
+      expect(cookies.signed[:user_id]).to be_nil
+    end
+    it 'deletes cookies[:remember_token]' do
+      expect(cookies[:remember_token]).to be_nil
     end
   end
 end

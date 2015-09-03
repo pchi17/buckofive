@@ -3,12 +3,11 @@ class SessionsController < ApplicationController
   end
 
   def create
-    @user = User.find_by(email: params[:session][:email])
-    if @user
+    if @user = User.find_by(email: params[:session][:email])
       if @user.authenticate(params[:session][:password])
         login(@user)
         remember(@user) if params[:session][:remember_me] == '1'
-        redirect_back_or(root_path)
+        friendly_forward_or(root_path)
       else
         flash.now[:danger] = 'password is incorrect'
         render :new

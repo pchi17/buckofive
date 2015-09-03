@@ -10,7 +10,7 @@ RSpec.describe UserMailer, type: :mailer do
     end
 
     context 'when rendering header' do
-      it 'renders the subject' do
+      it 'renders the correct subject' do
         expect(@mail.subject).to eq('Account Activation')
       end
       it 'renders the correct sender' do
