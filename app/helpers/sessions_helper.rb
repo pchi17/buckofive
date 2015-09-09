@@ -1,22 +1,22 @@
 module SessionsHelper
   def logged_in?
-    !current_user.nil?
+    return true if session[:user_id] ||= cookies.signed[:user_id]
+    return false
+  end
+
+  def current_user
+    return @current_user if @current_user
+    logged_in? ? @current_user = User.find(session[:user_id]) : nil
   end
 
   def login(user)
     session[:user_id] = user.id
   end
 
-  def current_user
-    if user_id = session[:user_id]
-      @current_user ||= User.find_by(id: user_id)
-    elsif user_id = cookies.signed[:user_id]
-      user = User.find_by(id: user_id)
-      if user.is_digest?(:remember, cookies[:remember_token])
-        login(user)
-        @current_user = user
-      end
-    end
+  def logout(user)
+    forget(user)
+    session.delete(:user_id)
+    @current_user = nil
   end
 
   def remember(user)
@@ -29,7 +29,6 @@ module SessionsHelper
     user.forget_me
     cookies.delete(:user_id)
     cookies.delete(:remember_token)
-    session.delete(:user_id)
   end
 
   # friendly forwarding

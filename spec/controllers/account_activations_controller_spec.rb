@@ -17,12 +17,12 @@ RSpec.describe AccountActivationsController, type: :controller do
 
       it 'sets a flash[:info] message' do
         post :create, id: @user
-        expect(flash[:info]).to_not be_nil
+        expect(subject).to set_flash[:info]
       end
 
       it 'redirect_to login_path' do
         post :create, id: @user
-        expect(response).to redirect_to login_path
+        expect(subject).to redirect_to login_path
       end
     end
 
@@ -40,12 +40,12 @@ RSpec.describe AccountActivationsController, type: :controller do
 
         it 'sets a flash[:info] message' do
           post :create, id: @user
-          expect(flash[:info]).to_not be_nil
+          expect(subject).to set_flash[:info]
         end
 
         it 'redirect_to :back' do
           post :create, id: @user
-          expect(response).to redirect_back_or(edit_user_path(@user))
+          expect(subject).to redirect_to request.env['HTTP_REFERER']
         end
       end
 
@@ -58,7 +58,7 @@ RSpec.describe AccountActivationsController, type: :controller do
 
         it 'redirect_to root_path' do
           post :create, id: @other
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end
@@ -83,11 +83,11 @@ RSpec.describe AccountActivationsController, type: :controller do
         end
 
         it 'sets a flash[:info] message' do
-          expect(flash[:info]).to_not be_nil
+          expect(subject).to set_flash[:info]
         end
 
         it 'redirect_to root_path' do
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
 
@@ -103,11 +103,11 @@ RSpec.describe AccountActivationsController, type: :controller do
         end
 
         it 'sets a flash[:success] message' do
-          expect(flash[:success]).to_not be_nil
+          expect(subject).to set_flash[:success]
         end
 
         it 'redirect_to root_path' do
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end
@@ -120,7 +120,7 @@ RSpec.describe AccountActivationsController, type: :controller do
       end
 
       it 'redirect_to root_path' do
-        expect(response).to redirect_to root_path
+        expect(subject).to redirect_to root_path
       end
     end
 
@@ -132,7 +132,7 @@ RSpec.describe AccountActivationsController, type: :controller do
       end
 
       it 'redirect_to root_path' do
-        expect(response).to redirect_to root_path
+        expect(subject).to redirect_to root_path
       end
     end
   end

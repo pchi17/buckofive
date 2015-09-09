@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  def self.seed_users
+  def self.create_users
     before :all do
       @user  = create(:user)
       @other = create(:user, :another_user)
@@ -20,28 +20,28 @@ RSpec.describe UsersController, type: :controller do
       expect(assigns(:user).id).to be_nil
     end
 
-    it 'renders the :new template' do
-      expect(response).to render_template :new
-    end
+    it { expect(subject).to render_template :new }
   end
 
   describe 'POST#create' do
-
     context 'with valid attributes' do
-      it 'creates a new User' do
+      before :each do |example|
+        unless example.metadata[:skip_before]
+          post :create, user: attributes_for(:user)
+        end
+      end
+
+      it 'creates a new User', skip_before: true do
         expect {
           post :create, user: attributes_for(:user)
         }.to change(User, :count).by(1)
       end
-      it 'sends an account activation email' do
+
+      it 'sends an account activation email', skip_before: true do
         expect {
           post :create, user: attributes_for(:user)
         }.to change(ActionMailer::Base.deliveries, :size).by(1)
       end
-    end
-
-    context 'with valid attributes' do
-      before(:each) { post :create, user: attributes_for(:user) }
 
       it 'assigns a valid user to @user' do
         expect(assigns(:user)).to be_valid
@@ -49,12 +49,9 @@ RSpec.describe UsersController, type: :controller do
       it 'sets a logs in the user' do
         expect(session[:user_id]).to eq(assigns(:user).id)
       end
-      it 'sets a flash[:info] message' do
-        expect(flash[:info]).to_not be_nil
-      end
-      it 'redirect_to root_path' do
-        expect(response).to redirect_to root_path
-      end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to root_path }
     end
 
     context 'with valid attributes' do
@@ -74,33 +71,35 @@ RSpec.describe UsersController, type: :controller do
     end
 
     context 'with invalid attributes' do
-      it 'does not create a new User' do
+      before :each do |example|
+        unless example.metadata[:skip_before]
+          post :create, user: attributes_for(:user, :invalid_email)
+        end
+      end
+
+      it 'does not create a new User', skip_before: true do
         expect {
           post :create, user: attributes_for(:user, :invalid_email)
         }.to_not change(User, :count)
       end
-      it 'does not send an account activation email' do
+
+      it 'does not send an account activation email', skip_before: true do
         expect {
           post :create, user: attributes_for(:user, :invalid_email)
         }.to_not change(ActionMailer::Base.deliveries, :size)
       end
-    end
-
-    context 'with invalid attributes' do
-      before(:each) { post :create, user: attributes_for(:user, :invalid_email) }
 
       it 'assigns an invalid user to @user' do
         expect(assigns(:user)).to_not be_valid
       end
-      it 're-renders the :new template' do
-        expect(response).to render_template :new
-      end
+
+      it { expect(subject).to render_template :new }
     end
 
   end
 
   describe 'GET #edit' do
-    seed_users
+    create_users
 
     context 'when not logged in' do
       before(:each) { get :edit, id: @user }
@@ -108,12 +107,9 @@ RSpec.describe UsersController, type: :controller do
       it 'stores the edit_user_path' do
         expect(session[:forwarding_url]).to eq(edit_user_url(@user))
       end
-      it 'sets a flash[:info] message' do
-        expect(flash[:info]).to_not be_nil
-      end
-      it 'redirect_to login_path' do
-        expect(response).to redirect_to login_path
-      end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
     end
 
     context 'when logged in as @user' do
@@ -122,21 +118,21 @@ RSpec.describe UsersController, type: :controller do
       context 'when accessing own edit page' do
         it 'renders the :edit view' do
           get :edit, id: @user
-          expect(response).to render_template :edit
+          expect(subject).to render_template :edit
         end
       end
 
       context 'when accessing wrong edit page' do
         it 'redirect_to root_path' do
           get :edit, id: @other
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end
   end
 
   describe 'PATCH #update' do
-    seed_users
+    create_users
 
     before :all do
       @attrs = attributes_for(:user)
@@ -151,12 +147,9 @@ RSpec.describe UsersController, type: :controller do
         # because the request is not a GET
         expect(session[:forwarding_url]).to be_nil
       end
-      it 'sets a flash[:info] message' do
-        expect(flash[:info]).to_not be_nil
-      end
-      it 'redirect_to login_path' do
-        expect(response).to redirect_to login_path
-      end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
     end
 
     context 'when logged in as @user' do
@@ -169,20 +162,17 @@ RSpec.describe UsersController, type: :controller do
           it 'changes the @user attributes' do
             expect(assigns(:user).reload.name).to eq(@attrs[:name])
           end
-          it 'sets a flash[:success] message' do
-            expect(flash[:success]).to_not be_nil
-          end
-          it 'redirect_to root_path' do
-            expect(response).to redirect_to root_path
-          end
+
+          it { expect(subject).to set_flash[:success] }
+          it { expect(subject).to redirect_to root_path }
         end
 
         context 'with invalid attributes' do
-          before(:all) { @attrs[:email] = '123' } # too short
+          before(:all) { @attrs[:password] = '123' } # too short
 
           it 're-renders the :edit template' do
             patch :update, id: @user, user: @attrs
-            expect(response).to render_template :edit
+            expect(subject).to render_template :edit
           end
         end
       end
@@ -190,14 +180,14 @@ RSpec.describe UsersController, type: :controller do
       context 'when update wrong profile' do
         it 'redirect_to root_path' do
           patch :update, id: @other, user: @attrs
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end
   end
 
   describe 'DELETE #destroy' do
-    seed_users
+    create_users
 
     context 'when not logged in' do
       before(:each) { delete :destroy, id: @user }
@@ -206,32 +196,27 @@ RSpec.describe UsersController, type: :controller do
         # because the request is not a GET
         expect(session[:forwarding_url]).to be_nil
       end
-      it 'sets a flash[:info] message' do
-        expect(flash[:info]).to_not be_nil
-      end
-      it 'redirect_to login_path' do
-        delete :destroy, id: @user
-        expect(response).to redirect_to login_path
-      end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
     end
 
     context 'when logged in as normal @user' do
       before(:each) { login(@user) }
 
       context 'when deleting own profile' do
-        it 'deletes the user from database' do
+        before :each do |example|
+          delete :destroy, id: @user unless example.metadata[:skip_before]
+        end
+
+        it 'deletes the user from database', skip_before: true do
           expect {
             delete :destroy, id: @user
           }.to change(User, :count).by(-1)
         end
-        it 'sets a flash[:info] message' do
-          delete :destroy, id: @user
-          expect(flash[:info]).to_not be_nil
-        end
-        it 'redirect_to root_path' do
-          delete :destroy, id: @user
-          expect(response).to redirect_to root_path
-        end
+
+        it { expect(subject).to set_flash[:info] }
+        it { expect(subject).to redirect_to root_path }
       end
 
       context 'when deleting wrong profile' do
@@ -242,7 +227,7 @@ RSpec.describe UsersController, type: :controller do
         end
         it 'redirect_to root_path' do
           delete :destroy, id: @other
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end
@@ -258,7 +243,7 @@ RSpec.describe UsersController, type: :controller do
         end
         it 'redirect_to root_path' do
           delete :destroy, id: @admin
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
 
@@ -270,7 +255,7 @@ RSpec.describe UsersController, type: :controller do
         end
         it 'redirect_to root_path' do
           delete :destroy, id: @other
-          expect(response).to redirect_to root_path
+          expect(subject).to redirect_to root_path
         end
       end
     end

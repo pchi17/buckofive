@@ -12,6 +12,7 @@ gem 'jbuilder', '~> 2.0'
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 gem 'puma'
+gem 'omniauth-twitter', '1.2.1'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.3.0'
@@ -24,4 +25,6 @@ end
 group :test do
   gem 'capybara', '~> 2.4.4'
   gem 'database_cleaner', '~> 1.4.1'
+  gem 'fork_break'
+  gem 'shoulda-matchers', require: false
 end

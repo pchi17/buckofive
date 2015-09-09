@@ -6,7 +6,7 @@ RSpec.describe SessionsController, type: :controller do
   describe 'GET #new' do
     it 'renders the :new template' do
       get :new
-      expect(response).to render_template :new
+      expect(subject).to render_template :new
     end
   end
 
@@ -29,9 +29,8 @@ RSpec.describe SessionsController, type: :controller do
       it 'sets session[:user_id] to @user.id' do
         expect(session[:user_id]).to eq(assigns(:user).id)
       end
-      it 'redirect_to root_path' do
-        expect(response).to redirect_to root_path
-      end
+
+      it { expect(response).to redirect_to root_path }
     end
 
     context 'with valid email and password' do
@@ -61,13 +60,8 @@ RSpec.describe SessionsController, type: :controller do
         expect(assigns(:user)).to be_nil
       end
 
-      it 'sets a flash.now[:danger] message' do
-        expect(flash.now[:danger]).to_not be_nil
-      end
-
-      it 're-renders the :new template' do
-        expect(response).to render_template :new
-      end
+      it { expect(subject).to set_flash.now[:danger] }
+      it { expect(subject).to render_template :new }
     end
 
     context 'with wrong password' do
@@ -85,13 +79,8 @@ RSpec.describe SessionsController, type: :controller do
         expect(assigns(:user).authenticate(@attrs[:password])).to be false
       end
 
-      it 'sets a flash.now[:danger] message' do
-        expect(flash.now[:danger]).to_not be_nil
-      end
-
-      it 're-renders the :new template' do
-        expect(response).to render_template :new
-      end
+      it { expect(subject).to set_flash.now[:danger] }
+      it { expect(subject).to render_template :new }
     end
   end
 
@@ -108,7 +97,7 @@ RSpec.describe SessionsController, type: :controller do
     end
     it 'redirect_to root_path' do
       delete :destroy
-      expect(response).to redirect_to root_path
+      expect(subject).to redirect_to root_path
     end
 
     context 'when remember_me is enabled' do

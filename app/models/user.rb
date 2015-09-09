@@ -1,7 +1,8 @@
 class User < ActiveRecord::Base
+  has_many :authentications, dependent: :delete_all
   attr_accessor :remember_token, :activation_token, :reset_token
-
-  before_save { email.downcase! }
+  
+  before_save { email.downcase! if email }
 
   VALID_EMAIL_FORMAT = /\A[\w\+\-\.]+@[a-z\d\-\.]+[a-z\d\-]\.[a-z]+\z/i
 
@@ -76,12 +77,15 @@ class User < ActiveRecord::Base
     reset_sent_at < 2.hours.ago
   end
 
-  # check digest
   def is_digest?(attribute, token)
     if digest = send("#{attribute}_digest")
       BCrypt::Password.new(digest).is_password?(token)
     else
       return false
     end
+  end
+
+  def has_authentication(provider)
+    authentications.where(provider: provider).count > 0
   end
 end

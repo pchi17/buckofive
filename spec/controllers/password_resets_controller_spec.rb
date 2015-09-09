@@ -11,7 +11,7 @@ RSpec.describe PasswordResetsController, type: :controller do
   describe 'GET #new' do
     it 'renders the :new view' do
       get :new
-      expect(response).to render_template :new
+      expect(subject).to render_template :new
     end
   end
 
@@ -19,17 +19,9 @@ RSpec.describe PasswordResetsController, type: :controller do
     context 'with a registered email' do
       before(:each) { post :create, password_reset: { email: @user.email } }
 
-      it 'returns the correct @user' do
-        expect(assigns(:user)).to eq(@user)
-      end
-
-      it 'sets a flash[:info] message' do
-        expect(flash[:info]).to_not be_nil
-      end
-
-      it 'redirect_to login_path' do
-        expect(response).to redirect_to login_path
-      end
+      it { expect(assigns(:user)).to eq(@user) }
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path}
     end
 
     context 'with a registered email' do
@@ -43,17 +35,9 @@ RSpec.describe PasswordResetsController, type: :controller do
     context 'with a non registered email' do
       before(:each) { post :create, password_reset: { email: @user.email + 'xxx' } }
 
-      it 'returns nil for @user' do
-        expect(assigns(:user)).to be_nil
-      end
-
-      it 'sets a flash[:danger] message' do
-        expect(flash[:danger]).to_not be_nil
-      end
-
-      it 're-renders the :new template' do
-        expect(response).to render_template :new
-      end
+      it { expect(assigns(:user)).to be_nil }
+      it { expect(subject).to set_flash[:danger] }
+      it { expect(subject).to render_template :new }
     end
 
     context 'with a non registered email' do
@@ -66,18 +50,6 @@ RSpec.describe PasswordResetsController, type: :controller do
   end
 
   describe 'GET #edit' do
-    def self.it_sets_flash_danger_message
-      it 'sets a flash[:danger] message' do
-        expect(flash[:danger]).to_not be_nil
-      end
-    end
-
-    def self.it_redirects_to_login
-      it 'redirect_to login_path' do
-        expect(response).to redirect_to login_path
-      end
-    end
-
     context 'with valid reset_token and email' do
       it 'finds the correct user' do
         get :edit, id: @user.reset_token, email: @user.email
@@ -99,13 +71,8 @@ RSpec.describe PasswordResetsController, type: :controller do
           get :edit, id: @user.reset_token, email: @user.email
         end
 
-        it 'sets flash[:warning] message' do
-          expect(flash[:warning]).to_not be_nil
-        end
-
-        it 'redirect_to new_password_reset_path' do
-          expect(response).to redirect_to new_password_reset_path
-        end
+        it { expect(subject).to set_flash[:warning] }
+        it { expect(subject).to redirect_to new_password_reset_path }
       end
     end
 
@@ -114,8 +81,8 @@ RSpec.describe PasswordResetsController, type: :controller do
         get :edit, id: @user.reset_token + 'xxx', email: @user.email
       end
 
-      it_sets_flash_danger_message
-      it_redirects_to_login
+      it { expect(subject).to set_flash[:danger] }
+      it { expect(subject).to redirect_to login_path }
     end
 
     context 'with invalid email' do
@@ -123,8 +90,8 @@ RSpec.describe PasswordResetsController, type: :controller do
         get :edit, id: @user.reset_token, email: @user.email + 'xxx'
       end
 
-      it_sets_flash_danger_message
-      it_redirects_to_login
+      it { expect(subject).to set_flash[:danger] }
+      it { expect(subject).to redirect_to login_path }
     end
   end
 
@@ -135,18 +102,6 @@ RSpec.describe PasswordResetsController, type: :controller do
       end
     end
 
-    def self.it_renders_edit_template
-      it 're-renders :edit template' do
-        expect(response).to render_template :edit
-      end
-    end
-
-    def self.it_sets_flash_danger_message
-      it 'sets flash[:danger] message' do
-        expect(flash[:danger]).to_not be_nil
-      end
-    end
-
     context 'with valid reset_token and email' do
       context 'when reset link is not expired' do
         context 'when password and confirmation matches and are valid' do
@@ -154,18 +109,17 @@ RSpec.describe PasswordResetsController, type: :controller do
             patch :update, id: @user.reset_token, email: @user.email,
               user: { password: @new_password, password_confirmation: @new_password }
           end
+
           it 'updates the password' do
             expect(assigns(:user).reload.authenticate(@new_password)).to eq(@user)
           end
+
           it 'logs in the user' do
             expect(session[:user_id]).to eq(@user.id)
           end
-          it 'sets a flash[:success] message' do
-            expect(flash[:success]).to_not be_nil
-          end
-          it 'redirect_to root_path' do
-            expect(response).to redirect_to root_path
-          end
+
+          it { expect(subject).to set_flash[:success] }
+          it { expect(subject).to redirect_to root_path }
         end
 
         context 'when password and confirmation do not match' do
@@ -174,8 +128,11 @@ RSpec.describe PasswordResetsController, type: :controller do
               user: { password: @new_password, password_confirmation: @new_password + 'xxx' }
           end
 
-          it_does_not_reset_password
-          it_renders_edit_template
+          it 'does not reset password' do
+            expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
+          end
+
+          it { expect(subject).to render_template :edit }
         end
 
         context 'when password is nil' do
@@ -184,8 +141,11 @@ RSpec.describe PasswordResetsController, type: :controller do
               user: { password: nil, password_confirmation: nil }
           end
 
-          it_does_not_reset_password
-          it_renders_edit_template
+          it 'does not reset password' do
+            expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
+          end
+
+          it { expect(subject).to render_template :edit }
         end
 
         context 'when password is empty' do
@@ -194,8 +154,11 @@ RSpec.describe PasswordResetsController, type: :controller do
               user: { password: '', password_confirmation: '' }
           end
 
-          it_does_not_reset_password
-          it_renders_edit_template
+          it 'does not reset password' do
+            expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
+          end
+
+          it { expect(subject).to render_template :edit }
         end
 
         context 'when password is blank' do
@@ -204,8 +167,11 @@ RSpec.describe PasswordResetsController, type: :controller do
             user: { password: ' ' * 7, password_confirmation: ' ' * 7 }
           end
 
-          it_does_not_reset_password
-          it_renders_edit_template
+          it 'does not reset password' do
+            expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
+          end
+
+          it { expect(subject).to render_template :edit }
         end
 
         context 'when password is too short' do
@@ -214,8 +180,11 @@ RSpec.describe PasswordResetsController, type: :controller do
               user: { password: '12345', password_confirmation: '12345' }
           end
 
-          it_does_not_reset_password
-          it_renders_edit_template
+          it 'does not reset password' do
+            expect(assigns(:user).reload.authenticate(@old_password)).to eq(@user)
+          end
+
+          it { expect(subject).to render_template :edit }
         end
       end
 
@@ -226,12 +195,8 @@ RSpec.describe PasswordResetsController, type: :controller do
             user: { password: @new_password, password_confirmation: @new_password }
         end
 
-        it 'sets flash[:warning] message' do
-          expect(flash[:warning]).to_not be_nil
-        end
-        it 'redirect_to new_password_reset_path' do
-          expect(response).to redirect_to new_password_reset_path
-        end
+        it { expect(subject).to set_flash[:warning] }
+        it { expect(subject).to redirect_to new_password_reset_path }
       end
     end
 
@@ -241,7 +206,7 @@ RSpec.describe PasswordResetsController, type: :controller do
           user: { password: @new_password, password_confirmation: @new_password }
       end
 
-      it_sets_flash_danger_message
+      it { expect(subject).to set_flash[:danger] }
     end
 
     context 'with invalid email' do
@@ -249,8 +214,8 @@ RSpec.describe PasswordResetsController, type: :controller do
         patch :update, id: @user.reset_token, email: @user.email + 'xxx',
           user: { password: @new_password, password_confirmation: @new_password }
       end
-      
-      it_sets_flash_danger_message
+
+      it { expect(subject).to set_flash[:danger] }
     end
   end
 end

@@ -13,13 +13,6 @@ require 'rails_helper'
 RSpec.describe SessionsHelper, type: :helper do
   before(:all)  { @user = create(:user) }
 
-  describe '#login' do
-    it 'sets the session[:user_id] to the id of a user' do
-      login(@user)
-      expect(session[:user_id]).to eq(@user.id)
-    end
-  end
-
   describe '#logged_in?' do
     it 'returns false when no one is logged in' do
       expect(logged_in?).to be false
@@ -43,6 +36,30 @@ RSpec.describe SessionsHelper, type: :helper do
         remember(@user)
         expect(current_user).to eq(@user)
       end
+    end
+  end
+
+  describe '#login' do
+    it 'sets the session[:user_id] to the id of a user' do
+      login(@user)
+      expect(session[:user_id]).to eq(@user.id)
+    end
+  end
+
+  describe '#logout' do
+    before :each do
+      login(@user)
+      logout(@user)
+    end
+
+    # it forgets @user, see #forget 
+
+    it 'deletes session[:user_id]' do
+      expect(session[:user_id]).to be_nil
+    end
+
+    it 'sets @current_user to nil' do
+      expect(@current_user).to be_nil
     end
   end
 
