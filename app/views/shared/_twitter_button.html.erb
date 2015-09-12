@@ -1,10 +1,6 @@
 <%= link_to '/auth/twitter', class: 'btn btn-block btn-twitter' do %>
   <% if logged_in? %>
-    <% if current_user.has_authentication('twitter') %>
-      <span>sync with your twitter account</span>
-    <% else %>
-      <span>connect your twitter account</span>
-    <% end %>
+    <span>connect or sync with your twitter account</span>
   <% else %>
     <span>sign in with twitter</span>
   <% end %>

@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   resources :password_resets,     only: [:new, :create, :edit, :update]
 
   # OmniAuth
-  get 'auth/twitter/callback' => 'authentications#new'
+  get 'auth/twitter/callback' => 'authentications#twitter'
   get 'auth/failure'          => 'authentications#failure'
 
   # The priority is based upon order of creation: first created -> highest priority.

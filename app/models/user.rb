@@ -1,33 +1,28 @@
 class User < ActiveRecord::Base
   has_many :authentications, dependent: :delete_all
-  attr_accessor :remember_token, :activation_token, :reset_token
-  
+  attr_accessor :password, :password_confirmation, :skip_password,
+                :remember_token, :activation_token, :reset_token
+
   before_save { email.downcase! if email }
 
   VALID_EMAIL_FORMAT = /\A[\w\+\-\.]+@[a-z\d\-\.]+[a-z\d\-]\.[a-z]+\z/i
 
   validates :name,  presence: true
   validates :email, presence: true, format: { with: VALID_EMAIL_FORMAT }, uniqueness: { case_sensitive: false }
-  validates :password, length: { minimum: 6 }
-  has_secure_password
-
-  # class methods
-  class << self
-    def new_token
-      SecureRandom.urlsafe_base64
-    end
-
-    def digest(password)
-      if ActiveModel::SecurePassword.min_cost
-        cost = BCrypt::Engine::MIN_COST
-      else
-        cost = BCrypt::Engine.cost
-      end
-      BCrypt::Password.create(password, cost: cost)
-    end
-  end
+  validates :password, presence:true, length: (6..32), confirmation: true, unless: :skip_password
 
   # instance methods
+
+  # since I did not use has_secure_password,
+  # I need to redefine password= and authenticate
+  def password=(str)
+    @password = str
+    self.password_digest = User.digest(str)
+  end
+
+  def authenticate(password)
+    is_digest?(:password, password) ? self : false
+  end
 
   # login, logout
   def remember_me
@@ -87,5 +82,21 @@ class User < ActiveRecord::Base
 
   def has_authentication(provider)
     authentications.where(provider: provider).count > 0
+  end
+
+  # class methods
+  class << self
+    def new_token
+      SecureRandom.urlsafe_base64
+    end
+
+    def digest(token)
+      if ActiveModel::SecurePassword.min_cost
+        cost = BCrypt::Engine::MIN_COST
+      else
+        cost = BCrypt::Engine.cost
+      end
+      BCrypt::Password.create(token, cost: cost)
+    end
   end
 end

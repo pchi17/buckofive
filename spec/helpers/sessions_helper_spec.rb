@@ -52,7 +52,7 @@ RSpec.describe SessionsHelper, type: :helper do
       logout(@user)
     end
 
-    # it forgets @user, see #forget 
+    # it forgets @user, see #forget
 
     it 'deletes session[:user_id]' do
       expect(session[:user_id]).to be_nil

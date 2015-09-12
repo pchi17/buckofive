@@ -1,0 +1,20 @@
+<%= form_tag({ controller: 'users', action: 'index' }, method: :get, class: 'form-inline') do %>
+  <%= label_tag      :search_term, nil, class: 'sr-only' %>
+  <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for users here' %>
+  <%= submit_tag 'search', class: 'btn btn-primary' %>
+<% end %>
+
+<table class="table table-responsive table-hover">
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= profile_picture(user, 50) %></td>
+      <td><%= user.name %></td>
+      <% if current_user.admin? %>
+        <td>
+          <%= link_to 'delete', user_path(user), method: :delete, class: 'btn btn-danger btn-xs' %>
+        </td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
+<%= will_paginate @users %>

@@ -45,25 +45,15 @@ RSpec.describe User, type: :model do
   end
 
   describe '#password' do
-    it { expect(subject).to have_secure_password }
+    it { expect(subject).to validate_presence_of :password }
     it { expect(subject).to validate_length_of(:password).is_at_least(6) }
-    it { expect(subject).to validate_length_of(:password).is_at_most(72) }
-  end
-
-  describe '#authentication' do
-    context 'when supplying the matching password' do
-      it 'returns the user' do
-        pword = subject.password
-        subject.save
-        expect(subject.authenticate(pword)).to eq(subject)
-      end
-    end
-
-    context 'when supplying a non matching password' do
-      it 'returns false' do
-        pword = subject.password
-        subject.save
-        expect(subject.authenticate(pword + 'xxx')).to be false
+    it { expect(subject).to validate_length_of(:password).is_at_most(32) }
+    it { expect(subject).to validate_confirmation_of :password }
+    context 'when skip_password is true' do
+      it 'does not validate presence of password' do
+        subject.skip_password = true
+        subject.password = nil
+        expect(subject).to be_valid
       end
     end
   end

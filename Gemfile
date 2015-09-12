@@ -13,6 +13,7 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'bcrypt', '~> 3.1.7'
 gem 'puma'
 gem 'omniauth-twitter', '1.2.1'
+gem 'will_paginate', '~> 3.0.6'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.3.0'

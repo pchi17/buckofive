@@ -1,12 +1,13 @@
 module SessionsHelper
   def logged_in?
-    return true if session[:user_id] ||= cookies.signed[:user_id]
-    return false
+    !current_user.nil?
   end
 
   def current_user
     return @current_user if @current_user
-    logged_in? ? @current_user = User.find(session[:user_id]) : nil
+    if session[:user_id] ||= cookies.signed[:user_id]
+      @current_user = User.find_by(id: session[:user_id])
+    end
   end
 
   def login(user)
@@ -55,7 +56,7 @@ module SessionsHelper
     end
 
     def correct_user
-      @user = User.find(params[:id])
-      redirect_to root_path unless @user.id == session[:user_id]
+      @user = User.find_by(id: params[:id])
+      redirect_back_or root_path unless @user && @user.id == session[:user_id]
     end
 end

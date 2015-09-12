@@ -57,19 +57,19 @@ header {
   }
 }
 
+//user panel
+.userPanel {
+  text-align: center;
+  .btn {
+    display: inline-block;
+    margin: 2px 0;
+    width: 80%;
+  }
+}
+
 // flash messages
 .alert {
   text-align: center;
-}
-
-// twitter buttons
-.btn-twitter {
-  color: white;
-  background-color: $twitter-color;
-  &:hover {
-    color: white;
-    background-color: $darker-twitter-color;
-  }
 }
 
 // form errors
@@ -86,5 +86,38 @@ header {
   .form-control {
     box-shadow: 0 0 5px $state-danger-text;
     color: $state-danger-text;
+  }
+}
+
+// twitter buttons
+.btn-twitter {
+  color: white;
+  background-color: $twitter-color;
+  &:hover {
+    color: white;
+    background-color: $darker-twitter-color;
+  }
+}
+
+// profile picture
+.profile-picture {
+  border-radius: 5px;
+}
+.user-activated {
+  box-shadow: 0 0 10px $brand-success;
+}
+.user-nonactivated {
+  box-shadow: 0 0 10px $brand-danger;
+}
+
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.form-inline {
+  margin-bottom: 10px;
+  input[type='text'] {
+    width: 60%
   }
 }

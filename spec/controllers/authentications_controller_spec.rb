@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe AuthenticationsController, type: :controller do
-  describe 'GET #new' do
+  describe 'GET #twitter' do
     before :all do
       mock_auth_hash
     end
@@ -15,8 +15,7 @@ RSpec.describe AuthenticationsController, type: :controller do
     context 'when logged in' do
       before :each do |example|
         login(@user)
-        request.env['HTTP_REFERER'] = edit_user_path(@user)
-        get :new unless example.metadata[:skip_before]
+        get :twitter unless example.metadata[:skip_before]
       end
 
       context 'when authentication already exists in the database' do
@@ -52,7 +51,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to request.env['HTTP_REFERER'] }
+          it { expect(subject).to redirect_to edit_user_path(current_user) }
         end
       end
 
@@ -62,7 +61,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         it 'creates a new authentication associated with current_user', skip_before: true do
           expect {
-            get :new
+            get :twitter
           }.to change(current_user.authentications, :count).by(1)
         end
 
@@ -80,7 +79,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to request.env['HTTP_REFERER'] }
+          it { expect(subject).to redirect_to edit_user_path(current_user) }
         end
       end
 
@@ -89,7 +88,7 @@ RSpec.describe AuthenticationsController, type: :controller do
     context 'when not logged in' do
       before :each do |example|
         logout(current_user) if logged_in?
-        get :new unless example.metadata[:skip_before]
+        get :twitter unless example.metadata[:skip_before]
       end
 
       context 'when authentication already exists in the database' do
@@ -133,7 +132,7 @@ RSpec.describe AuthenticationsController, type: :controller do
       context 'when authentication does not exist in the database' do
         it 'creates a new @user', skip_before: true  do
           expect {
-            get :new
+            get :twitter
           }.to change(User, :count).by(1)
         end
 
@@ -155,7 +154,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         it 'creates a new @authentication associated with the @user', skip_before: true do
           expect(Authentication.count).to eq(0)
-          get :new
+          get :twitter
           expect(assigns(:user).authentications.count).to eq(1)
         end
 
