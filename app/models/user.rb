@@ -1,6 +1,6 @@
 class User < ActiveRecord::Base
   has_many :authentications, dependent: :delete_all
-  attr_accessor :password, :password_confirmation, :skip_password,
+  attr_accessor :password, :password_confirmation, :skip_password_validation,
                 :remember_token, :activation_token, :reset_token
 
   before_save { email.downcase! if email }
@@ -9,7 +9,7 @@ class User < ActiveRecord::Base
 
   validates :name,  presence: true
   validates :email, presence: true, format: { with: VALID_EMAIL_FORMAT }, uniqueness: { case_sensitive: false }
-  validates :password, presence:true, length: (6..32), confirmation: true, unless: :skip_password
+  validates :password, presence:true, length: (6..32), confirmation: true, unless: :skip_password_validation
 
   # instance methods
 

@@ -27,7 +27,7 @@ class AuthenticationsController < ApplicationController
           secret:   auth_hash.credentials.secret
         )
       end
-      redirect_to edit_user_path current_user
+      redirect_to edit_profile_path
     else
       if @authentication = Authentication.find_by(provider: auth_hash.provider, uid: auth_hash.uid)
         @user = @authentication.user
@@ -41,6 +41,7 @@ class AuthenticationsController < ApplicationController
         )
         @user.activate_account unless @user.activated?
         login(@user)
+        remember(@user)
       else
         @user = User.new(
           name:      auth_hash.info.nickname,
@@ -56,14 +57,15 @@ class AuthenticationsController < ApplicationController
           secret:   auth_hash.credentials.secret
         )
         login(@user)
+        remember(@user)
       end
       flash[:success] = "signed in with your #{auth_hash.provider} account"
-      redirect_to root_path
+      friendly_forward_or root_path
     end
   end
 
   def failure
     flash[:danger] = 'authentication failed :('
-    redirect_back_or root_path
+    redirect_to root_path
   end
 end

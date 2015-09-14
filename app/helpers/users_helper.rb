@@ -7,4 +7,14 @@ module UsersHelper
     klass = user.activated? ? 'user-activated' : 'user-nonactivated'
     image_tag(source, alt: user.name, class: "profile-picture #{klass}", size: "#{size}")
   end
+
+  private
+    def user_params
+      params.require(:user).permit(
+        :name,
+        :email,
+        :password,
+        :password_confirmation
+      )
+    end
 end

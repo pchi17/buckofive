@@ -1,3 +1,5 @@
+<% @user ||= current_user%>
+
 <div id="error_list">
   <div class="alert alert-danger">
     The form contains <%= pluralize(@user.errors.count, 'error') %>

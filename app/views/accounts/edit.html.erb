@@ -1,0 +1,24 @@
+<% content_for :title, 'Edit Account' %>
+
+<%= render 'shared/edit_profile_buttons' %>
+
+<div class="col-md-5">
+  <%= form_for current_user, url: profile_account_path, method: :patch do |form| %>
+    <hr/>
+    <%= render 'shared/error_messages' if current_user.errors.any? %>
+    <div class="form-group">
+      <%= form.label :name, class: 'sr-only' %>
+      <%= form.text_field :name, class: 'form-control', placeholder: 'Name', autofocus: true %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :email, class: 'sr-only' %>
+      <%= form.email_field :email, class: 'form-control', placeholder: 'Email' %>
+    </div>
+
+    <div class="form-group">
+      <%= form.submit 'Submit Changes', class: 'btn btn-success btn-sm' %>
+    </div>
+    <hr/>
+  <% end %>
+</div>

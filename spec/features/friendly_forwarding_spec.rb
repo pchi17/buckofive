@@ -6,7 +6,7 @@ feature 'friendly forwarding' do
   scenario 'user try to visit edit page' do
     # user is not signed in
     visit "/"
-    visit edit_user_path(@user)
+    visit edit_profile_path
     # user is redirect_to login_path
     expect(current_path).to eq(login_path)
     within "form" do
@@ -15,6 +15,6 @@ feature 'friendly forwarding' do
       click_on("Log In")
     end
     # user is redirect back to edit page instead of root_path
-    expect(current_path).to eq(edit_user_path(@user))
+    expect(current_path).to eq(edit_profile_path)
   end
 end

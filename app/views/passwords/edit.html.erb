@@ -1,0 +1,28 @@
+<% content_for :title, 'Change Password' %>
+
+<%= render 'shared/edit_profile_buttons' %>
+
+<div class="col-md-5">
+  <%= form_for current_user, url: profile_password_path, method: :patch do |form| %>
+    <hr/>
+    <%= render 'shared/error_messages' if current_user.errors.any? %>
+    <div class="form-group">
+      <%= form.label :oldpassword, class: 'sr-only' %>
+      <%= form.password_field :oldpassword, class: 'form-control', placeholder: 'Old Password', autofocus: true%>
+    </div>
+    <div class="form-group">
+      <%= form.label :password, class: 'sr-only' %>
+      <%= form.password_field :password, class: 'form-control', placeholder: 'New Password' %>
+    </div>
+
+    <div class="form-group">
+      <%= form.label :password_confirmation, class: 'sr-only' %>
+      <%= form.password_field :password_confirmation, class: 'form-control', placeholder: 'Confirmation' %>
+    </div>
+
+    <div class="form-group">
+      <%= form.submit 'change your password', class: 'btn btn-success btn-sm' %>
+    </div>
+    <hr/>
+  <% end %>
+</div>

@@ -5,7 +5,7 @@ class AccountActivationsController < ApplicationController
   def create
     @user.send_activation_email
     flash[:info] = 'activation Email sent'
-    redirect_back_or(edit_user_path(@user))
+    redirect_to edit_profile_path
   end
 
   def edit

@@ -41,11 +41,6 @@ module SessionsHelper
     redirect_to(session.delete(:forwarding_url) || default)
   end
 
-  # redirect back
-  def redirect_back_or(default)
-    redirect_to (request.env['HTTP_REFERER'] || default)
-  end
-
   private
     def logged_in_user
       unless logged_in?
@@ -57,6 +52,6 @@ module SessionsHelper
 
     def correct_user
       @user = User.find_by(id: params[:id])
-      redirect_back_or root_path unless @user && @user.id == session[:user_id]
+      redirect_to root_path unless @user && @user.id == session[:user_id]
     end
 end

@@ -51,7 +51,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to edit_user_path(current_user) }
+          it { expect(subject).to redirect_to edit_profile_path }
         end
       end
 
@@ -79,7 +79,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to edit_user_path(current_user) }
+          it { expect(subject).to redirect_to edit_profile_path }
         end
       end
 
@@ -88,6 +88,7 @@ RSpec.describe AuthenticationsController, type: :controller do
     context 'when not logged in' do
       before :each do |example|
         logout(current_user) if logged_in?
+        session[:forwarding_url] = profile_path
         get :twitter unless example.metadata[:skip_before]
       end
 
@@ -123,9 +124,13 @@ RSpec.describe AuthenticationsController, type: :controller do
           expect(session[:user_id]).to eq(assigns(:user).id)
         end
 
+        it 'remembers @user' do
+          expect(cookies.signed[:user_id]).to eq(assigns(:user).id)
+        end
+
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to root_path }
+          it { expect(subject).to redirect_to profile_path }
         end
       end
 
@@ -166,9 +171,13 @@ RSpec.describe AuthenticationsController, type: :controller do
           expect(session[:user_id]).to eq(assigns(:user).id)
         end
 
+        it 'remembers @user' do
+          expect(cookies.signed[:user_id]).to eq(assigns(:user).id)
+        end
+
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to root_path }
+          it { expect(subject).to redirect_to profile_path }
         end
       end
     end
@@ -177,6 +186,6 @@ RSpec.describe AuthenticationsController, type: :controller do
   describe '#failure' do
     before(:each) { get :failure }
     it { expect(subject).to set_flash[:danger] }
-    it { expect(subject).to redirect_back_or root_path }
+    it { expect(subject).to redirect_to root_path }
   end
 end

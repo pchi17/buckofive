@@ -49,10 +49,16 @@ RSpec.describe User, type: :model do
     it { expect(subject).to validate_length_of(:password).is_at_least(6) }
     it { expect(subject).to validate_length_of(:password).is_at_most(32) }
     it { expect(subject).to validate_confirmation_of :password }
-    context 'when skip_password is true' do
-      it 'does not validate presence of password' do
-        subject.skip_password = true
+
+    context 'when skip_password_validation is true' do
+      it 'does not validate password' do
+        subject.skip_password_validation = true
         subject.password = nil
+        expect(subject).to be_valid
+        subject.password = 'foo'
+        expect(subject).to be_valid
+        subject.password = 'foobar'
+        subject.password_confirmation = 'notfoobar'
         expect(subject).to be_valid
       end
     end

@@ -3,12 +3,12 @@
   <%= profile_picture(current_user, 150) %>
   <hr/>
     <% if current_user.activated? %>
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#createPoll">
+      <button type="button" class="btn btn-success btn-inline-block" data-toggle="modal" data-target="#createPoll">
         Create Poll
       </button>
     <% end %>
-    <%= link_to 'Settings', edit_user_path(current_user), class: 'btn btn-primary' %>
-    <%= link_to 'Log Out',  logout_path ,method: :delete, class: 'btn btn-danger ' %>
+    <%= link_to 'Settings', edit_profile_path, class: 'btn btn-primary btn-inline-block' %>
+    <%= link_to 'Log Out',  logout_path , method: :delete, class: 'btn btn-danger btn-inline-block' %>
 
   <!-- Modal  -->
   <div class="modal fade" id="createPoll" tabindex="-1" role="dialog" aria-labelledby="createPoll">
@@ -31,7 +31,8 @@
   <!-- Modal -->
 
 <% else %>
-  <%= link_to 'Log In',  login_path,  class: 'btn btn-primary' %>
-  <%= link_to 'Sign Up', signup_path, class: 'btn btn-primary' %>
+  <%= link_to 'Log In',  login_path,  class: 'btn btn-primary btn-block' %>
+  <%= link_to 'Sign Up', signup_path, class: 'btn btn-primary btn-block' %>
+  <hr/>
   <%= render 'shared/twitter_button' %>
 <% end %>

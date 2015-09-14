@@ -30,8 +30,6 @@ RSpec.describe AccountActivationsController, type: :controller do
       before(:each) { login(@user) }
 
       context 'when posting to self' do
-        before(:each) { request.env['HTTP_REFERER'] = edit_user_url(@user) }
-
         it 'sends an activation email' do
           expect {
             post :create, id: @user
@@ -45,7 +43,7 @@ RSpec.describe AccountActivationsController, type: :controller do
 
         it 'redirect_to :back' do
           post :create, id: @user
-          expect(subject).to redirect_to request.env['HTTP_REFERER']
+          expect(subject).to redirect_to edit_profile_path
         end
       end
 

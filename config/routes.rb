@@ -7,9 +7,14 @@ Rails.application.routes.draw do
   get    '/login'   => 'sessions#new'
   post   '/login'   => 'sessions#create'
   delete '/logout'  => 'sessions#destroy'
-  resources :users
+  resources :users,               only: [:new, :create, :index, :destroy]
   resources :account_activations, only: [:create, :edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
+
+  resource :profile, only: [:show, :edit] do
+    resource :account,  only: [:edit, :update]
+    resource :password, only: [:edit, :update]
+  end
 
   # OmniAuth
   get 'auth/twitter/callback' => 'authentications#twitter'
