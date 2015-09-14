@@ -9,56 +9,31 @@ RSpec.describe AccountActivationsController, type: :controller do
 
   describe 'POST #create' do
     context 'when not logged in' do
-      it 'does not send an activation email' do
+      before(:each) { |example| post :create unless example.metadata[:skip_before] }
+      it 'does not send an activation email', skip_before: true do
         expect {
-          post :create, id: @user
+          post :create
         }.to_not change(ActionMailer::Base.deliveries, :size)
       end
 
-      it 'sets a flash[:info] message' do
-        post :create, id: @user
-        expect(subject).to set_flash[:info]
-      end
-
-      it 'redirect_to login_path' do
-        post :create, id: @user
-        expect(subject).to redirect_to login_path
-      end
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
     end
 
     context 'when logged in' do
-      before(:each) { login(@user) }
-
-      context 'when posting to self' do
-        it 'sends an activation email' do
-          expect {
-            post :create, id: @user
-          }.to change(ActionMailer::Base.deliveries, :size).by(1)
-        end
-
-        it 'sets a flash[:info] message' do
-          post :create, id: @user
-          expect(subject).to set_flash[:info]
-        end
-
-        it 'redirect_to :back' do
-          post :create, id: @user
-          expect(subject).to redirect_to edit_profile_path
-        end
+      before(:each) do |example|
+        login(@user)
+        post :create unless example.metadata[:skip_before]
       end
 
-      context 'when posting to other' do
-        it 'does not send an activation email' do
-          expect {
-            post :create, id: @other
-          }.to_not change(ActionMailer::Base.deliveries, :size)
-        end
-
-        it 'redirect_to root_path' do
-          post :create, id: @other
-          expect(subject).to redirect_to root_path
-        end
+      it 'sends an activation email', skip_before: true do
+        expect {
+          post :create
+        }.to change(ActionMailer::Base.deliveries, :size).by(1)
       end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to edit_profile_path }
     end
   end
 

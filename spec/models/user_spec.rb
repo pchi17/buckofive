@@ -234,4 +234,36 @@ RSpec.describe User, type: :model do
       expect(BCrypt::Password.new(password_hash).is_password?(password)).to be true
     end
   end
+
+  describe '::search' do
+    before(:all) do
+      @jane = create(:user, name: 'Jane', email: 'jane@me.com', password: 'foobar', password_confirmation: 'foobar')
+      @john = create(:user, name: 'John', email: 'john@me.com', password: 'foobar', password_confirmation: 'foobar')
+      @ryan = create(:user, name: 'Ryan', email: 'ryan@me.com', password: 'foobar', password_confirmation: 'foobar')
+    end
+
+    after(:all) { DatabaseCleaner.clean_with(:deletion) }
+
+    context 'with no search_term' do
+      it 'finds all users' do
+        expect(User.search(nil, 1)).to eq([@jane, @john, @ryan])
+      end
+
+      it 'paginates users' do
+        expect(User.search(nil, 1, 1)).to eq([@jane])
+        expect(User.search(nil, 2, 1)).to eq([@john])
+      end
+    end
+
+    context 'with search_term j' do
+      it 'only finds jane and john' do
+        expect(User.search('j', 1, 10)).to eq([@jane, @john])
+      end
+      
+      it 'paginates users' do
+        expect(User.search(nil, 1, 1)).to eq([@jane])
+        expect(User.search(nil, 2, 1)).to eq([@john])
+      end
+    end
+  end
 end

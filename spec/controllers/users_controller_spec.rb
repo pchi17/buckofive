@@ -95,7 +95,46 @@ RSpec.describe UsersController, type: :controller do
 
       it { expect(subject).to render_template :new }
     end
+  end
 
+  describe 'GET #index' do
+    before :all do
+      @jane = create(:user, name: 'Jane', email: 'jane@me.com', password: 'foobar', password_confirmation: 'foobar')
+      @john = create(:user, name: 'John', email: 'john@me.com', password: 'foobar', password_confirmation: 'foobar')
+      @ryan = create(:user, name: 'Ryan', email: 'ryan@me.com', password: 'foobar', password_confirmation: 'foobar')
+    end
+
+    after(:all) { DatabaseCleaner.clean_with(:deletion) }
+
+    context 'when logged in' do
+      before(:each) { login(@john) }
+
+      context 'with no search_term' do
+        it 'finds all users' do
+          get :index
+          expect(assigns(:users)).to eq([@jane, @john, @ryan])
+        end
+      end
+
+      context 'with search_term' do
+        it 'only finds the matching users' do
+          get :index, search_term: 'j'
+          expect(assigns(:users)).to eq([@jane, @john])
+        end
+      end
+
+      it {
+        get :index
+        expect(subject).to render_template :index
+      }
+    end
+
+    context 'when not logged in' do
+      before(:each) { get :index }
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
+    end
   end
 
   describe 'DELETE #destroy' do

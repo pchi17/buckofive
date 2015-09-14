@@ -1,6 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:edit, :update, :destroy]
-  before_action :correct_user,   only: [:edit, :update]
+  before_action :logged_in_user, only: [:index, :destroy]
 
   def new
     @user = User.new
@@ -20,13 +19,7 @@ class UsersController < ApplicationController
   end
 
   def index
-    if term = params[:search_term]
-      # simple case insensitive search
-      users = User.where("LOWER(name) LIKE '%#{term.downcase}%'")
-    else
-      users = User.all
-    end
-    @users = users.paginate(page: params[:page], per_page: 10)
+    @users = User.search(params[:search_term], params[:page])
   end
 
   def destroy

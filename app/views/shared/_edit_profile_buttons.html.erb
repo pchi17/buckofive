@@ -1,7 +1,7 @@
 <div class="col-md-4">
   <hr/>
   <% unless current_user.activated? %>
-    <%= link_to 'Resend Activation Email', account_activations_path(id: current_user), method: :post,
+    <%= link_to 'Resend Activation Email', account_activations_path, method: :post,
         class: 'btn btn-primary btn-block' %>
   <% end %>
 

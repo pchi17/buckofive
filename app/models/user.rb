@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
   attr_accessor :password, :password_confirmation, :skip_password_validation,
                 :remember_token, :activation_token, :reset_token
 
+  default_scope { order(name: :asc) }
+
   before_save { email.downcase! if email }
 
   VALID_EMAIL_FORMAT = /\A[\w\+\-\.]+@[a-z\d\-\.]+[a-z\d\-]\.[a-z]+\z/i
@@ -97,6 +99,11 @@ class User < ActiveRecord::Base
         cost = BCrypt::Engine.cost
       end
       BCrypt::Password.create(token, cost: cost)
+    end
+
+    def search(term, page, per_page = 10)
+      users = term ? User.where("LOWER(name) LIKE '%#{term.downcase}%'") : User.all
+      users.paginate(page: page, per_page: per_page)
     end
   end
 end

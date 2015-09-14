@@ -49,9 +49,4 @@ module SessionsHelper
         redirect_to login_path
       end
     end
-
-    def correct_user
-      @user = User.find_by(id: params[:id])
-      redirect_to root_path unless @user && @user.id == session[:user_id]
-    end
 end

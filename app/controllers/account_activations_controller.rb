@@ -1,10 +1,9 @@
 class AccountActivationsController < ApplicationController
-  before_action :logged_in_user, only: [:create]
-  before_action :correct_user,   only: [:create]
+  before_action :logged_in_user, only: :create
 
   def create
-    @user.send_activation_email
-    flash[:info] = 'activation Email sent'
+    current_user.send_activation_email
+    flash[:info] = "activation Email sent to '#{current_user.email}'"
     redirect_to edit_profile_path
   end
 
