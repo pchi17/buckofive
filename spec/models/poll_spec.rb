@@ -21,16 +21,6 @@ RSpec.describe Poll, type: :model do
     it { expect(subject).to validate_uniqueness_of(:content).case_insensitive }
   end
 
-  describe 'default_scope' do
-    let!(:poll1) { create(:poll, content: 'content1', user: user) }
-    let!(:poll2) { create(:poll, content: 'content2', user: user) }
-    let!(:poll3) { create(:poll, content: 'content3', user: user) }
-
-    it 'sorts polls in descending order by created_at' do
-      expect(Poll.all).to eq([poll3, poll2, poll1])
-    end
-  end
-
   describe 'before_validation' do
     it 'strips content' do
       subject.content = "\r\n  what? \r\n\t"

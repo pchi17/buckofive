@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe Vote, type: :model do
   let(:philip) { create(:philip) }
   let(:mike)   { create(:mike) }
-  let(:choice)  { create(:poll, user: philip).choices.first }
+  let(:choice) { create(:poll, user: philip).choices.first }
   subject { build(:vote, user: mike, choice: choice) }
 
   it 'has a valid factory' do
@@ -34,6 +34,7 @@ RSpec.describe Vote, type: :model do
 
     it 'updates counter cache' do
       subject.save
+      expect(choice).to eq(Choice.first)
       expect {
         mike.destroy
       }.to change { Choice.first.votes_count }.by(-1)

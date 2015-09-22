@@ -4,8 +4,6 @@ class Poll < ActiveRecord::Base
   has_many :votes, through: :choices
   accepts_nested_attributes_for :choices, reject_if: lambda { |a| a[:value].blank? }
 
-  default_scope { order(created_at: :desc) }
-
   MINIMUM_CHOICES = 2
 
   before_validation do

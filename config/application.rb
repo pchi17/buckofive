@@ -23,6 +23,8 @@ module Buckofive
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
+    config.action_view.embed_authenticity_token_in_remote_forms = true
+
     unless Rails.env.production?
       config.before_configuration do
         env_file = Rails.root.join('.env.json')

@@ -5,8 +5,8 @@
     <%= @poll.content %>
   </div>
   <% if @poll.voted_by?(current_user) %>
-    <%= render 'shared/poll/results'%>
+    <%= render 'polls/partials/results'%>
   <% else %>
-    <%= render 'shared/poll/choices'%>
+    <%= render 'polls/partials/choices'%>
   <% end %>
 </div>
