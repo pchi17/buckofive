@@ -1,16 +1,24 @@
-<%= form_tag({ controller: 'users', action: 'index' }, method: :get, class: 'form-inline') do %>
-  <%= label_tag      :search_term, nil, class: 'sr-only' %>
-  <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for users here' %>
-  <%= submit_tag 'search', class: 'btn btn-primary' %>
+<%= content_for :title, 'Users Index' %>
+
+<%= form_tag({ controller: 'users', action: 'index' }, method: :get) do %>
+  <div class="form-group">
+    <%= label_tag      :search_term, nil, class: 'sr-only' %>
+    <div class="input-group">
+      <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for users' %>
+      <span class="input-group-btn">
+        <%= submit_tag 'search', class: 'btn btn-default' %>
+      </span>
+    </div>
+  </div>
 <% end %>
 
 <table class="table table-responsive table-hover">
   <% @users.each do |user| %>
     <tr>
       <td><%= profile_picture(user, 50) %></td>
-      <td><%= user.name %></td>
+      <td class="left-align"><%= user.name %></td>
       <% if current_user.admin? %>
-        <td>
+        <td class="center-align">
           <%= link_to 'delete', user_path(user), method: :delete, class: 'btn btn-danger btn-xs' %>
         </td>
       <% end %>

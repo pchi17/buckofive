@@ -20,7 +20,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
       context 'when authentication already exists in the database' do
         before :all do
-          @user = create(:user)
+          @user = create(:philip)
           @auth = create(:authentication, user: @user)
         end
         after(:all) { DatabaseCleaner.clean_with(:deletion) }
@@ -56,7 +56,7 @@ RSpec.describe AuthenticationsController, type: :controller do
       end
 
       context 'when authentication does not exist in the database' do
-        before(:all) { @user = create(:user) }
+        before(:all) { @user = create(:philip) }
         after(:all)  { DatabaseCleaner.clean_with(:deletion) }
 
         it 'creates a new authentication associated with current_user', skip_before: true do
@@ -94,7 +94,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
       context 'when authentication already exists in the database' do
         before :all do
-          @user = create(:user)
+          @user = create(:philip)
           @auth = create(:authentication, user: @user)
         end
 

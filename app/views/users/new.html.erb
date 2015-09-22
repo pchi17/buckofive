@@ -1,34 +1,34 @@
 <% content_for :title, 'Sign Up' %>
-<%= form_for @user do |form| %>
-  <%= render 'shared/error_messages' if @user.errors.any? %>
+<%= form_for @user do |f| %>
+  <%= render 'shared/error_messages', object: f.object if @user.errors.any? %>
   <hr/>
   <div class="form-group">
-    <%= form.label :name, class: 'sr-only' %>
-    <%= form.text_field :name, class: 'form-control', placeholder: 'Name', autofocus: true %>
+    <%= f.label :name, class: 'sr-only' %>
+    <%= f.text_field :name, class: 'form-control', placeholder: 'Name', autofocus: true %>
   </div>
 
   <div class="form-group">
-    <%= form.label :email, class: 'sr-only' %>
-    <%= form.email_field :email, class: 'form-control', placeholder: 'Email' %>
+    <%= f.label :email, class: 'sr-only' %>
+    <%= f.email_field :email, class: 'form-control', placeholder: 'Email' %>
   </div>
 
   <div class="form-group">
-    <%= form.label :password, class: 'sr-only' %>
-    <%= form.password_field :password, class: 'form-control', placeholder: 'Password' %>
+    <%= f.label :password, class: 'sr-only' %>
+    <%= f.password_field :password, class: 'form-control', placeholder: 'Password' %>
   </div>
 
   <div class="form-group">
-    <%= form.label :password_confirmation, class: 'sr-only' %>
-    <%= form.password_field :password_confirmation, class: 'form-control', placeholder: 'Password Confirmation' %>
+    <%= f.label :password_confirmation, class: 'sr-only' %>
+    <%= f.password_field :password_confirmation, class: 'form-control', placeholder: 'Password Confirmation' %>
   </div>
 
   <div class="form-group">
-    <%= form.check_box :remember_me, checked: true %>
+    <%= f.check_box :remember_me, checked: true %>
     <span>remember me on this computer</span>
   </div>
 
   <div class="form-group">
-    <%= form.submit 'Create Account', class: 'btn btn-success' %>
+    <%= f.submit 'Create Account', class: 'btn btn-success' %>
   </div>
   <hr/>
 <% end %>

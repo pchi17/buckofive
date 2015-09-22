@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :logged_in_user, only: [:index, :destroy]
+  before_action :logged_in_user?, only: [:index, :destroy]
 
   def new
     @user = User.new
@@ -23,10 +23,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    unless @user = User.find_by(id: params[:id])
-      return redirect_to root_path
-    end
-
+    @user = User.find(params[:id])
     if @user.id == session[:user_id]
       @user.destroy
       flash[:info] = 'your account has been deleted :('
@@ -35,6 +32,7 @@ class UsersController < ApplicationController
       @user.destroy
       redirect_to users_path
     else
+      flash[:info] = 'you cannot do that...'
       redirect_to root_path
     end
   end

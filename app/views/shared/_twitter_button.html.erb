@@ -1,8 +1,4 @@
 <%= link_to '/auth/twitter', class: 'btn btn-block btn-twitter' do %>
-  <% if logged_in? %>
-    <span>sync with twitter</span>
-  <% else %>
-    <span>sign in with twitter</span>
-  <% end %>
+  <span>Connect with Twitter</span>
   <%= image_tag 'twitter.png', alt: 'Twitter Logo', size: '20' %>
 <% end %>

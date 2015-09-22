@@ -1,23 +1,33 @@
 FactoryGirl.define do
   factory :user do
-    name  'Philip'
-    email 'philip@example.com'
     password              'foobar'
     password_confirmation 'foobar'
 
-    trait :another_user do
+    factory :philip do
+      name 'Philip'
+      email 'philip@example.com'
+    end
+
+    factory :mike do
       name  'Mike'
       email 'mike@example.com'
-      password              'coolkid'
-      password_confirmation 'coolkid'
+    end
+
+    factory :stephens do
+      name  'Stephens'
+      email 'stephens@example.com'
     end
 
     trait :admin do
-      name  'Super Admin'
-      email 'admin@example.com'
-      password              'admin1'
-      password_confirmation 'admin1'
-      admin true
+      admin     true
+      # admin should be activated I hope...
+      activated true
+      activated_at Time.now
+    end
+
+    trait :activated do
+      activated true
+      activated_at Time.now
     end
 
     trait :invalid_email do

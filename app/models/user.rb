@@ -1,11 +1,15 @@
 class User < ActiveRecord::Base
-  has_many :authentications, dependent: :delete_all
-  attr_accessor :password, :password_confirmation, :skip_password_validation,
-                :remember_token, :activation_token, :reset_token
+  has_many :authentications, inverse_of: :user
+  has_many :polls,           inverse_of: :user
+  has_many :votes,           inverse_of: :user, dependent: :destroy
+  has_many :choices, through: :votes
 
   default_scope { order(name: :asc) }
 
   before_save { email.downcase! if email }
+
+  attr_accessor :password, :password_confirmation, :skip_password_validation,
+                :remember_token, :activation_token, :reset_token
 
   VALID_EMAIL_FORMAT = /\A[\w\+\-\.]+@[a-z\d\-\.]+[a-z\d\-]\.[a-z]+\z/i
 

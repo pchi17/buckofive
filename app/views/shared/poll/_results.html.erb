@@ -1,0 +1,37 @@
+<div class="poll-results">
+  <table class="table table-hover">
+    <thead>
+      <tr class="info">
+        <th class="col-md-1">selected</th>
+        <th class="col-md-3">choices</th>
+        <th class="col-md-1">votes</th>
+        <th class="col-md-1">%</th>
+        <th class="col-md-6">histogram</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @poll.get_choices(current_user).each do |choice| %>
+        <% percent = @poll.percentage(choice) %>
+        <tr class="<%= 'success' if choice.selected_by_user %>">
+          <td>
+            <% if choice.selected_by_user %>
+              <span class="glyphicon glyphicon-ok"></span>
+            <% end %>
+          </td>
+          <td><%= choice.value %></td>
+          <td><%= choice.votes_count %></td>
+          <td><%= percent %></td>
+          <td class="left-align">
+            <div class="graph-bar" style="width: <%= percent %>">
+            </div>
+          </td>
+        </tr>
+      <% end %>
+      <tr class="info bold">
+        <td colspan="2"><strong>Total Votes:</strong></td>
+        <td><strong><%= @poll.total_votes %></strong></td>
+        <td colspan="2"></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

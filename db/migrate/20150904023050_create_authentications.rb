@@ -1,7 +1,7 @@
 class CreateAuthentications < ActiveRecord::Migration
   def change
     create_table :authentications do |t|
-      t.references :user, index: true
+      t.references :user, null: false, index: true
       t.string :provider, null: false
       t.string :uid,      null: false
       t.string :token
@@ -11,5 +11,6 @@ class CreateAuthentications < ActiveRecord::Migration
 
       t.index [:provider, :uid], unique: true
     end
+    add_foreign_key :authentications, :users, on_delete: :cascade
   end
 end

@@ -11,13 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150904023050) do
+ActiveRecord::Schema.define(version: 20150914060733) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "authentications", force: :cascade do |t|
-    t.integer  "user_id"
+    t.integer  "user_id",    null: false
     t.string   "provider",   null: false
     t.string   "uid",        null: false
     t.string   "token"
@@ -28,6 +28,27 @@ ActiveRecord::Schema.define(version: 20150904023050) do
 
   add_index "authentications", ["provider", "uid"], name: "index_authentications_on_provider_and_uid", unique: true, using: :btree
   add_index "authentications", ["user_id"], name: "index_authentications_on_user_id", using: :btree
+
+  create_table "choices", force: :cascade do |t|
+    t.integer  "poll_id",                 null: false
+    t.string   "value",                   null: false
+    t.integer  "votes_count", default: 0, null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
+  end
+
+  add_index "choices", ["poll_id", "value"], name: "index_choices_on_poll_id_and_value", unique: true, using: :btree
+  add_index "choices", ["poll_id"], name: "index_choices_on_poll_id", using: :btree
+
+  create_table "polls", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.string   "content",    null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "polls", ["content"], name: "index_polls_on_content", unique: true, using: :btree
+  add_index "polls", ["user_id"], name: "index_polls_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "name",                              null: false
@@ -47,4 +68,20 @@ ActiveRecord::Schema.define(version: 20150904023050) do
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
 
+  create_table "votes", force: :cascade do |t|
+    t.integer  "user_id",    null: false
+    t.integer  "choice_id",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "votes", ["choice_id"], name: "index_votes_on_choice_id", using: :btree
+  add_index "votes", ["user_id", "choice_id"], name: "index_votes_on_user_id_and_choice_id", unique: true, using: :btree
+  add_index "votes", ["user_id"], name: "index_votes_on_user_id", using: :btree
+
+  add_foreign_key "authentications", "users", on_delete: :cascade
+  add_foreign_key "choices", "polls", on_delete: :cascade
+  add_foreign_key "polls", "users", on_delete: :cascade
+  add_foreign_key "votes", "choices", on_delete: :cascade
+  add_foreign_key "votes", "users", on_delete: :cascade
 end

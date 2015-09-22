@@ -1,8 +1,7 @@
 class Authentication < ActiveRecord::Base
-  belongs_to :user
+  belongs_to :user, inverse_of: :authentications
 
-  before_save { provider.downcase! }
-  
+  validates :user,     presence: true
   validates :provider, presence: true
   validates :uid,      presence: true, uniqueness: { scope: :provider }
 end

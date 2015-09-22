@@ -1,38 +1,19 @@
 <% if logged_in? %>
+
   <h4><%= current_user.name %></h4>
   <%= profile_picture(current_user, 150) %>
   <hr/>
     <% if current_user.activated? %>
-      <button type="button" class="btn btn-success btn-inline-block" data-toggle="modal" data-target="#createPoll">
-        Create Poll
-      </button>
+      <%= link_to 'Create a Poll', new_poll_path, class: 'btn btn-success btn-inline-block' %>
     <% end %>
     <%= link_to 'Settings', edit_profile_path, class: 'btn btn-primary btn-inline-block' %>
     <%= link_to 'Log Out',  logout_path , method: :delete, class: 'btn btn-danger btn-inline-block' %>
 
-  <!-- Modal  -->
-  <div class="modal fade" id="createPoll" tabindex="-1" role="dialog" aria-labelledby="createPoll">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Create Poll</h4>
-        </div>
-        <div class="modal-body">
-
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-success">Create</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- Modal -->
-
 <% else %>
+
   <%= link_to 'Log In',  login_path,  class: 'btn btn-primary btn-block' %>
   <%= link_to 'Sign Up', signup_path, class: 'btn btn-primary btn-block' %>
   <hr/>
   <%= render 'shared/twitter_button' %>
+
 <% end %>

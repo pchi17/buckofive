@@ -1,0 +1,12 @@
+<% content_for :title, "Poll" %>
+
+<div class="poll">
+  <div class="poll-question">
+    <%= @poll.content %>
+  </div>
+  <% if @poll.voted_by?(current_user) %>
+    <%= render 'shared/poll/results'%>
+  <% else %>
+    <%= render 'shared/poll/choices'%>
+  <% end %>
+</div>

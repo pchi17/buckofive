@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
-  before(:all) { @user = create(:user) }
+  before(:all) { @user = create(:philip) }
 
   describe 'GET #new' do
     it 'renders the :new template' do

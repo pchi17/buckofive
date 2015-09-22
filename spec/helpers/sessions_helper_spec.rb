@@ -11,7 +11,7 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe SessionsHelper, type: :helper do
-  before(:all)  { @user = create(:user) }
+  before(:all)  { @user = create(:philip) }
 
   describe '#logged_in?' do
     it 'returns false when no one is logged in' do

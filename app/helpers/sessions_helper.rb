@@ -42,7 +42,7 @@ module SessionsHelper
   end
 
   private
-    def logged_in_user
+    def logged_in_user?
       unless logged_in?
         store_location
         flash[:info] = 'please log in first'

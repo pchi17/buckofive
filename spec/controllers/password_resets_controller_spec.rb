@@ -2,11 +2,15 @@ require 'rails_helper'
 
 RSpec.describe PasswordResetsController, type: :controller do
   before :all do
-    @user = create(:user)
+    @user = create(:philip)
     @user.create_reset_digest
     @old_password = @user.password
     @new_password = @old_password + 'xxx'
   end
+
+  it { expect(subject).to use_before_action(:get_user) }
+  it { expect(subject).to use_before_action(:valid_user?) }
+  it { expect(subject).to use_before_action(:is_link_expired?) }
 
   describe 'GET #new' do
     it 'renders the :new view' do

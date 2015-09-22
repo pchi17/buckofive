@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'friendly forwarding' do
-  before(:all) { @user = create(:user) }
+  before(:all) { @user = create(:philip) }
 
   scenario 'user try to visit edit page' do
     # user is not signed in

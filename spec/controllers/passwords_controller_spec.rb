@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe PasswordsController, type: :controller do
-  before(:all) { @user = create(:user) }
+  before(:all) { @user = create(:philip) }
+
+  it { expect(subject).to use_before_action(:logged_in_user?) }
 
   describe 'GET #edit' do
     context 'when no one is logged in' do

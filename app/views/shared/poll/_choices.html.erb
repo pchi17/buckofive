@@ -1,0 +1,16 @@
+<div class="poll-choices">
+  <%= form_for current_user.votes.build do |f| %>
+    <%= hidden_field_tag :poll_id, @poll.id %>
+    <% @poll.choices.order(id: :asc).each do |c| %>
+      <div class="radio">
+        <label>
+          <%= f.radio_button :choice_id, c.id %>
+          <%= c.value %>
+        </label>
+      </div>
+    <% end %>
+    <div class="form-group">
+      <%= f.submit 'Vote', class: 'btn btn-success btn-block' %>
+    </div>
+  <% end %>
+</div>

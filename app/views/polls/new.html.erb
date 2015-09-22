@@ -1,0 +1,152 @@
+<% content_for :title, 'New Poll' %>
+
+<%= form_for @poll do |f| %>
+  <%= render 'shared/error_messages', object: f.object if @poll.errors.any?%>
+  <div class="form-group">
+    <%= f.text_area :content, rows: 6, class: 'form-control', autofocus: true, placeholder: 'Enter your poll content' %>
+    <hr/>
+  </div>
+
+  <%= f.fields_for :choices do |c| %>
+    <div class="form-group">
+      <%= c.label :value, class: 'sr-only' %>
+      <div class="input-group">
+        <%= c.text_field :value, class: 'form-control choice', placeholder: 'Choice' %>
+        <span class="input-group-btn">
+          <button type="button" class="btn btn-danger deleteChoice">&times;</button>
+        </span>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <button type="button" class="btn btn-default" id="addChoice">&plus; add another choice</button>
+  </div>
+
+
+  <div class="form-group">
+    <hr/>
+    <%= f.submit 'Create Poll', class: 'btn btn-success btn-block' %>
+  </div>
+<% end %>
+
+<script>
+  var choices = 2 // default is yes/no
+
+  $("form#new_poll").on('click', '.deleteChoice', function() {
+    $(this).parents('div.form-group').remove();
+  });
+
+  $("form#new_poll").submit(function(evt) {
+    $("#error_list").remove(); // removes existing error message
+    $(".field_with_errors").children().unwrap();
+
+    var textArea = $("form#new_poll textarea")
+    var choiceInputs = $(".choice")
+    var errors = []
+
+    var has_empty_choice     = false
+    var has_duplicate_choice = false
+    var choice_too_long      = false
+
+    if(isEmpty($(textArea))) {
+      errors.push('your poll question cannot be blank');
+      wrapFieldWithErrors($(textArea));
+    }
+    if(isTooLong($(textArea), 250)) {
+      errors.push('please keep your poll less than 250 characters');
+      wrapFieldWithErrors($(textArea));
+    }
+
+    if(choiceInputs.length < 2) {
+      errors.push('you must provide at least <strong>2</strong> choices');
+    }
+
+    for(var i = 0; i < choiceInputs.length; i++) {
+      var input = choiceInputs[i];
+
+      if (isEmpty($(input))) {
+        wrapFieldWithErrors($(input));
+        has_empty_choice = true;
+      }
+
+      if (isTooLong($(input), 50)) {
+        wrapFieldWithErrors($(input));
+        choice_too_long = true
+      }
+
+      for(var j = i + 1; j < choiceInputs.length; j++) {
+        if(isDuplicate($(input), $(choiceInputs[j]))) {
+          wrapFieldWithErrors($(input))
+          wrapFieldWithErrors($(choiceInputs[j]))
+          has_duplicate_choice = true;
+        }
+      }
+    }
+
+    if(has_empty_choice)     { errors.push('your choices cannot be empty') }
+    if(has_duplicate_choice) { errors.push('your choices must be unique') }
+    if(choice_too_long)      { errors.push('please keep your choices less than 50 characters')}
+
+    if(errors.length > 0) {
+      evt.preventDefault();
+      renderErrorMessage(errors);
+    }
+  });
+
+  var isEmpty = function(element) {
+    return element.val().replace(/\s/g, '').length === 0;
+  };
+
+  var isDuplicate = function(element1, element2) {
+    return element1.val().toLowerCase() === element2.val().toLowerCase();
+  };
+
+  var isTooLong = function(element, len) {
+    return element.val().length > len;
+  };
+
+  var wrapFieldWithErrors = function(element) {
+    if(!element.parent().is('div.field_with_errors')) {
+      element.wrap('<div class="field_with_errors"></div>');
+    }
+  }
+
+  var renderErrorMessage = function(errorsArray) {
+    var errorDiv = document.createElement("div");
+    var alertDiv = document.createElement("div");
+    var errorUl  = document.createElement("ul");
+
+    $(errorDiv).attr('id', 'error_list').append(alertDiv).append(errorUl);
+    $(alertDiv).addClass('alert alert-danger').text('please fix the following errors');
+    for(var i = 0; i < errorsArray.length; i++) {
+      var errorLi  = document.createElement("li");
+      $(errorLi).html(errorsArray[i]);
+      $(errorUl).append(errorLi);
+    }
+    $("form#new_poll").prepend(errorDiv);
+  };
+
+  $("#addChoice").click(function() {
+    var newId   = 'poll_choices_attributes_'  + choices.toString() + '_value';
+    var newName = 'poll[choices_attributes][' + choices.toString() + '][value]';
+    choices += 1;
+
+    var newFormGroup  = document.createElement("div");
+    var newInputGroup = document.createElement("div");
+    var newLabel  = document.createElement("label");
+    var newInput  = document.createElement("input");
+    var newSpan   = document.createElement("span");
+    var newButton = document.createElement("button");
+
+    $(newFormGroup).addClass('form-group').append(newLabel).append(newInputGroup);
+    $(newLabel).addClass('sr-only').text('Answer').attr('for', newId);
+    $(newInputGroup).addClass('input-group').append(newInput).append(newSpan);
+    $(newInput).addClass('form-control choice').attr({'id': newId, 'name': newName, 'type': 'text', 'placeholder': 'Choice'});
+    $(newSpan).addClass('input-group-btn').append(newButton);
+    $(newButton).addClass('btn btn-danger deleteChoice').attr('type', 'button').html('&times;');
+
+    $(this).parent().before(newFormGroup);
+    $(newInput).focus();
+  });
+</script>

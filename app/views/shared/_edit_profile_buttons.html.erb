@@ -2,11 +2,11 @@
   <hr/>
   <% unless current_user.activated? %>
     <%= link_to 'Resend Activation Email', account_activations_path, method: :post,
-        class: 'btn btn-primary btn-block' %>
+        class: 'btn btn-default btn-block' %>
   <% end %>
 
-  <%= link_to 'Edit Account',    edit_profile_account_path,  class: 'btn btn-primary btn-block' %>
-  <%= link_to 'Change Password', edit_profile_password_path, class: 'btn btn-primary btn-block' %>
+  <%= link_to 'Edit Account',    edit_profile_account_path,  class: 'btn btn-default btn-block' %>
+  <%= link_to 'Change Password', edit_profile_password_path, class: 'btn btn-default btn-block' %>
 
   <%= render 'shared/twitter_button' %>
 

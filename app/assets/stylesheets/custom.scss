@@ -58,7 +58,7 @@ header {
 }
 
 //user panel
-.userPanel {
+.user-panel {
   text-align: center;
 }
 
@@ -101,28 +101,50 @@ header {
 }
 
 // profile picture
-.profile-picture {
-  border-radius: 5px;
-}
-.user-activated {
-  box-shadow: 0 0 10px $brand-success;
+.portrait {
+  border-radius: 3px;
 }
 .user-nonactivated {
-  box-shadow: 0 0 10px $brand-danger;
+  border: 2px solid $brand-warning;
 }
 
-
-.table > tbody > tr > td {
-  vertical-align: middle;
+.table > thead > tr > th {
+  text-align: center;
 }
 
-.form-inline {
-  margin-bottom: 10px;
-  input[type='text'] {
-    width: 60%
+.table > tbody > tr {
+  td {
+    text-align: center;
+    vertical-align: middle;
+  }
+  .left-align {
+    text-align: left;
+    vertical-align: middle;
   }
 }
 
-.editProfileBtns {
+textarea {
+  width: 100%;
+}
+
+.poll {
+  box-shadow: 5px 5px 5px #888;
+  margin-top: 40px;
+  padding: 20px;
+}
+.poll-question {
+  background-color: $gray-lighter;
+  border-radius: 5px;
+  padding: 15px;
   text-align: center;
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+.poll-choices label {
+  margin: 0 50px;
+}
+
+.graph-bar {
+  background-color: $brand-danger;
+  height: 20px;
 }
