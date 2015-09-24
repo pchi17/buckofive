@@ -148,3 +148,13 @@ textarea {
   background-color: $brand-danger;
   height: 20px;
 }
+
+.profile-radio-buttons {
+  display: inline-block;
+  width: 80%;
+}
+.profile-search-submit {
+  display: inline-block;
+  float: right;
+  width: 15%;
+}

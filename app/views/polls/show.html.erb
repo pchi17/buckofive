@@ -9,4 +9,8 @@
   <% else %>
     <%= render 'polls/partials/choices'%>
   <% end %>
+
+  <% if @poll.created_by?(current_user) || current_user.admin? %>
+    <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>
+  <% end %>
 </div>

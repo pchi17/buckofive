@@ -41,10 +41,11 @@ ActiveRecord::Schema.define(version: 20150914060733) do
   add_index "choices", ["poll_id"], name: "index_choices_on_poll_id", using: :btree
 
   create_table "polls", force: :cascade do |t|
-    t.integer  "user_id",    null: false
-    t.string   "content",    null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.integer  "user_id",                 null: false
+    t.string   "content",                 null: false
+    t.integer  "total_votes", default: 0, null: false
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   add_index "polls", ["content"], name: "index_polls_on_content", unique: true, using: :btree

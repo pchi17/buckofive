@@ -12,4 +12,20 @@ module ApplicationHelper
     klass = user.activated? ? nil : ' user-nonactivated'
     image_tag(source, alt: user.name, class: "portrait#{klass}" ,size: "#{size}")
   end
+
+  # sorting a table
+  def table_sort(attribute, title = nil)
+    title ||= attribute.titleize
+    direction = (attribute == sort_column && sort_direction == 'asc')? 'desc' : 'asc'
+    link_to title, params.merge(sort: attribute, direction: direction , page: nil)
+  end
+
+  private
+    def sort_column
+      Poll.column_names.include?(params[:sort]) ? params[:sort] : 'created_at'
+    end
+
+    def sort_direction
+      ['asc', 'desc'].include?(params[:direction]) ? params[:direction] : 'desc'
+    end
 end

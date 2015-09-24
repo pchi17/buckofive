@@ -26,14 +26,6 @@ feature 'static pages' do
     end
   end
 
-  feature 'Home Page' do
-    before(:each) { visit '/' }
-
-    check_title('Home')
-    check_logo
-    check_links
-  end
-
   feature 'About Page' do
     before(:each) { visit '/about' }
 

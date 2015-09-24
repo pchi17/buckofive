@@ -42,11 +42,21 @@ module SessionsHelper
   end
 
   private
+    # check if a user is logged in
     def logged_in_user?
       unless logged_in?
         store_location
         flash[:info] = 'please log in first'
         redirect_to login_path
+      end
+    end
+
+    # check if the logged in user is activated
+    def activated_current_user?
+      unless current_user.activated
+        flash[:warning]  = "please activated your account first, "
+        flash[:warning] += "you can activate your account by email or by sync with twitter."
+        redirect_to edit_profile_path
       end
     end
 end

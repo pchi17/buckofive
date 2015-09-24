@@ -1,4 +1,7 @@
 class User < ActiveRecord::Base
+  attr_accessor :password, :password_confirmation, :skip_password_validation,
+                :remember_token, :activation_token, :reset_token
+
   has_many :authentications, inverse_of: :user
   has_many :polls,           inverse_of: :user
   has_many :votes,           inverse_of: :user, dependent: :destroy
@@ -7,9 +10,6 @@ class User < ActiveRecord::Base
   default_scope { order(name: :asc) }
 
   before_save { email.downcase! if email }
-
-  attr_accessor :password, :password_confirmation, :skip_password_validation,
-                :remember_token, :activation_token, :reset_token
 
   VALID_EMAIL_FORMAT = /\A[\w\+\-\.]+@[a-z\d\-\.]+[a-z\d\-]\.[a-z]+\z/i
 
@@ -106,7 +106,7 @@ class User < ActiveRecord::Base
     end
 
     def search(term, page, per_page = 10)
-      users = term ? User.where("LOWER(name) LIKE '%#{term.downcase}%'") : User.all
+      users = term ? User.where("LOWER(name) LIKE :term", term: "%#{term.downcase}%") : User.all
       users.paginate(page: page, per_page: per_page)
     end
   end

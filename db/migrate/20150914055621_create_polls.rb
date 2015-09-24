@@ -1,8 +1,9 @@
 class CreatePolls < ActiveRecord::Migration
   def change
     create_table :polls do |t|
-      t.references :user, null: false, index: true
-      t.string :content, null: false
+      t.references :user,        null: false, index: true
+      t.string     :content,     null: false
+      t.integer    :total_votes, null: false, default: 0
 
       t.timestamps null: false
 

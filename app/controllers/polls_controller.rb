@@ -1,6 +1,6 @@
 class PollsController < ApplicationController
-  before_action :logged_in_user?
-  before_action :activated_current_user?
+  before_action :logged_in_user?,         except: :index
+  before_action :activated_current_user?, except: :index
 
   def new
     @poll = current_user.polls.build
@@ -19,6 +19,7 @@ class PollsController < ApplicationController
   end
 
   def index
+    @polls = Poll.search(params[:search_term], sort_column, sort_direction, params[:page])
   end
 
   def show
@@ -26,6 +27,12 @@ class PollsController < ApplicationController
   end
 
   def destroy
+    @poll = Poll.find(params[:id])
+    if @poll.created_by?(current_user) || current_user.admin?
+      @poll.delete
+      flash[:info] = 'poll deleted'
+    end
+    redirect_to profile_path
   end
 
   private

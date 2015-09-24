@@ -2,7 +2,7 @@
 
 <%= form_tag({ controller: 'users', action: 'index' }, method: :get) do %>
   <div class="form-group">
-    <%= label_tag      :search_term, nil, class: 'sr-only' %>
+    <%= label_tag :search_term, nil, class: 'sr-only' %>
     <div class="input-group">
       <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for users' %>
       <span class="input-group-btn">

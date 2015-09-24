@@ -10,6 +10,10 @@ class Choice < ActiveRecord::Base
   validates :value, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false, scope: :poll }
   validate  :is_duplicate?
 
+  def self.rank_by_votes
+    order('votes_count DESC')
+  end
+
   private
     def is_duplicate?
       if duplicate_choice

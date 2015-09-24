@@ -1,0 +1,12 @@
+<table class="table table-responsive table-hover">
+  <thead>
+    <tr>
+      <th><%= table_sort('content') %></th>
+      <th><%= table_sort('created_at', 'Created')%></th>
+      <th><%= table_sort('total_votes', 'Votes') %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <%= render @polls %>
+  </tbody>
+</table>

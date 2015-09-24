@@ -1,3 +1,32 @@
 <% content_for :title, 'Profile' %>
 
-<%= current_user.name %>
+<%= form_tag({controller: 'profiles', action: 'show'}, method: :get) do%>
+  <%= hidden_field_tag :sort,      params[:sort] %>
+  <%= hidden_field_tag :direction, params[:direction] %>
+  <div class="form-group">
+    <%= label_tag :search_term, nil, class: 'sr-only' %>
+    <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for polls' %>
+  </div>
+  <div class="form-group profile-radio-buttons">
+    <div class="btn-group btn-group-justified" data-toggle="buttons">
+      <label class="btn btn-default">
+        <%= radio_button_tag :filter, 'all_polls' %>
+        all polls
+      </label>
+      <label class="btn btn-default">
+        <%= radio_button_tag :filter, 'created_by_me' %>
+        created by me
+      </label>
+      <label class="btn btn-default">
+        <%= radio_button_tag :filter, 'voted_by_me' %>
+        voted by me
+      </label>
+    </div>
+  </div>
+  <div class="form-group profile-search-submit">
+    <%= submit_tag 'Search', class: 'btn btn-success btn-block' %>
+  </div>
+<% end %>
+
+<%= render 'polls/poll_table'%>
+<%= will_paginate @polls %>

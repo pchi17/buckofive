@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe PollsController, type: :controller do
-  before(:all) do
-    @activated_user   = create(:philip, :activated)
-    @unactivated_user = create(:mike)
-  end
+  let(:admin)            { create(:philip, :admin) }
+  let(:activated_user)   { create(:mike, :activated) }
+  let(:unactivated_user) { create(:stephens) }
+  let(:poll) { build(:poll, user: admin) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
   it { expect(subject).to use_before_action(:activated_current_user?) }
@@ -13,7 +13,7 @@ RSpec.describe PollsController, type: :controller do
     context 'when logged in' do
       context 'when current_user is activated' do
         before(:each) do
-          login(@activated_user)
+          login(activated_user)
           get :new
         end
 
@@ -30,7 +30,7 @@ RSpec.describe PollsController, type: :controller do
 
       context 'when current_user is not activated' do
         before(:each) do
-          login(@unactivated_user)
+          login(unactivated_user)
           get :new
         end
 
@@ -61,7 +61,7 @@ RSpec.describe PollsController, type: :controller do
 
     context 'when logged in' do
       context 'when current_user is activated' do
-        before(:each) { login(@activated_user) }
+        before(:each) { login(activated_user) }
 
         context 'with valid attributes' do
           before(:each) do |example|
@@ -195,7 +195,7 @@ RSpec.describe PollsController, type: :controller do
 
       context 'when current_user is not activated' do
         before(:each) do
-          login(@unactivated_user)
+          login(unactivated_user)
           post :create, poll: attrs
         end
 
@@ -212,6 +212,108 @@ RSpec.describe PollsController, type: :controller do
   end
 
   describe 'GET #index'
-  describe 'GET #show'
-  describe 'DELETE #destroy'
+
+  describe 'GET #show' do
+    before(:each) { poll.save }
+
+    context 'when not logged in and activated' do
+      before(:each) do
+        login(activated_user)
+        get :show, id: poll.id
+      end
+
+      it 'finds the correct poll' do
+        expect(assigns(:poll)).to eq(poll)
+      end
+      it 'renders the show template' do
+        expect(subject).to render_template :show
+      end
+    end
+
+    context 'when not logged in' do
+      before(:each) { get :show, id: poll.id }
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
+    end
+
+    context 'when not activated' do
+      before(:each) do
+        login(unactivated_user)
+        get :show, id: poll.id
+      end
+
+      it { expect(subject).to set_flash[:warning] }
+      it { expect(subject).to redirect_to edit_profile_path }
+    end
+  end
+
+  describe 'DELETE #destroy' do
+    before(:each) { poll.save }
+
+    context 'when logged in and activated' do
+      context 'when logged in as admin' do
+        before(:each) do
+          login(admin)
+        end
+        it 'deletes the poll' do
+          expect {
+            delete :destroy, id: poll.id
+          }.to change { Poll.count }.by(-1)
+        end
+        it 'redirect_to root_path' do
+          delete :destroy, id: poll.id
+          expect(subject).to redirect_to profile_path
+        end
+      end
+
+      context 'when logged in as non-admin' do
+        before(:each) { login(activated_user) }
+
+        context 'when deleting own poll' do
+          before(:each) { @poll = create(:poll, content: 'what is this?', user: activated_user) }
+          it 'deletes the poll' do
+            expect {
+              delete :destroy, id: @poll.id
+            }.to change { Poll.count }.by(-1)
+          end
+
+          it 'redirect_to root_path' do
+            delete :destroy, id: @poll.id
+            expect(subject).to redirect_to profile_path
+          end
+        end
+
+        context 'when deleting others poll' do
+          it 'does not delete the poll' do
+            expect {
+              delete :destroy, id: poll.id
+            }.to_not change { Poll.count }
+          end
+
+          it 'redirect_to root_path' do
+            delete :destroy, id: poll.id
+            expect(subject).to redirect_to profile_path
+          end
+        end
+      end
+    end
+
+    context 'when not logged in' do
+      before(:each) { delete :destroy, id: poll.id }
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
+    end
+
+    context 'when not activated' do
+      before(:each) do
+        login(unactivated_user)
+        delete :destroy, id: poll.id
+      end
+
+      it { expect(subject).to set_flash[:warning] }
+      it { expect(subject).to redirect_to edit_profile_path }
+    end
+  end
 end

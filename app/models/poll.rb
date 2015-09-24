@@ -6,26 +6,9 @@ class Poll < ActiveRecord::Base
 
   MINIMUM_CHOICES = 2
 
-  before_validation do
-    content.strip! if content
+  before_validation :strip_content, :check_choices
 
-    values = Hash.new(0)
-    choices.each do |c|
-      values[c.value.downcase] += 1
-    end
-
-    if values.count < MINIMUM_CHOICES
-      errors.add(:choices, 'you must provide 2 unique choices')
-    end
-
-    dups = values.select { |k, v| v > 1 }.keys
-
-    choices.each do |c|
-      c.duplicate_choice = true if dups.include?(c.value)
-    end
-  end
-
-  validates :user,     presence: true
+  validates :user,    presence: true
   validates :content, presence: true, length: { maximum: 250 }, uniqueness: { case_sensitive: false }
 
   alias creator user
@@ -42,24 +25,72 @@ class Poll < ActiveRecord::Base
 
   def get_choices(user)
     choice_ids   = get_choice_ids(user)
-    choices.each do |c|
+    choices.rank_by_votes.each do |c|
       if choice_ids.include?(c.id)
         c.selected_by_user = true
       else
         c.selected_by_user = false
       end
     end
-    choices.sort do |a, b|
-      compare = (b.votes_count <=> a.votes_count)
-      compare.zero? ? (a.value <=> b.value) : compare
-    end
-  end
-
-  def total_votes
-    @total_votes ||= choices.inject(0) { |sum, choice| sum += choice.votes_count }
   end
 
   def percentage(choice)
     ('%.2f' % ((choice.votes_count.to_f / total_votes) * 100)) + "%"
   end
+
+  def created_by?(user)
+    user_id == user.id
+  end
+
+  class << self
+    def created_by(user)
+      where(user: user)
+    end
+
+    def voted_by(user)
+      joins(:votes).where("votes.user_id = ?", user.id)
+    end
+
+    def filter_by(user, filter)
+      case filter
+      when 'created_by_me'
+        created_by(user)
+      when 'voted_by_me'
+        voted_by(user)
+      else
+        all
+      end
+    end
+
+    def search(term, col, dir, page, per_page = 10)
+      if term
+        polls = where("LOWER(content) LIKE :term", term: "%#{term.downcase}%").order("#{col} #{dir}")
+      else
+        polls = order("#{col} #{dir}")
+      end
+      polls.paginate(page: page, per_page: per_page)
+    end
+  end
+
+  private
+    def strip_content
+      content.strip! if content
+    end
+
+    def check_choices
+      values = Hash.new(0)
+      choices.each do |c|
+        values[c.value.downcase] += 1
+      end
+
+      if values.count < MINIMUM_CHOICES
+        errors.add(:choices, 'you must provide 2 unique choices')
+      end
+
+      dups = values.select { |k, v| v > 1 }.keys
+
+      choices.each do |c|
+        c.duplicate_choice = true if dups.include?(c.value.downcase)
+      end
+    end
 end

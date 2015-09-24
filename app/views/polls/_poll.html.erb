@@ -1,0 +1,5 @@
+<tr>
+  <td class="left-align"><%= link_to poll.content, poll_path(poll) %></td>
+  <td><%= time_ago_in_words(poll.created_at)%> ago</td>
+  <td class="left-align"><%= poll.total_votes %></td>
+</tr>
