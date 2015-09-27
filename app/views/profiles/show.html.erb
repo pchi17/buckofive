@@ -1,8 +1,6 @@
 <% content_for :title, 'Profile' %>
 
-<%= form_tag({controller: 'profiles', action: 'show'}, method: :get) do%>
-  <%= hidden_field_tag :sort,      params[:sort] %>
-  <%= hidden_field_tag :direction, params[:direction] %>
+<%= form_tag profile_path, id: 'poll-search-form', method: :get, remote: true do %>
   <div class="form-group">
     <%= label_tag :search_term, nil, class: 'sr-only' %>
     <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for polls' %>
@@ -26,7 +24,6 @@
   <div class="form-group profile-search-submit">
     <%= submit_tag 'Search', class: 'btn btn-success btn-block' %>
   </div>
-<% end %>
 
-<%= render 'polls/poll_table'%>
-<%= will_paginate @polls %>
+  <div id="poll-table"><%= render 'polls/poll_table'%></div>
+<% end %>

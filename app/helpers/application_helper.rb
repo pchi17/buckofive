@@ -17,7 +17,7 @@ module ApplicationHelper
   def table_sort(attribute, title = nil)
     title ||= attribute.titleize
     direction = (attribute == sort_column && sort_direction == 'asc')? 'desc' : 'asc'
-    link_to title, params.merge(sort: attribute, direction: direction , page: nil)
+    link_to title, params.merge(sort: attribute, direction: direction , page: nil), remote: true
   end
 
   private

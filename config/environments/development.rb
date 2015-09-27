@@ -13,12 +13,6 @@ Rails.application.configure do
   config.consider_all_requests_local       = true
   config.action_controller.perform_caching = false
 
-  # action mailer
-  config.action_mailer.raise_delivery_errors = true
-  config.action_mailer.delivery_method = :test
-  host = 'localhost:3000'
-  config.action_mailer.default_url_options = { host: host }
-
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 
@@ -41,4 +35,20 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+
+  # action mailer - Mandrill
+  host = 'localhost:3000'
+  config.action_mailer.raise_delivery_errors = true
+  config.action_mailer.default_url_options = { host: host }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.default charset: 'utf-8'
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.mandrillapp.com',
+    port: 587,
+    domain: host,
+    user_name: ENV['MANDRILL_USERNAME'],
+    password:  ENV['MANDRILL_PASSWORD'],
+    authentication: :login,
+    enable_starttls_auto: true
+  }
 end

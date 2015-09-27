@@ -6,12 +6,16 @@ class Choice < ActiveRecord::Base
 
   before_validation { value.strip! if value }
 
-  validates :poll,   presence: true
+  validates :poll,  presence: true
   validates :value, presence: true, length: { maximum: 50 }, uniqueness: { case_sensitive: false, scope: :poll }
   validate  :is_duplicate?
 
   def self.rank_by_votes
     order('votes_count DESC')
+  end
+
+  def percentage
+    ('%.2f' % ((votes_count.to_f / poll.total_votes) * 100)) + "%"
   end
 
   private

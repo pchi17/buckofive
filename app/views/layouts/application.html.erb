@@ -10,15 +10,20 @@
   <%= render 'layouts/header' %>
 
   <div class="container">
-    <% flash.each do |type, msg| %>
-      <div class="alert alert-<%= type %>"><%= msg %></div>
-    <% end %>
-
     <div class="row">
-      <div class="col-md-3 user-panel">
+      <noscript>
+        <div class="alert alert-danger">
+          We can do a lot better with JavaScript enabled ...
+        </div>
+      </noscript>
+      <div class="col-md-3" id="user-panel">
         <%= render 'layouts/user_panel' %>
       </div>
-      <div class="col-md-9">
+
+      <div class="col-md-9" id="main-window">
+        <% flash.each do |type, msg| %>
+          <div class="alert alert-<%= type %>"><%= msg %></div>
+        <% end %>
         <%= yield %>
       </div>
     </div>

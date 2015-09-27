@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe VotesController, type: :controller do
+RSpec.describe VotesController, type: :controller, isolation: true do
   let(:philip) { create(:philip, :activated) }
   let(:mike)   { create(:mike) }
   let(:poll)   { create(:poll, user: philip) }
@@ -12,7 +12,7 @@ RSpec.describe VotesController, type: :controller do
   describe 'POST #create' do
     context 'when not logged_in_user' do
       before(:each) do
-        post :create, vote: { choice_id: choice.id }
+        post :create, poll_id: poll.id, choice_id: choice.id
       end
 
       it { expect(subject).to set_flash[:info] }
@@ -22,7 +22,7 @@ RSpec.describe VotesController, type: :controller do
     context 'when current_user is not activated' do
       before(:each) do
         login(mike)
-        post :create, vote: { choice_id: choice.id }
+        post :create, poll_id: poll.id, choice_id: choice.id
       end
 
       it { expect(subject).to set_flash[:warning] }
@@ -33,7 +33,7 @@ RSpec.describe VotesController, type: :controller do
       it 'creates a vote' do
         login(philip)
         expect {
-          post :create, vote: { choice_id: choice.id }
+          post :create, poll_id: poll.id, choice_id: choice.id
         }.to change { Vote.count }.by(1)
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe VotesController, type: :controller do
       it 'creates a vote' do
         login(philip)
         expect {
-          xhr :post, :create, vote: { choice_id: choice.id }
+          xhr :post, :create, poll_id: poll.id, choice_id: choice.id
         }.to change { Vote.count }.by(1)
       end
     end
@@ -53,7 +53,7 @@ RSpec.describe VotesController, type: :controller do
         poll
         bad_choice = Choice.maximum(:id) + 1
         expect {
-          post :create, vote: { choice_id: bad_choice }
+          post :create, poll_id: poll.id, choice_id: bad_choice
         }.to_not change { Vote.count }
       end
     end
@@ -63,7 +63,7 @@ RSpec.describe VotesController, type: :controller do
         login(philip)
         create(:vote, user: philip, choice: choice)
         expect {
-          post :create, vote: { choice_id: choice.id }
+          post :create, poll_id: poll.id, choice_id: choice.id
         }.to_not change { Vote.count }
       end
     end

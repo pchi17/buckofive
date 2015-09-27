@@ -58,7 +58,7 @@ header {
 }
 
 //user panel
-.user-panel {
+#user-panel {
   text-align: center;
 }
 
@@ -140,8 +140,16 @@ textarea {
   font-size: 1.5em;
   margin-bottom: 20px;
 }
-.poll-choices label {
-  margin: 0 50px;
+
+.choice-btns {
+  width: 100%;
+  padding: 0 10%;
+  label.btn {
+    display: inline-block;
+    text-align: left;
+    padding: 10px 20px;
+    width: 80%;
+  }
 }
 
 .graph-bar {

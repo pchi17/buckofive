@@ -3,23 +3,24 @@ class AccountActivationsController < ApplicationController
 
   def create
     current_user.send_activation_email
-    flash[:info] = "activation Email sent to '#{current_user.email}'"
-    redirect_to edit_profile_path
+    respond_to { |format| format.js }
   end
 
   def edit
     if @user = User.find_by(email: params[:email])
       if @user.activated?
         flash[:info] = 'your account is already activated'
-        return redirect_to root_path
+        login(@user)
+        return redirect_to profile_path
       end
       if @user.is_digest?(:activation, params[:id])
         @user.activate_account
         flash[:success] = 'account activated'
-        return redirect_to root_path
+        login(@user)
+        return redirect_to profile_path
       end
     end
     flash[:danger] = 'invalid activation link'
-    redirect_to root_path
+    redirect_to edit_profile_path
   end
 end

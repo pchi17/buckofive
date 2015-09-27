@@ -4,6 +4,7 @@ RSpec.describe PasswordsController, type: :controller do
   before(:all) { @user = create(:philip) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
+  it { expect(subject).to use_before_action(:is_email_nil?) }
 
   describe 'GET #edit' do
     context 'when no one is logged in' do
@@ -52,9 +53,7 @@ RSpec.describe PasswordsController, type: :controller do
       context 'with valid attributes' do
         before(:each) { patch :update, user: @valid_attrs }
 
-        it 'sets skip_password_validation to false' do
-          expect(assigns(:current_user).skip_password_validation).to be false
-        end
+        it { expect(assigns(:current_user).skip_password_validation).to be nil }
 
         it 'updates current_user password' do
           expect(current_user.reload.authenticate(@newpassword)).to eq(current_user)
@@ -68,9 +67,7 @@ RSpec.describe PasswordsController, type: :controller do
       context 'with invalid attributes' do
         before(:each) { patch :update, user: @invalid_attrs }
 
-        it 'sets skip_password_validation to false' do
-          expect(assigns(:current_user).skip_password_validation).to be false
-        end
+        it { expect(assigns(:current_user).skip_password_validation).to be nil }
 
         it { expect(subject).to render_template :edit }
 

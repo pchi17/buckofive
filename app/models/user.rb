@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
 
   # instance methods
 
-  # since I did not use has_secure_password,
+  # since I did not use has_secure_password
   # I need to redefine password= and authenticate
   def password=(str)
     @password = str

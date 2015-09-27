@@ -4,11 +4,12 @@
   <div class="poll-question">
     <%= @poll.content %>
   </div>
+
   <% if @poll.voted_by?(current_user) %>
-    <%= render 'polls/partials/results'%>
+    <%= render 'polls/partials/results' %>
   <% else %>
     <%= render 'polls/partials/choices'%>
-  <% end %>
+  <% end %>  
 
   <% if @poll.created_by?(current_user) || current_user.admin? %>
     <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>

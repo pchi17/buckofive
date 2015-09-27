@@ -10,16 +10,25 @@ class PollsController < ApplicationController
 
   def create
     @poll = current_user.polls.build(poll_params)
-    if @poll.save
-      flash[:success] = 'your poll was created successfully'
-      redirect_to poll_path(@poll)
+    if params[:add_choice]
+      @poll.choices.build
+    elsif params[:remove_choices]
+      # do nothing, allow_destroy automatically removes choices marked with :_destroy
     else
-      render :new
+      if @poll.save
+        flash[:success] = 'your poll was created successfully'
+        return redirect_to poll_path(@poll)
+      end
     end
+    render :new
   end
 
   def index
     @polls = Poll.search(params[:search_term], sort_column, sort_direction, params[:page])
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def show
@@ -37,6 +46,6 @@ class PollsController < ApplicationController
 
   private
     def poll_params
-      params.require(:poll).permit(:content, choices_attributes: :value )
+      params.require(:poll).permit(:content, choices_attributes: [:value, :_destroy] )
     end
 end

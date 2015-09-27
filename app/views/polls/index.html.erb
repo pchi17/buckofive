@@ -1,9 +1,6 @@
 <%= content_for :title, 'Polls Index' %>
 
-<%= form_tag({ controller: 'polls', action: 'index' }, method: :get) do %>
-  <%= hidden_field_tag :sort,      params[:sort] %>
-  <%= hidden_field_tag :direction, params[:direction] %>
-
+<%= form_tag polls_path, id: 'poll-search-form', method: :get, remote: true do %>
   <div class="form-group">
     <%= label_tag :search_term, nil, class: 'sr-only' %>
     <div class="input-group">
@@ -13,7 +10,6 @@
       </span>
     </div>
   </div>
-<% end %>
 
-<%= render 'poll_table'%>
-<%= will_paginate @polls %>
+  <div id="poll-table"><%= render 'poll_table'%></div>
+<% end %>

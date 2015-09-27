@@ -11,7 +11,7 @@
     </thead>
     <tbody>
       <% @poll.get_choices(current_user).each do |choice| %>
-        <% percent = @poll.percentage(choice) %>
+        <% percent = choice.percentage %>
         <tr class="<%= 'success' if choice.selected_by_user %>">
           <td>
             <% if choice.selected_by_user %>

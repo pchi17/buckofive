@@ -60,7 +60,7 @@ class AuthenticationsController < ApplicationController
         remember(@user)
       end
       flash[:success] = "signed in with your #{auth_hash.provider} account"
-      friendly_forward_or root_path
+      friendly_forward_or profile_path
     end
   end
 

@@ -2,7 +2,7 @@ class Poll < ActiveRecord::Base
   belongs_to :user,  inverse_of: :polls
   has_many :choices, inverse_of: :poll
   has_many :votes, through: :choices
-  accepts_nested_attributes_for :choices, reject_if: lambda { |a| a[:value].blank? }
+  accepts_nested_attributes_for :choices, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? }
 
   MINIMUM_CHOICES = 2
 
@@ -14,13 +14,7 @@ class Poll < ActiveRecord::Base
   alias creator user
 
   def get_choice_ids(user)
-    @vote_ids ||= {}
-    return @vote_ids[user] if @vote_ids[user]
-    @vote_ids[user] = votes.where(user: user).pluck(:choice_id)
-  end
-
-  def voted_by?(user)
-    get_choice_ids(user).present?
+    votes.where(user: user).pluck(:choice_id)
   end
 
   def get_choices(user)
@@ -34,8 +28,8 @@ class Poll < ActiveRecord::Base
     end
   end
 
-  def percentage(choice)
-    ('%.2f' % ((choice.votes_count.to_f / total_votes) * 100)) + "%"
+  def voted_by?(user)
+    get_choice_ids(user).present?
   end
 
   def created_by?(user)

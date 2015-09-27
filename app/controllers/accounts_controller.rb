@@ -5,6 +5,12 @@ class AccountsController < ApplicationController
   end
 
   def update
-    update_current_user('account updated', edit_profile_account_path, true)
+    current_user.skip_password_validation = true
+    if current_user.update_attributes(user_params)
+      flash[:success] = 'account updated'
+      friendly_forward_or edit_profile_account_path
+    else
+      render :edit
+    end
   end
 end
