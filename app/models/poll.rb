@@ -4,12 +4,15 @@ class Poll < ActiveRecord::Base
   has_many :votes, through: :choices
   accepts_nested_attributes_for :choices, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? }
 
+  mount_uploader :picture, PollPhotoUploader
+
   MINIMUM_CHOICES = 2
 
   before_validation :strip_content, :check_choices
 
   validates :user,    presence: true
   validates :content, presence: true, length: { maximum: 250 }, uniqueness: { case_sensitive: false }
+  validate  :picture_size
 
   alias creator user
 
@@ -66,6 +69,10 @@ class Poll < ActiveRecord::Base
     end
   end
 
+  def picture_size_mb
+    (picture.size.to_f/1024/1024).round(2)
+  end
+
   private
     def strip_content
       content.strip! if content
@@ -85,6 +92,12 @@ class Poll < ActiveRecord::Base
 
       choices.each do |c|
         c.duplicate_choice = true if dups.include?(c.value.downcase)
+      end
+    end
+
+    def picture_size
+      if picture.size > 3.megabytes
+        errors.add(:picture, "must be less than 3MB, current size is #{picture_size_mb}MB")
       end
     end
 end

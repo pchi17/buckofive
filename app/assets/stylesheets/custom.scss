@@ -90,6 +90,11 @@ header {
   }
 }
 
+// static pages
+#about-page, #help-page, #contact-page {
+  font-size: 1.2em;
+}
+
 // twitter buttons
 .btn-twitter {
   color: white;
@@ -165,4 +170,9 @@ textarea {
   display: inline-block;
   float: right;
   width: 15%;
+}
+
+input[type="file"] {
+  margin: 0 10px;
+  display: inline;
 }

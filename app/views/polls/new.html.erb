@@ -1,9 +1,12 @@
 <% content_for :title, 'New Poll' %>
 
-<%= form_for @poll do |f| %>
+<%= form_for @poll, html: { mutipart: true } do |f| %>
   <%= render 'shared/error_messages', object: f.object if @poll.errors.any?%>
   <div class="form-group">
     <%= f.text_area :content, rows: 6, class: 'form-control', autofocus: true, placeholder: 'Enter your poll content' %>
+  </div>
+  <div class="form-group">
+    <%= f.file_field :picture, accept: 'image/jpeg,image/gif,image/png' %>
     <hr/>
   </div>
 

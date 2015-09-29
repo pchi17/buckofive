@@ -1,5 +1,26 @@
 <% content_for :title, 'Help'%>
 
-<p>
-  The Help Page
-</p>
+<div id="help-page">
+  <hr/>
+  <p><strong>This project is still a work in progess... the calvary is coming</strong></p>
+  <hr/>
+  <h3 id="signup-login">Signup and Login</h3>
+  <p>
+    You can signup with an Email address, you will need to provide a name, email, and password. You will then login with your email and password each time you logout.
+  </p>
+  <p>
+    You can also use this site by connecting to your <a href="https://twitter.com" target="_blank">Twitter</a> account, by clicking on <%= twitter_button(nil, nil)%> below the sign up button. no signup is necessary in this case.
+  </p>
+  <p>
+    If you already have an account, you can still connect your <a href="https://twitter.com" target="_blank">Twitter</a> account by going to settings then click on <%= twitter_button(nil, nil)%>. Then you will be able to log into your existing account with your <a href="https://twitter.com" target="_blank">Twitter</a> account.
+  </p>
+  <hr/>
+  <h3 id="activation">Activation</h3>
+  <p>
+    Your account must be activated in order to create polls and vote on polls. If you sign up with your Email address, an activation email will be sent to the address you provided. You can request an activation email to be resend by going to settings and click on <span class="btn btn-primary">Resend Activation Email</span>.
+  </p>
+  <p>
+    Your account will be automatically activated if you connect to your <a href="https://twitter.com" target="_blank">Twitter</a> account.
+  </p>
+  <hr/>
+</div>

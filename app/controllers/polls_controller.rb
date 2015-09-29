@@ -1,6 +1,6 @@
 class PollsController < ApplicationController
-  before_action :logged_in_user?,         except: :index
-  before_action :activated_current_user?, except: :index
+  before_action :logged_in_user?,         except: [:index, :show]
+  before_action :activated_current_user?, except: [:index, :show]
 
   def new
     @poll = current_user.polls.build
@@ -46,6 +46,6 @@ class PollsController < ApplicationController
 
   private
     def poll_params
-      params.require(:poll).permit(:content, choices_attributes: [:value, :_destroy] )
+      params.require(:poll).permit(:content, :picture, choices_attributes: [:value, :_destroy] )
     end
 end

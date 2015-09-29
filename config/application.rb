@@ -25,6 +25,8 @@ module Buckofive
 
     config.action_view.embed_authenticity_token_in_remote_forms = true
 
+    # load env vars in '.env.json' file before anything else
+    # in production, env vars are stored in Heroku's ENV
     unless Rails.env.production?
       config.before_configuration do
         env_file = Rails.root.join('.env.json')
@@ -35,5 +37,8 @@ module Buckofive
         end
       end
     end
+
+    # add uploaders to load path so they are available in rails console
+    config.autoload_paths += [Rails.root.join('app/uploaders')]
   end
 end

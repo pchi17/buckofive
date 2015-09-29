@@ -13,6 +13,13 @@ module ApplicationHelper
     image_tag(source, alt: user.name, class: "portrait#{klass}" ,size: "#{size}")
   end
 
+  def twitter_button(klass = 'btn-block', href = '/auth/twitter')
+    link_to(href, class: "btn btn-twitter #{klass}") do
+      content_tag(:span, 'Connect to Twitter') +
+      image_tag('twitter.png', alt: 'Twitter Logo', size: '20')
+    end
+  end
+
   # sorting a table
   def table_sort(attribute, title = nil)
     title ||= attribute.titleize

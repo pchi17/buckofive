@@ -1,17 +1,26 @@
 <% content_for :title, "Poll" %>
+<% unless logged_in? && current_user.activated? %>
+  <div class="alert alert-warning">
+    log in and activated your account to create and vote on polls.
+  </div>
+<% end %>
 
 <div class="poll">
   <div class="poll-question">
+    <% if @poll.picture? %>
+      <%= image_tag @poll.picture.url, alt: 'poll picture' %>
+      <br/>
+    <% end %>
     <%= @poll.content %>
   </div>
 
-  <% if @poll.voted_by?(current_user) %>
-    <%= render 'polls/partials/results' %>
-  <% else %>
+  <% if logged_in? && current_user.activated && !@poll.voted_by?(current_user) %>
     <%= render 'polls/partials/choices'%>
-  <% end %>  
+  <% else %>
+    <%= render 'polls/partials/results' %>
+  <% end %>
 
-  <% if @poll.created_by?(current_user) || current_user.admin? %>
+  <% if logged_in? && (@poll.created_by?(current_user) || current_user.admin?) %>
     <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>
   <% end %>
 </div>

@@ -4,6 +4,7 @@ class CreatePolls < ActiveRecord::Migration
       t.references :user,        null: false, index: true
       t.string     :content,     null: false
       t.integer    :total_votes, null: false, default: 0
+      t.string     :picture
 
       t.timestamps null: false
 

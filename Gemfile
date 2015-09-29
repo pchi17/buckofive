@@ -16,6 +16,10 @@ gem 'puma'
 gem 'omniauth-twitter', '1.2.1'
 gem 'will_paginate', '~> 3.0.6'
 gem 'bootstrap-will_paginate'
+gem 'mandrill-api', require: 'mandrill'
+gem 'carrierwave'
+gem 'mini_magick'
+gem 'fog'
 
 group :development, :test do
   gem 'faker', '~> 1.5.0'
@@ -30,4 +34,8 @@ group :test do
   gem 'capybara', '~> 2.4.4'
   gem 'database_cleaner', '~> 1.4.1'
   gem 'shoulda-matchers', require: false
+end
+
+group :production do
+  gem 'rails_12factor'
 end

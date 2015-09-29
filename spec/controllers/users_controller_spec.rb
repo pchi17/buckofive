@@ -39,12 +39,6 @@ RSpec.describe UsersController, type: :controller do
         }.to change(User, :count).by(1)
       end
 
-      it 'sends an account activation email', skip_before: true do
-        expect {
-          post :create, user: attributes_for(:philip)
-        }.to change(ActionMailer::Base.deliveries, :size).by(1)
-      end
-
       it 'assigns a valid user to @user' do
         expect(assigns(:user)).to be_valid
       end

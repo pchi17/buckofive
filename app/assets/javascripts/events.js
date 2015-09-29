@@ -57,20 +57,27 @@ $(document).ready(function() {
   $("form#new_poll").submit(function(evt) {
     setupRemoveUnwrap();
 
-    var textArea = $("form#new_poll textarea")
-    var choiceInputs = $(".choice")
+    var textArea     = $("form#new_poll textarea");
+    var pollPicture  = $("form#new_poll #poll_picture")[0].files[0];
+    var choiceInputs = $(".choice");
 
-    var has_empty_choice     = false
-    var has_duplicate_choice = false
-    var choice_too_long      = false
+    var has_empty_choice     = false;
+    var has_duplicate_choice = false;
+    var choice_too_long      = false;
 
-    if(isBlank($(textArea))) {
+    if(isBlank(textArea)) {
       errors.push('your poll question cannot be blank');
       wrapFieldWithErrors($(textArea));
     }
-    if(isTooLong($(textArea), 250)) {
+    if(isTooLong(textArea, 250)) {
       errors.push('please keep your poll less than 250 characters');
       wrapFieldWithErrors($(textArea));
+    }
+    if(!(pollPicture === undefined)) {
+      var pollPictureSize = pollPicture.size/1024/1024;
+      if(pollPictureSize > 3) {
+        errors.push('Picture must be less than 3MB, current size is ' + pollPictureSize.toFixed(2) + 'MB');
+      }
     }
 
     if(choiceInputs.length < 2) {
@@ -109,7 +116,7 @@ $(document).ready(function() {
   // add a choice
   $("#addChoice").click(function(evt) {
     evt.preventDefault();
-    
+
     var newId   = 'poll_choices_attributes_'  + choices.toString() + '_value';
     var newName = 'poll[choices_attributes][' + choices.toString() + '][value]';
     choices += 1;

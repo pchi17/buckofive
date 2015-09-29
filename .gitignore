@@ -12,4 +12,8 @@
 !/log/.keep
 /tmp
 
+# Ignore local environment variables
 /.env.json
+
+# Ignore development image uploads
+/public/uploads

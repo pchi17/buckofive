@@ -1,5 +1,30 @@
 <% content_for :title, 'About'%>
-
-<p>
-  The About Page
-</p>
+<div id="about-page">
+  <hr/>
+  <p>
+    <cite><strong><a href="https://www.youtube.com/watch?v=XE8BgQzyktE" target="_blank">freedom cost a buck o'five </a></strong></cite>
+  </p>
+  <p>
+    One day I was wondering how many people would vote Donald Trump for president... which gave me the idea to build this site - a simple application that lets users create polls and vote on polls.
+  </p>
+  <hr/>
+  <strong>House Rules</strong>
+  <ul>
+    <li>This site shall forever be free...</li>
+    <li>This site supports freedom of speech. Users may make a poll on any topic.</li>
+    <li>
+      However, this site opposes discrimination of any kind. We ask our users to be considerate when making polls so as to not offend any person or group. You may <%= link_to 'contact ADMIN', contact_path %> regarding any offensive material you find.
+    </li>
+    <li>
+      This site values users' privacy. Polls created and votes casted are confidential. No one on this site will know who created which poll or who voted which way.
+    </li>
+    <li>
+      You must be <%= link_to 'logged in', help_path(anchor: 'signup-login') %> and your account must be <%= link_to 'activated', help_path(anchor: 'activation') %> in order to create polls and vote. Your vote matters that's why we should make sure you are you and you are not a Google Spider.
+    </li>
+    <li>Once a poll is created, it cannot be modified. You can delete the polls you created at any time.</li>
+  </ul>
+  <hr/>
+  <p>
+    That's all I got to say at the moment. Have fun voting.
+  </p>
+</div>

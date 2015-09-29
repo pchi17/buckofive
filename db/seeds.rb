@@ -1,4 +1,4 @@
-# seed users
+# seed 2 admins
 User.create!(
   name:  'Philip',
   email: 'philip@example.com',
@@ -16,6 +16,7 @@ User.create!(
   admin:     true
 )
 
+# seed 30 normal users
 30.times do |i|
   User.create!(
     name:  Faker::Name.name,
