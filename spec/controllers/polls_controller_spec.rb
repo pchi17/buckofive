@@ -211,12 +211,13 @@ RSpec.describe PollsController, type: :controller do
     end
   end
 
-  describe 'GET #index'
+  describe 'GET #index' do
+  end
 
   describe 'GET #show' do
     before(:each) { poll.save }
 
-    context 'when not logged in and activated' do
+    context 'when logged in and activated' do
       before(:each) do
         login(activated_user)
         get :show, id: poll.id
@@ -232,9 +233,7 @@ RSpec.describe PollsController, type: :controller do
 
     context 'when not logged in' do
       before(:each) { get :show, id: poll.id }
-
-      it { expect(subject).to set_flash[:info] }
-      it { expect(subject).to redirect_to login_path }
+      it { expect(subject).to render_template :show }
     end
 
     context 'when not activated' do
@@ -242,9 +241,6 @@ RSpec.describe PollsController, type: :controller do
         login(unactivated_user)
         get :show, id: poll.id
       end
-
-      it { expect(subject).to set_flash[:warning] }
-      it { expect(subject).to redirect_to edit_profile_path }
     end
   end
 
