@@ -48,7 +48,7 @@ class User < ActiveRecord::Base
 
   def send_activation_email
     create_activation_digest
-    UserMailer.account_activation(self)
+    UserMailer.account_activation(self).deliver_now
   end
 
   def activate_account
@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
 
   def send_reset_email
     create_reset_digest
-    UserMailer.password_reset(self)
+    UserMailer.password_reset(self).deliver_now
   end
 
   def is_reset_expired?
