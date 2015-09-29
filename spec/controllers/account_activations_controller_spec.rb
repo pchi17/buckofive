@@ -7,10 +7,28 @@ RSpec.describe AccountActivationsController, type: :controller do
 
   describe 'POST #create' do
     context 'when not logged in' do
-      before(:each) { post :create, format: :js }
+      before(:each) { |example| post :create, format: :js unless example.metadata[:skip_before] }
 
+      it 'does not send an activation email', skip_before: true do
+        expect {
+          post :create, format: :js
+        }.to_not change(ActionMailer::Base.deliveries, :size)
+      end
       it { expect(subject).to set_flash[:info] }
       it { expect(subject).to redirect_to login_path }
+    end
+
+    context 'when logged in' do
+      before(:each) do |example|		
+        login(@philip)		
+        post :create, format: :js unless example.metadata[:skip_before]		
+      end		
+		
+      it 'sends an activation email', skip_before: true do		
+        expect {		
+          post :create, format: :js		
+        }.to change(ActionMailer::Base.deliveries, :size).by(1)		
+      end		
     end
   end
 

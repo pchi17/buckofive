@@ -113,6 +113,12 @@ RSpec.describe User, type: :model do
       subject.send_activation_email
       expect(subject.activation_digest).to_not be_nil
     end
+    it 'sends an activation_email' do
+      subject.save
+      expect {
+        subject.send_activation_email
+      }.to change(ActionMailer::Base.deliveries, :size).by(1)
+    end
   end
 
   describe '#activate_account' do
@@ -149,6 +155,12 @@ RSpec.describe User, type: :model do
       subject.save
       subject.send_reset_email
       expect(subject.reset_digest).to_not be_nil
+    end
+    it 'sends a password reset email' do
+      subject.save		
+      expect {		
+        subject.send_reset_email		
+      }.to change(ActionMailer::Base.deliveries, :size).by(1)		
     end
   end
 
