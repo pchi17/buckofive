@@ -20,7 +20,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
       context 'when authentication already exists in the database' do
         before :all do
-          @user = create(:philip)
+          @user = create(:philip, :with_account)
           @auth = create(:authentication, user: @user)
         end
         after(:all) { DatabaseCleaner.clean_with(:deletion) }
@@ -34,7 +34,7 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
 
         it 'updates current_user image_url' do
-          expect(current_user.image_url).to eq(auth_hash.info.image)
+          expect(current_user.image).to eq(auth_hash.info.image)
         end
 
         it 'updates @authentication token' do
@@ -56,7 +56,7 @@ RSpec.describe AuthenticationsController, type: :controller do
       end
 
       context 'when authentication does not exist in the database' do
-        before(:all) { @user = create(:philip) }
+        before(:all) { @user = create(:philip, :with_account) }
         after(:all)  { DatabaseCleaner.clean_with(:deletion) }
 
         it 'creates a new authentication associated with current_user', skip_before: true do
@@ -70,7 +70,7 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
 
         it 'updates current_user image_url' do
-          expect(current_user.image_url).to eq(auth_hash.info.image)
+          expect(current_user.image).to eq(auth_hash.info.image)
         end
 
         it 'activates current_user if not already activated' do
@@ -82,7 +82,6 @@ RSpec.describe AuthenticationsController, type: :controller do
           it { expect(subject).to redirect_to edit_profile_path }
         end
       end
-
     end
 
     context 'when not logged in' do
@@ -94,7 +93,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
       context 'when authentication already exists in the database' do
         before :all do
-          @user = create(:philip)
+          @user = create(:philip, :with_account)
           @auth = create(:authentication, user: @user)
         end
 
@@ -113,7 +112,7 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
 
         it 'updates current_user image_url' do
-          expect(assigns(:user).image_url).to eq(auth_hash.info.image)
+          expect(assigns(:user).image).to eq(auth_hash.info.image)
         end
 
         it 'activates current_user if not already activated' do
@@ -145,8 +144,12 @@ RSpec.describe AuthenticationsController, type: :controller do
           expect(assigns(:user).email).to be_nil
         end
 
+        it 'builds an account for the user' do
+          expect(assigns(:user).account).to_not be_nil
+        end
+
         it 'creates a @user without password' do
-          expect(assigns(:user).email).to be_nil
+          expect(assigns(:user).account.password).to be_nil
         end
 
         it 'creates a @user with name from auth_hash' do
@@ -154,7 +157,7 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
 
         it 'creates a @user with image_url from auth_hash' do
-          expect(assigns(:user).image_url).to eq(auth_hash.info.image)
+          expect(assigns(:user).image).to eq(auth_hash.info.image)
         end
 
         it 'creates a new @authentication associated with the @user', skip_before: true do
@@ -165,6 +168,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         it 'activates @user' do
           expect(assigns(:user).activated?).to be true
+          expect(assigns(:user).account.activated_at).to_not be_nil
         end
 
         it 'logs in @user' do
@@ -183,7 +187,7 @@ RSpec.describe AuthenticationsController, type: :controller do
     end
   end
 
-  describe '#failure' do
+  describe 'GET #failure' do
     before(:each) { get :failure }
     it { expect(subject).to set_flash[:danger] }
     it { expect(subject).to redirect_to root_path }

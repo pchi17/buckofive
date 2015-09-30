@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe VotesController, type: :controller, isolation: true do
-  let(:philip) { create(:philip, :activated) }
-  let(:mike)   { create(:mike) }
+  let(:philip) { create(:philip, :with_account, :activated) }
+  let(:mike)   { create(:mike,   :with_account) }
   let(:poll)   { create(:poll, user: philip) }
   let(:choice) { poll.choices.first }
 
@@ -26,7 +26,7 @@ RSpec.describe VotesController, type: :controller, isolation: true do
       end
 
       it { expect(subject).to set_flash[:warning] }
-      it { expect(subject).to redirect_to edit_profile_path }
+      it { expect(subject).to redirect_to help_path(anchor: 'activation') }
     end
 
     context 'with format.html' do

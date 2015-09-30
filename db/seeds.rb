@@ -2,18 +2,22 @@
 User.create!(
   name:  'Philip',
   email: 'philip@example.com',
-  password:              'coolkid',
-  password_confirmation: 'coolkid',
   activated: true,
-  admin: true
+  admin: true,
+  account_attributes: {
+    password:              'coolkid',
+    password_confirmation: 'coolkid'
+  }
 )
 User.create!(
   name:  'Mike',
   email: 'mike@example.com',
-  password:              'coolkid',
-  password_confirmation: 'coolkid',
   activated: true,
-  admin:     true
+  admin:     true,
+  account_attributes: {
+    password:              'coolkid',
+    password_confirmation: 'coolkid'
+  }
 )
 
 # seed 30 normal users
@@ -21,9 +25,11 @@ User.create!(
   User.create!(
     name:  Faker::Name.name,
     email: "User#{i}@example.com",
-    password:              'foobar',
-    password_confirmation: 'foobar',
-    activated: [true, false].sample
+    activated: [true, false].sample,
+    account_attributes: {
+      password:              'foobar',
+      password_confirmation: 'foobar'
+    }
   )
 end
 

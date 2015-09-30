@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe UsersController, type: :controller do
   def self.create_users
     before :all do
-      @philip_admin = create(:philip, :admin)
-      @mike         = create(:mike)
-      @stephens     = create(:stephens)
+      @philip_admin = create(:philip,   :with_account, :admin)
+      @mike         = create(:mike,     :with_account)
+      @stephens     = create(:stephens, :with_account)
     end
 
     after :all do
@@ -22,6 +22,10 @@ RSpec.describe UsersController, type: :controller do
       expect(assigns(:user).id).to be_nil
     end
 
+    it 'builds an accout' do
+      expect(assigns(:user).account).to_not be_nil
+    end
+
     it { expect(subject).to render_template :new }
   end
 
@@ -29,20 +33,20 @@ RSpec.describe UsersController, type: :controller do
     context 'with valid attributes' do
       before :each do |example|
         unless example.metadata[:skip_before]
-          post :create, user: attributes_for(:philip)
+          post :create, user: attributes_for(:philip, account_attributes: attributes_for(:account))
         end
       end
 
       it 'creates a new User', skip_before: true do
         expect {
-          post :create, user: attributes_for(:philip)
+          post :create, user: attributes_for(:philip, account_attributes: attributes_for(:account))
         }.to change(User, :count).by(1)
       end
 
       it 'sends an account activation email', skip_before: true do
-        expect {		
-          post :create, user: attributes_for(:philip)		
-        }.to change(ActionMailer::Base.deliveries, :size).by(1)		
+        expect {
+          post :create, user: attributes_for(:philip, account_attributes: attributes_for(:account))
+        }.to change(ActionMailer::Base.deliveries, :size).by(1)
       end
 
       it 'assigns a valid user to @user' do
@@ -59,14 +63,14 @@ RSpec.describe UsersController, type: :controller do
     context 'with valid attributes' do
       context 'with remember_me checked' do
         it 'sets :user_id in the cookie' do
-          post :create, user: attributes_for(:user, remember_me: '1')
+          post :create, user: attributes_for(:philip, remember_me: '1', account_attributes: attributes_for(:account))
           expect(cookies.signed[:user_id]).to eq(assigns(:user).id)
         end
       end
 
       context 'with remember_me not checked' do
         it 'does not set :user_id in the cookie' do
-          post :create, user: attributes_for(:user, remember_me: '0')
+          post :create, user: attributes_for(:philip, remember_me: '0', account_attributes: attributes_for(:account))
           expect(cookies.signed[:user_id]).to be_nil
         end
       end
@@ -75,19 +79,19 @@ RSpec.describe UsersController, type: :controller do
     context 'with invalid attributes' do
       before :each do |example|
         unless example.metadata[:skip_before]
-          post :create, user: attributes_for(:user, :invalid_email)
+          post :create, user: attributes_for(:user, :invalid_email, account_attributes: attributes_for(:account))
         end
       end
 
       it 'does not create a new User', skip_before: true do
         expect {
-          post :create, user: attributes_for(:user, :invalid_email)
+          post :create, user: attributes_for(:user, :invalid_email, account_attributes: attributes_for(:account))
         }.to_not change(User, :count)
       end
 
       it 'does not send an account activation email', skip_before: true do
         expect {
-          post :create, user: attributes_for(:user, :invalid_email)
+          post :create, user: attributes_for(:user, :invalid_email, account_attributes: attributes_for(:account))
         }.to_not change(ActionMailer::Base.deliveries, :size)
       end
 
@@ -167,7 +171,7 @@ RSpec.describe UsersController, type: :controller do
             delete :destroy, id: @stephens
           }.to_not change(User, :count)
         end
-        it 'redirects back' do
+        it 'redirect_to root_path' do
           delete :destroy, id: @stephens
           expect(subject).to redirect_to root_path
         end
@@ -195,14 +199,14 @@ RSpec.describe UsersController, type: :controller do
             delete :destroy, id: @stephens
           }.to change(User, :count).by(-1)
         end
-        it 'redirects_to edit_profile_path' do
+        it 'redirects_to users_path' do
           delete :destroy, id: @stephens
           expect(subject).to redirect_to users_path
         end
       end
 
       context 'when deleting a non-existing user' do
-        it 'redirects back' do
+        it 'respond_with 404' do
           bad_id = User.maximum(:id) + 1
           delete :destroy, id: bad_id
           expect(subject).to respond_with 404

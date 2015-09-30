@@ -11,10 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150914060733) do
+ActiveRecord::Schema.define(version: 20150930075347) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "accounts", primary_key: "user_id", force: :cascade do |t|
+    t.string   "password_digest"
+    t.string   "remember_digest"
+    t.string   "activation_digest"
+    t.string   "reset_digest"
+    t.datetime "activated_at"
+    t.datetime "reset_sent_at"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
+  end
 
   create_table "authentications", force: :cascade do |t|
     t.integer  "user_id",    null: false
@@ -53,19 +64,13 @@ ActiveRecord::Schema.define(version: 20150914060733) do
   add_index "polls", ["user_id"], name: "index_polls_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "name",                              null: false
+    t.string   "name",                       null: false
     t.string   "email"
-    t.string   "password_digest"
-    t.string   "remember_digest"
-    t.string   "activation_digest"
-    t.string   "reset_digest"
-    t.boolean  "admin",             default: false
-    t.boolean  "activated",         default: false
-    t.datetime "activated_at"
-    t.datetime "reset_sent_at"
-    t.string   "image_url"
-    t.datetime "created_at",                        null: false
-    t.datetime "updated_at",                        null: false
+    t.string   "image"
+    t.boolean  "admin",      default: false
+    t.boolean  "activated",  default: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
@@ -81,6 +86,7 @@ ActiveRecord::Schema.define(version: 20150914060733) do
   add_index "votes", ["user_id", "choice_id"], name: "index_votes_on_user_id_and_choice_id", unique: true, using: :btree
   add_index "votes", ["user_id"], name: "index_votes_on_user_id", using: :btree
 
+  add_foreign_key "accounts", "users", on_delete: :cascade
   add_foreign_key "authentications", "users", on_delete: :cascade
   add_foreign_key "choices", "polls", on_delete: :cascade
   add_foreign_key "polls", "users", on_delete: :cascade

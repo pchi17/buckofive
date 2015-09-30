@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe PollsController, type: :controller do
-  let(:admin)            { create(:philip, :admin) }
-  let(:activated_user)   { create(:mike, :activated) }
-  let(:unactivated_user) { create(:stephens) }
+  let(:admin)            { create(:philip,   :with_account, :admin) }
+  let(:activated_user)   { create(:mike,     :with_account, :activated) }
+  let(:unactivated_user) { create(:stephens, :with_account) }
   let(:poll) { build(:poll, user: admin) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
@@ -35,7 +35,7 @@ RSpec.describe PollsController, type: :controller do
         end
 
         it { expect(subject).to set_flash[:warning] }
-        it { expect(subject).to redirect_to edit_profile_path }
+        it { expect(subject).to redirect_to help_path(anchor: 'activation') }
       end
     end
 
@@ -200,7 +200,7 @@ RSpec.describe PollsController, type: :controller do
         end
 
         it { expect(subject).to set_flash[:warning] }
-        it { expect(subject).to redirect_to edit_profile_path }
+        it { expect(subject).to redirect_to help_path(anchor: 'activation') }
       end
     end
 
@@ -212,6 +212,56 @@ RSpec.describe PollsController, type: :controller do
   end
 
   describe 'GET #index' do
+    before(:all) do
+      user = create(:philip, :with_account, :activated)
+      @poll1 = create(:poll, content: 'blah blah abc', user: user)
+      @poll2 = create(:poll, content: 'blah blah xyz', user: user)
+      @poll3 = create(:poll, content: 'blah blah ccc', user: user)
+    end
+
+    after(:all) { DatabaseCleaner.clean_with(:deletion) }
+
+    context 'with no params' do
+      before(:each) { get :index }
+      it 'returns all polls' do
+        expect(assigns(:polls).count).to eq(3)
+      end
+      it 'defaults to sort by created_at desc' do
+        expect(assigns(:polls)).to eq([@poll3, @poll2, @poll1])
+      end
+    end
+
+    context 'with search_term = c' do
+      before(:each) { get :index, search_term: 'c' }
+      it 'returns first 2 polls' do
+        expect(assigns(:polls).count).to eq(2)
+      end
+      it 'defaults to sort by created_at desc' do
+        expect(assigns(:polls)).to eq([@poll3, @poll1])
+      end
+    end
+
+    context 'with sort = content' do
+      before(:each) { get :index, sort: 'content'}
+      it 'returns all polls' do
+        expect(assigns(:polls).count).to eq(3)
+      end
+      it 'defaults to desc' do
+        expect(assigns(:polls)).to eq([@poll2, @poll3, @poll1])
+      end
+    end
+
+    context 'with sort = content and direction = asc' do
+      before(:each) { get :index, sort: 'content', direction: 'asc' }
+      it 'returns all polls' do
+        expect(assigns(:polls).count).to eq(3)
+      end
+      it 'defaults to desc' do
+        expect(assigns(:polls)).to eq([@poll1, @poll3, @poll2])
+      end
+    end
+
+    it { get :index; expect(subject).to render_template :index }
   end
 
   describe 'GET #show' do
@@ -309,7 +359,7 @@ RSpec.describe PollsController, type: :controller do
       end
 
       it { expect(subject).to set_flash[:warning] }
-      it { expect(subject).to redirect_to edit_profile_path }
+      it { expect(subject).to redirect_to help_path(anchor: 'activation') }
     end
   end
 end

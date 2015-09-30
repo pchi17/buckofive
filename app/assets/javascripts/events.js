@@ -42,11 +42,11 @@ $(document).ready(function() {
   });
 
   // password#edit validations
-  $("form.edit_user[action='/profile/password']").submit(function(evt) {
+  $("form.edit_account").submit(function(evt) {
     setupRemoveUnwrap();
 
-    var password     = $(this).find("input#user_password");
-    var confirmation = $(this).find("input#user_password_confirmation");
+    var password     = $(this).find("input#account_password");
+    var confirmation = $(this).find("input#account_password_confirmation");
 
     validate_password(password, confirmation);
 

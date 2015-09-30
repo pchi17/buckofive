@@ -1,7 +1,24 @@
+# == Schema Information
+#
+# Table name: choices
+#
+#  id          :integer          not null, primary key
+#  poll_id     :integer          not null
+#  value       :string           not null
+#  votes_count :integer          default(0), not null
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_choices_on_poll_id            (poll_id)
+#  index_choices_on_poll_id_and_value  (poll_id,value) UNIQUE
+#
+
 require 'rails_helper'
 
 RSpec.describe Choice, type: :model do
-  let(:user) { create(:philip) }
+  let(:user) { create(:philip, :with_account, :activated) }
   let(:poll) { build(:poll, user: user) }
   subject { poll.choices.first }
 

@@ -1,3 +1,21 @@
+# == Schema Information
+#
+# Table name: polls
+#
+#  id          :integer          not null, primary key
+#  user_id     :integer          not null
+#  content     :string           not null
+#  total_votes :integer          default(0), not null
+#  picture     :string
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#
+# Indexes
+#
+#  index_polls_on_content  (content) UNIQUE
+#  index_polls_on_user_id  (user_id)
+#
+
 class Poll < ActiveRecord::Base
   belongs_to :user,  inverse_of: :polls
   has_many :choices, inverse_of: :poll
@@ -12,6 +30,7 @@ class Poll < ActiveRecord::Base
 
   validates :user,    presence: true
   validates :content, presence: true, length: { maximum: 250 }, uniqueness: { case_sensitive: false }
+  validate  :user_activated
   validate  :picture_size
 
   alias creator user
@@ -85,7 +104,7 @@ class Poll < ActiveRecord::Base
       end
 
       if values.count < MINIMUM_CHOICES
-        errors.add(:choices, 'you must provide 2 unique choices')
+        errors.add(:choices, "you must provide #{MINIMUM_CHOICES} unique choices")
       end
 
       dups = values.select { |k, v| v > 1 }.keys
@@ -98,6 +117,12 @@ class Poll < ActiveRecord::Base
     def picture_size
       if picture.size > 3.megabytes
         errors.add(:picture, "must be less than 3MB, current size is #{picture_size_mb}MB")
+      end
+    end
+
+    def user_activated
+      unless creator && creator.activated?
+        errors.add(:user, 'must be activated')
       end
     end
 end

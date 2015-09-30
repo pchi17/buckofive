@@ -21,25 +21,24 @@ class PasswordResetsController < ApplicationController
   end
 
   def update
-    if params[:user][:password].blank?
+    if params[:account][:password].blank?
       flash[:danger] = 'password cannot be blank'
       render :edit
     else
-      if @user.update_attributes(user_params)
+      if @user.account.update_attributes(password_params)
         @user.clear_reset_digest
         login(@user)
         flash[:success] = 'password reset successful'
         redirect_to root_path
       else
-        flash[:danger] = 'password reset unsuccessful'
         render :edit
       end
     end
   end
 
   private
-    def user_params
-      params.require(:user).permit(:password, :password_confirmation)
+    def password_params
+      params.require(:account).permit(:password, :password_confirmation)
     end
 
     def get_user

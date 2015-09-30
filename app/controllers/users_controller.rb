@@ -3,6 +3,7 @@ class UsersController < ApplicationController
 
   def new
     @user = User.new
+    @user.build_account
   end
 
   def create
@@ -11,7 +12,7 @@ class UsersController < ApplicationController
       login(@user)
       remember(@user) if params[:user][:remember_me] == '1'
       @user.send_activation_email
-      flash[:warning]   = 'please check your email to activate your account'
+      flash[:warning] = 'please check your email to activate your account'
       redirect_to profile_path
     else
       render :new
@@ -36,4 +37,14 @@ class UsersController < ApplicationController
       redirect_to root_path
     end
   end
+
+  private
+    def user_params
+      params.require(:user).permit(
+        :name, :email, account_attributes: [
+          :password,
+          :password_confirmation
+        ]
+      )
+    end
 end

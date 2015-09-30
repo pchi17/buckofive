@@ -5,7 +5,7 @@ module ApplicationHelper
   end
 
   def profile_picture(user, size = 80)
-    unless source = user.image_url
+    unless source = user.image
       gravatar_id = Digest::MD5::hexdigest(user.email)
       source      = "https://secure.gravatar.com/avatar/#{gravatar_id}?#{size}"
     end

@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe UserMailer, type: :mailer do
-  before(:all) { @user = create(:philip) }
+  before(:all) { @user = create(:philip, :with_account) }
 
   describe "account_activation" do
     before :all do

@@ -1,8 +1,23 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  email      :string
+#  image      :string
+#  admin      :boolean          default(FALSE)
+#  activated  :boolean          default(FALSE)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_users_on_email  (email) UNIQUE
+#
+
 FactoryGirl.define do
   factory :user do
-    password              'foobar'
-    password_confirmation 'foobar'
-
     factory :philip do
       name 'Philip'
       email 'philip@example.com'
@@ -18,16 +33,17 @@ FactoryGirl.define do
       email 'stephens@example.com'
     end
 
+    trait :with_account do
+      after(:build) { |user| build(:account, user: user) }
+    end
+
     trait :admin do
       admin     true
-      # admin should be activated I hope...
       activated true
-      activated_at Time.now
     end
 
     trait :activated do
       activated true
-      activated_at Time.now
     end
 
     trait :invalid_email do

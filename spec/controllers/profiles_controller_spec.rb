@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ProfilesController, type: :controller do
-  before(:all) { @user = create(:philip) }
+  before(:all) { @user = create(:philip, :with_account) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
 

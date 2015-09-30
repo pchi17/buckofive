@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 feature 'friendly forwarding' do
-  before(:all) { @user = create(:philip) }
+  before(:all) { @user = create(:philip, :with_account) }
 
   scenario 'user try to visit edit page' do
     # user is not signed in
@@ -11,7 +11,7 @@ feature 'friendly forwarding' do
     expect(current_path).to eq(login_path)
     within "form" do
       fill_in("session[email]", with: @user.email)
-      fill_in("session[password]", with: @user.password)
+      fill_in("session[password]", with: @user.account.password)
       click_on("Log In")
     end
     # user is redirect back to edit page instead of root_path

@@ -1,24 +1,41 @@
+# == Schema Information
+#
+# Table name: users
+#
+#  id         :integer          not null, primary key
+#  name       :string           not null
+#  email      :string
+#  image      :string
+#  admin      :boolean          default(FALSE)
+#  activated  :boolean          default(FALSE)
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#
+# Indexes
+#
+#  index_users_on_email  (email) UNIQUE
+#
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  subject { build(:philip) }
+  subject { build(:philip, :with_account) }
 
   it 'has a valid factory' do
     expect(subject).to be_valid
   end
 
   describe 'associations' do
-    it { expect(subject).to have_many(:authentications) }
-    it { expect(subject).to have_many(:polls) }
-    it { expect(subject).to have_many(:choices) }
-    it { expect(subject).to have_many(:votes) }
+    it { expect(subject).to have_one :account }
+    it { expect(subject).to have_many :authentications }
+    it { expect(subject).to have_many :polls }
+    it { expect(subject).to have_many :choices }
+    it { expect(subject).to have_many :votes }
+    it { expect(subject).to accept_nested_attributes_for(:account) }
   end
 
-  describe '#name' do
+  describe 'validations' do
     it { expect(subject).to validate_presence_of :name }
-  end
-
-  describe '#email' do
     it { expect(subject).to validate_presence_of :email }
     it { expect(subject).to validate_uniqueness_of(:email).case_insensitive }
 
@@ -41,6 +58,19 @@ RSpec.describe User, type: :model do
     it { expect(subject).to     allow_value(*valid_addresses).for(:email) }
     it { expect(subject).to_not allow_value(*invalid_addresses).for(:email) }
 
+    it 'validates user has_account' do
+      user = build(:mike)
+      expect(user).to be_invalid
+      expect(user.errors.messages[:account]).to_not be_nil
+      user.build_account
+      expect(user).to be_invalid # must have valid password and confirmation
+      expect(user.errors.messages[:'account.password']).to_not be_nil
+      user.build_account(password: 'foobar', password_confirmation: 'foobar')
+      expect(user).to be_valid
+    end
+  end
+
+  describe '#email' do
     context 'when saved' do
       it 'saves email in all lower case letters' do
         upcase_email = 'UPCASE@example.COM'
@@ -51,67 +81,47 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#password' do
-    it { expect(subject).to validate_presence_of :password }
-    it { expect(subject).to validate_length_of(:password).is_at_least(6) }
-    it { expect(subject).to validate_length_of(:password).is_at_most(32) }
-    it { expect(subject).to validate_confirmation_of :password }
-
-    context 'when skip_password_validation is true' do
-      it 'does not validate password' do
-        subject.skip_password_validation = true
-        subject.password = nil
-        expect(subject).to be_valid
-        subject.password = 'foo'
-        expect(subject).to be_valid
-        subject.password = 'foobar'
-        subject.password_confirmation = 'notfoobar'
-        expect(subject).to be_valid
-      end
-    end
-  end
-
   describe '#remember_me' do
-    it 'has the remember_token and remember_digest attributes' do
+    it 'has the remember_token and account has remember_digest' do
       subject.save
       subject.remember_me
       expect(subject.remember_token).to_not  be_nil
-      expect(subject.remember_digest).to_not be_nil
+      expect(subject.account.remember_digest).to_not be_nil
     end
   end
 
   describe '#forget_me' do
     context 'when user is remembered' do
-      it 'sets remember_digest to nil' do
+      it 'sets account remember_digest to nil' do
         subject.save
         subject.remember_me
         subject.forget_me
-        expect(subject.remember_digest).to be_nil
+        expect(subject.account.remember_digest).to be_nil
       end
     end
     context 'when user is not remembered' do
-      it 'sets remember_digest to nil' do
+      it 'sets account remember_digest to nil' do
         subject.save
         subject.forget_me
-        expect(subject.remember_digest).to be_nil
+        expect(subject.account.remember_digest).to be_nil
       end
     end
   end
 
   describe '#create_activation_digest' do
-    it 'has the activation_token and activation_digest attributes' do
+    it 'has the activation_token and account activation_digest' do
       subject.save
       subject.create_activation_digest
       expect(subject.activation_token).to_not be_nil
-      expect(subject.activation_digest).to_not be_nil
+      expect(subject.account.activation_digest).to_not be_nil
     end
   end
 
   describe '#send_activation_email' do
-    it 'creates and saves an activation_digest' do
+    it 'creates and saves an activation_digest in account table' do
       subject.save
       subject.send_activation_email
-      expect(subject.activation_digest).to_not be_nil
+      expect(subject.account.activation_digest).to_not be_nil
     end
     it 'sends an activation_email' do
       subject.save
@@ -131,22 +141,22 @@ RSpec.describe User, type: :model do
   end
 
   describe '#create_reset_digest' do
-    it 'has reset_token, reset_digest, and reset_sent_at attributes' do
+    it 'has reset_token, account has reset_digest, and reset_sent_at' do
       subject.save
       subject.create_reset_digest
       expect(subject.reset_token).to_not   be_nil
-      expect(subject.reset_digest).to_not  be_nil
-      expect(subject.reset_sent_at).to_not be_nil
+      expect(subject.account.reset_digest).to_not  be_nil
+      expect(subject.account.reset_sent_at).to_not be_nil
     end
   end
 
   describe '#clear_reset_digest' do
-    it 'sets reset_digest and reset_sent_at o nil' do
+    it 'sets account reset_digest and reset_sent_at o nil' do
       subject.save
       subject.create_reset_digest
       subject.clear_reset_digest
-      expect(subject.reset_digest).to  be_nil
-      expect(subject.reset_sent_at).to be_nil
+      expect(subject.account.reset_digest).to  be_nil
+      expect(subject.account.reset_sent_at).to be_nil
     end
   end
 
@@ -154,13 +164,13 @@ RSpec.describe User, type: :model do
     it 'creates and saves an reset_digest' do
       subject.save
       subject.send_reset_email
-      expect(subject.reset_digest).to_not be_nil
+      expect(subject.account.reset_digest).to_not be_nil
     end
     it 'sends a password reset email' do
-      subject.save		
-      expect {		
-        subject.send_reset_email		
-      }.to change(ActionMailer::Base.deliveries, :size).by(1)		
+      subject.save
+      expect {
+        subject.send_reset_email
+      }.to change(ActionMailer::Base.deliveries, :size).by(1)
     end
   end
 
@@ -168,14 +178,14 @@ RSpec.describe User, type: :model do
     context 'when reset email was sent less than 2 hours ago' do
       it 'returns false' do
         subject.save
-        subject.update_columns(reset_sent_at: 1.hour.ago)
+        subject.account.update_columns(reset_sent_at: 1.hour.ago)
         expect(subject.is_reset_expired?).to be false
       end
     end
     context 'when reset email was sent more than 2 hours ago' do
       it 'returns true' do
         subject.save
-        subject.update_columns(reset_sent_at: 3.hour.ago)
+        subject.account.update_columns(reset_sent_at: 3.hour.ago)
         expect(subject.is_reset_expired?).to be true
       end
     end
@@ -207,26 +217,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#has_authentication' do
-    context 'when user has an authentication from provider' do
-      it 'returns true' do
-        subject.save
-        auth = create(:authentication, user: subject)
-        provider = auth.provider
-        expect(subject.has_authentication(provider)).to be true
-      end
-    end
-
-    context 'when user does not have an authentication from provider' do
-      it 'returns false' do
-        subject.save
-        expect(subject.has_authentication('twitter')).to be false
-        auth = create(:authentication, user: subject, provider: 'facebook')
-        expect(subject.has_authentication('twitter')).to be false
-      end
-    end
-  end
-
   # class methods
   describe '::new_token' do
     it 'generates a new token' do
@@ -244,9 +234,9 @@ RSpec.describe User, type: :model do
 
   describe '::search' do
     before(:all) do
-      @philip   = create(:philip)
-      @mike     = create(:mike)
-      @stephens = create(:stephens)
+      @philip   = create(:philip,   :with_account)
+      @mike     = create(:mike,     :with_account)
+      @stephens = create(:stephens, :with_account)
     end
 
     after(:all) { DatabaseCleaner.clean_with(:deletion) }

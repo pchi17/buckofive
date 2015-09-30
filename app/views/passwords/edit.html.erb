@@ -3,9 +3,9 @@
 <%= render 'shared/edit_profile_buttons' %>
 
 <div class="col-md-5">
-  <%= form_for current_user, url: profile_password_path, method: :patch do |f| %>
+  <%= form_for current_user.account, url: profile_password_path, method: :patch do |f| %>
     <hr/>
-    <%= render 'shared/error_messages', object: f.object if current_user.errors.any? %>
+    <%= render 'shared/error_messages', object: f.object if f.object.errors.any? %>
 
     <div class="form-group">
       <%= f.label :password, class: 'sr-only' %>
@@ -17,7 +17,7 @@
       <%= f.password_field :password_confirmation, class: 'form-control', placeholder: 'Confirm New Password' %>
     </div>
 
-    <% unless current_user.password_digest.nil? %>
+    <% unless current_user.account.password_digest.nil? %>
       <hr/>
       <div class="form-group">
         <%= f.label :oldpassword, class: 'sr-only' %>

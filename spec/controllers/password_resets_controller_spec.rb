@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe PasswordResetsController, type: :controller do
   before :all do
-    @user = create(:philip)
+    @user = create(:philip, :with_account)
     @user.create_reset_digest
-    @old_password = @user.password
+    @old_password = @user.account.password
     @new_password = @old_password + 'xxx'
   end
 
@@ -45,11 +45,11 @@ RSpec.describe PasswordResetsController, type: :controller do
     end
 
     context 'with a non registered email' do
-      it 'does not send a password_reset email' do		
-        expect {		
-          post :create, password_reset: { email: @user.email + 'xxx' }		
-        }.to_not change(ActionMailer::Base.deliveries, :size)		
-      end		
+      it 'does not send a password_reset email' do
+        expect {
+          post :create, password_reset: { email: @user.email + 'xxx' }
+        }.to_not change(ActionMailer::Base.deliveries, :size)
+      end
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe PasswordResetsController, type: :controller do
 
       context 'with link expired' do
         before(:each) do
-          @user.update_columns(reset_sent_at: 3.hour.ago)
+          @user.account.update_columns(reset_sent_at: 3.hour.ago)
           get :edit, id: @user.reset_token, email: @user.email
         end
 
@@ -111,7 +111,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password and confirmation matches and are valid' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-              user: { password: @new_password, password_confirmation: @new_password }
+              account: { password: @new_password, password_confirmation: @new_password }
           end
 
           it 'updates the password' do
@@ -129,7 +129,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password and confirmation do not match' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-              user: { password: @new_password, password_confirmation: @new_password + 'xxx' }
+              account: { password: @new_password, password_confirmation: @new_password + 'xxx' }
           end
 
           it 'does not reset password' do
@@ -142,7 +142,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password is nil' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-              user: { password: nil, password_confirmation: nil }
+              account: { password: nil, password_confirmation: nil }
           end
 
           it 'does not reset password' do
@@ -155,7 +155,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password is empty' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-              user: { password: '', password_confirmation: '' }
+              account: { password: '', password_confirmation: '' }
           end
 
           it 'does not reset password' do
@@ -168,7 +168,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password is blank' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-            user: { password: ' ' * 7, password_confirmation: ' ' * 7 }
+            account: { password: ' ' * 7, password_confirmation: ' ' * 7 }
           end
 
           it 'does not reset password' do
@@ -181,7 +181,7 @@ RSpec.describe PasswordResetsController, type: :controller do
         context 'when password is too short' do
           before :each do
             patch :update, id: @user.reset_token, email: @user.email,
-              user: { password: '12345', password_confirmation: '12345' }
+              account: { password: '12345', password_confirmation: '12345' }
           end
 
           it 'does not reset password' do
@@ -194,9 +194,9 @@ RSpec.describe PasswordResetsController, type: :controller do
 
       context 'when reset link is expired' do
         before :each do
-          @user.update_columns(reset_sent_at: 3.hour.ago)
+          @user.account.update_columns(reset_sent_at: 3.hour.ago)
           patch :update, id: @user.reset_token, email: @user.email,
-            user: { password: @new_password, password_confirmation: @new_password }
+            account: { password: @new_password, password_confirmation: @new_password }
         end
 
         it { expect(subject).to set_flash[:warning] }
@@ -207,7 +207,7 @@ RSpec.describe PasswordResetsController, type: :controller do
     context 'with invalid reset_token' do
       before :each do
         patch :update, id: @user.reset_token + 'xxx', email: @user.email,
-          user: { password: @new_password, password_confirmation: @new_password }
+          account: { password: @new_password, password_confirmation: @new_password }
       end
 
       it { expect(subject).to set_flash[:danger] }
@@ -216,7 +216,7 @@ RSpec.describe PasswordResetsController, type: :controller do
     context 'with invalid email' do
       before :each do
         patch :update, id: @user.reset_token, email: @user.email + 'xxx',
-          user: { password: @new_password, password_confirmation: @new_password }
+          account: { password: @new_password, password_confirmation: @new_password }
       end
 
       it { expect(subject).to set_flash[:danger] }

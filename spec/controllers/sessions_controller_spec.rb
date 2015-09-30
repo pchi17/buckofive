@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe SessionsController, type: :controller do
-  before(:all) { @user = create(:philip) }
+  before(:all) { @user = create(:philip, :with_account) }
 
   describe 'GET #new' do
     it 'renders the :new template' do
@@ -13,7 +13,7 @@ RSpec.describe SessionsController, type: :controller do
   describe 'POST #create' do
     context 'with valid email and password' do
       before(:all) do
-        @attrs = { email: @user.email, password: @user.password }
+        @attrs = { email: @user.email, password: @user.account.password }
       end
 
       before(:each) { post :create, session: @attrs }
@@ -36,14 +36,14 @@ RSpec.describe SessionsController, type: :controller do
     context 'with valid email and password' do
       context 'with remember_me checked' do
         it 'sets :user_id in cookies' do
-          post :create, session: { email: @user.email, password: @user.password, remember_me: '1'}
+          post :create, session: { email: @user.email, password: @user.account.password, remember_me: '1'}
           expect(cookies.signed[:user_id]).to eq(assigns(:user).id)
         end
       end
 
       context 'with remember_me not checked' do
         it 'does not set :user_id in the cookies' do
-          post :create, session: { email: @user.email, password: @user.password, remember_me: '0'}
+          post :create, session: { email: @user.email, password: @user.account.password, remember_me: '0'}
           expect(cookies.signed[:user_id]).to be_nil
         end
       end
@@ -51,7 +51,7 @@ RSpec.describe SessionsController, type: :controller do
 
     context 'with non-existent email' do
       before(:all) do
-        @attrs = { email: @user.email + 'xxx', password: @user.password }
+        @attrs = { email: @user.email + 'xxx', password: @user.account.password }
       end
 
       before(:each) { post :create, session: @attrs }
@@ -66,7 +66,7 @@ RSpec.describe SessionsController, type: :controller do
 
     context 'with wrong password' do
       before(:all) do
-        @attrs = { email: @user.email, password: @user.password + 'xxx' }
+        @attrs = { email: @user.email, password: @user.account.password + 'xxx' }
       end
 
       before(:each) { post :create, session: @attrs }

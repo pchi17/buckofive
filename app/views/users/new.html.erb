@@ -12,15 +12,17 @@
     <%= f.email_field :email, class: 'form-control', placeholder: 'Email' %>
   </div>
 
-  <div class="form-group">
-    <%= f.label :password, class: 'sr-only' %>
-    <%= f.password_field :password, class: 'form-control', placeholder: 'Password' %>
-  </div>
+  <%= f.fields_for :account do |act| %>
+    <div class="form-group">
+      <%= act.label :password, class: 'sr-only' %>
+      <%= act.password_field :password, class: 'form-control', placeholder: 'Password' %>
+    </div>
 
-  <div class="form-group">
-    <%= f.label :password_confirmation, class: 'sr-only' %>
-    <%= f.password_field :password_confirmation, class: 'form-control', placeholder: 'Password Confirmation' %>
-  </div>
+    <div class="form-group">
+      <%= act.label :password_confirmation, class: 'sr-only' %>
+      <%= act.password_field :password_confirmation, class: 'form-control', placeholder: 'Password Confirmation' %>
+    </div>
+  <% end %>
 
   <div class="form-group">
     <%= f.check_box :remember_me, checked: true %>

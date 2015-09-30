@@ -3,7 +3,7 @@
 <%= render 'shared/edit_profile_buttons' %>
 
 <div class="col-md-5">
-  <%= form_for current_user, url: profile_account_path, method: :patch do |f| %>
+  <%= form_for current_user, url: profile_info_path, method: :patch do |f| %>
     <hr/>
     <%= render 'shared/error_messages', object: f.object if current_user.errors.any? %>
 

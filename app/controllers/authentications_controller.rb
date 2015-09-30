@@ -4,10 +4,10 @@ class AuthenticationsController < ApplicationController
     if logged_in?
       if @authentication = current_user.authentications.find_by(provider: auth_hash.provider, uid: auth_hash.uid)
         current_user.update_columns(
-          name:      auth_hash.info.nickname,
-          image_url: auth_hash.info.image
+          name:  auth_hash.info.nickname,
+          image: auth_hash.info.image
         )
-        current_user.activate_account unless current_user.activated?
+        current_user.activate_account
         flash[:success] = "name and picture synced with your #{auth_hash.provider} account"
         @authentication.update_columns(
           token:  auth_hash.credentials.token,
@@ -15,10 +15,10 @@ class AuthenticationsController < ApplicationController
         )
       else
         current_user.update_columns(
-          name:      auth_hash.info.nickname,
-          image_url: auth_hash.info.image
+          name:  auth_hash.info.nickname,
+          image: auth_hash.info.image
         )
-        current_user.activate_account unless current_user.activated?
+        current_user.activate_account
         flash[:success] = "#{auth_hash.provider} account connected"
         current_user.authentications.create(
           provider: auth_hash.provider,
@@ -32,8 +32,8 @@ class AuthenticationsController < ApplicationController
       if @authentication = Authentication.find_by(provider: auth_hash.provider, uid: auth_hash.uid)
         @user = @authentication.user
         @user.update_columns(
-          name:      auth_hash.info.nickname,
-          image_url: auth_hash.info.image
+          name:  auth_hash.info.nickname,
+          image: auth_hash.info.image
         )
         @authentication.update_columns(
           token:  auth_hash.credentials.token,
@@ -45,10 +45,10 @@ class AuthenticationsController < ApplicationController
       else
         @user = User.new(
           name:      auth_hash.info.nickname,
-          image_url: auth_hash.info.image,
-          activated:    true,
-          activated_at: Time.now
+          image: auth_hash.info.image,
+          activated:    true
         )
+        @user.build_account(activated_at: Time.now)
         @user.save(validate: false)
         @user.authentications.create(
           provider: auth_hash.provider,

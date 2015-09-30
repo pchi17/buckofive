@@ -11,7 +11,7 @@ require 'rails_helper'
 #   end
 # end
 RSpec.describe SessionsHelper, type: :helper do
-  before(:all)  { @user = create(:philip) }
+  before(:all)  { @user = create(:philip, :with_account) }
 
   describe '#logged_in?' do
     it 'returns false when no one is logged in' do
@@ -66,7 +66,7 @@ RSpec.describe SessionsHelper, type: :helper do
   describe '#remember' do
     before(:each) { remember(@user) }
     it 'stores a remember_digest in the database' do
-      expect(@user.remember_digest).to_not be_nil
+      expect(@user.account.remember_digest).to_not be_nil
     end
     it 'sets a signed :user_id in cookies' do
       expect(cookies.signed[:user_id]).to eq(@user.id)
@@ -83,7 +83,7 @@ RSpec.describe SessionsHelper, type: :helper do
     end
 
     it 'resets remember_digest to nil in the database' do
-      expect(@user.remember_digest).to be_nil
+      expect(@user.account.remember_digest).to be_nil
     end
     it 'deletes cookies[:user_id]' do
       expect(cookies.signed[:user_id]).to be_nil
