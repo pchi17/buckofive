@@ -53,7 +53,7 @@ mike.polls.create!(content: 'Will you drive a BMW?', choices_attributes: {
   }
 )
 
-User.all.each do |user|
+User.where(activated: true).each do |user|
   Poll.all.each do |poll|
     poll.choices.sample.votes.create(user: user)
   end

@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 20150930075347) do
     t.integer  "user_id",                 null: false
     t.string   "content",                 null: false
     t.integer  "total_votes", default: 0, null: false
+    t.integer  "flags",       default: 0, null: false
     t.string   "picture"
     t.datetime "created_at",              null: false
     t.datetime "updated_at",              null: false

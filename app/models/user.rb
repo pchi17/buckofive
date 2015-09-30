@@ -108,11 +108,6 @@ class User < ActiveRecord::Base
 
   # class methods
   class << self
-    def search(term, page, per_page = 10)
-      users = term ? User.where("LOWER(name) LIKE :term", term: "%#{term.downcase}%") : User.all
-      users.paginate(page: page, per_page: per_page)
-    end
-
     def new_token
       SecureRandom.urlsafe_base64
     end
@@ -124,6 +119,15 @@ class User < ActiveRecord::Base
         cost = BCrypt::Engine.cost
       end
       BCrypt::Password.create(token, cost: cost)
+    end
+
+    def search(term, page, per_page = 10)
+      users = term ? User.where("LOWER(name) LIKE :term", term: "%#{term.downcase}%") : User.all
+      users.paginate(page: page, per_page: per_page)
+    end
+
+    def admins
+      where("admin AND email IS NOT NULL")
     end
   end
 

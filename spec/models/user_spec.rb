@@ -263,4 +263,19 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe '::admin' do
+    before(:all) do
+      @philip   = create(:philip,   :with_account, :admin)
+      @mike     = build(:mike,     :with_account, :admin, email: nil)
+      @mike.save(validate: false)
+      @stephens = create(:stephens, :with_account)
+    end
+
+    after(:all) { DatabaseCleaner.clean_with(:deletion) }
+
+    it 'only returns admins with emails' do
+      expect(User.admins).to eq([@philip])
+    end
+  end
 end

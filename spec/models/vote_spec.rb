@@ -51,10 +51,10 @@ RSpec.describe Vote, type: :model do
 
     it 'updates counter cache' do
       subject.save
-      expect(choice).to eq(Choice.first)
       expect {
         mike.destroy
-      }.to change { Choice.first.votes_count }.by(-1)
+        choice.reload
+      }.to change { choice.votes_count }.by(-1)
     end
   end
 end

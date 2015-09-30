@@ -10,7 +10,9 @@ Rails.application.routes.draw do
   resources :users,               only: [:new, :create, :index, :destroy]
   resources :account_activations, only: [:create, :edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
-  resources :polls, except: [:edit, :update]
+  resources :polls, except: [:edit, :update] do
+    resource :flag, only: :create
+  end
   resources :votes, only: :create
 
   resource :profile, only: [:show, :edit] do

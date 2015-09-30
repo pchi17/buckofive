@@ -4,9 +4,7 @@ RSpec.describe UserMailer, type: :mailer do
   before(:all) { @user = create(:philip, :with_account) }
 
   describe "account_activation" do
-    before :all do
-      @mail = UserMailer.account_activation(@user)
-    end
+    before(:all) { @mail = UserMailer.account_activation(@user) }
 
     context 'when rendering header' do
       it 'renders the subject' do
@@ -31,9 +29,7 @@ RSpec.describe UserMailer, type: :mailer do
   end
 
   describe "password_reset" do
-    before :all do
-      @mail = UserMailer.password_reset(@user)
-    end
+    before(:all) { @mail = UserMailer.password_reset(@user) }
 
     context 'when rendering header' do
       it 'renders the correct subject' do

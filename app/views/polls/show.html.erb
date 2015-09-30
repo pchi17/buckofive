@@ -20,7 +20,10 @@
     <%= render 'polls/partials/results' %>
   <% end %>
 
-  <% if logged_in? && (@poll.created_by?(current_user) || current_user.admin?) %>
-    <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>
+  <% if logged_in? %>
+    <%= link_to 'Flag for Abuse', poll_flag_path(@poll), method: :post, remote: true, data: { confirm: 'are you sure?' }, class: 'btn btn-danger' %>
+    <% if @poll.created_by?(current_user) || current_user.admin? %>
+      <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>
+    <% end %>
   <% end %>
 </div>
