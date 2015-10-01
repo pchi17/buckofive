@@ -7,7 +7,17 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-  <%= render 'layouts/header' %>
+  <header class="navbar navbar-fixed-top navbar-default">
+    <div class="container">
+      <%= link_to "Buck O Five", root_path, id: 'logo' %>
+      <ul class="nav nav-pills navbar-right">
+        <li><%= link_to 'Home', root_path %></li>
+        <li><%= link_to 'About',   about_path %></li>
+        <li><%= link_to 'Help',    help_path %></li>
+        <li><%= link_to 'Contact', contact_path %></li>
+      </ul>
+    </div>
+  </header>
 
   <div class="container">
     <div class="row">
@@ -28,5 +38,12 @@
       </div>
     </div>
   </div>
+
+  <footer class="nav navbar-fixed-bottom navbar-default">
+      <small>
+        This projected is created and maintained by <a href="https://twitter.com/pchi17" target="_blank">Pengfei Philip Chi</a>.
+        click <a href="https://github.com/pchi17/buckofive" target="_blank">here</a> to see the source code.
+      </small>
+  </footer>
 </body>
 </html>

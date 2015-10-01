@@ -2,11 +2,12 @@ Rails.application.routes.draw do
   root 'polls#index'
   get    '/about'   => 'static_pages#about'
   get    '/help'    => 'static_pages#help'
-  get    '/contact' => 'static_pages#contact'
   get    '/signup'  => 'users#new'
   get    '/login'   => 'sessions#new'
   post   '/login'   => 'sessions#create'
   delete '/logout'  => 'sessions#destroy'
+  get    '/contact' => 'contacts#new'
+  post   '/contact' => 'contacts#create'
   resources :users,               only: [:new, :create, :index, :destroy]
   resources :account_activations, only: [:create, :edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]

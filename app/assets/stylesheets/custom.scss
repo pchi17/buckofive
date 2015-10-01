@@ -57,6 +57,15 @@ header {
   }
 }
 
+// footer
+footer {
+  text-align: center;
+  padding: 10px 0;
+  small {
+    color: #888;
+  }
+}
+
 //user panel
 #user-panel {
   text-align: center;
@@ -125,6 +134,7 @@ header {
 
 textarea {
   width: 100%;
+  resize: vertical;
 }
 
 .poll {

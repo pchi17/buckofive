@@ -5,4 +5,11 @@ class AdminMailerPreview < ActionMailer::Preview
     poll      = Poll.find(1)
     AdminMailer.flag_notification(recipient, poll)
   end
+
+  def contact_message
+    sender_email   = User.find(2).email
+    receiver_email = User.find(1).email
+    message  = 'How are you doing?'
+    AdminMailer.contact_message(sender_email, receiver_email, message)
+  end
 end

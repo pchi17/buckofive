@@ -1,4 +1,5 @@
 <% content_for :title, 'Log In '%>
+
 <%= form_for :session, url: login_path, html: { id: 'new_session' } do |f| %>
   <div class="form-group">
     <%= f.label :email, class: 'sr-only' %>
