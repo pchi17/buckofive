@@ -42,7 +42,7 @@ class PollsController < ApplicationController
     if @poll.created_by?(current_user) || current_user.admin?
       @poll.delete
       flash[:info] = 'poll deleted'
-      redirect_to profile_path
+      redirect_to flags_path
     else
       redirect_to @poll
     end

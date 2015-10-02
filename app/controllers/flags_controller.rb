@@ -1,6 +1,7 @@
 class FlagsController < ApplicationController
   before_action :logged_in_user?
-  before_action :activated_current_user?
+  before_action :activated_current_user?, only: :create
+  before_action :admin_user?,             only: :index
 
   def create
     poll = Poll.find(params[:poll_id])
@@ -13,5 +14,9 @@ class FlagsController < ApplicationController
       end
       format.js
     end
+  end
+
+  def index
+    @polls = Poll.flagged
   end
 end

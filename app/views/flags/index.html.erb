@@ -1,0 +1,24 @@
+<% content_for :title, 'Flagged Polls' %>
+
+<table class="table table-hover table-response">
+  <thead>
+    <tr>
+      <th>Poll</th>
+      <th>Created At</th>
+      <th>Votes</th>
+      <th>Flags</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @polls.each do |poll|%>
+      <tr>
+        <td><%= link_to poll.content, poll_path(poll) %></td>
+        <td><%= poll.created_at %></td>
+        <td><%= poll.total_votes %></td>
+        <td><%= poll.flags %></td>
+        <td><%= link_to 'delete', poll_path(poll), method: :delete, class: 'btn btn-danger btn-xs' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

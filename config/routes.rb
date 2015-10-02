@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   delete '/logout'  => 'sessions#destroy'
   get    '/contact' => 'contacts#new'
   post   '/contact' => 'contacts#create'
+  get    '/flags'   => 'flags#index'
   resources :users,               only: [:new, :create, :index, :destroy]
   resources :account_activations, only: [:create, :edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]

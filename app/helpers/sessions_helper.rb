@@ -53,9 +53,13 @@ module SessionsHelper
 
     # check if the logged in user is activated
     def activated_current_user?
-      unless current_user.activated
+      unless current_user.activated?
         flash[:warning]  = "please activate your account first"
         redirect_to help_path(anchor: 'activation')
       end
+    end
+
+    def admin_user?
+      redirect_to profile_path unless current_user.admin?
     end
 end

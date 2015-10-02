@@ -85,6 +85,10 @@ class Poll < ActiveRecord::Base
       end
       polls.paginate(page: page, per_page: per_page)
     end
+
+    def flagged
+      Poll.where("flags > 0").order(flags: :desc)
+    end
   end
 
   def picture_size_mb

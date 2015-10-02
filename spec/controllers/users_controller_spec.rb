@@ -14,6 +14,7 @@ RSpec.describe UsersController, type: :controller do
   end
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
+  it { expect(subject).to use_before_action(:admin_user?) }
 
   describe 'GET #new' do
     before(:each) { get :new }
@@ -106,8 +107,8 @@ RSpec.describe UsersController, type: :controller do
   describe 'GET #index' do
     create_users
 
-    context 'when logged in' do
-      before(:each) { login(@mike) }
+    context 'when logged in as admin' do
+      before(:each) { login(@philip_admin) }
 
       context 'with no search_term' do
         it 'finds all users' do
@@ -127,6 +128,14 @@ RSpec.describe UsersController, type: :controller do
         get :index
         expect(subject).to render_template :index
       }
+    end
+
+    context 'when logged in as non admin' do
+      it 'redirect_to profile_path' do
+        login(@mike)
+        get :index
+        expect(subject).to redirect_to profile_path
+      end
     end
 
     context 'when not logged in' do

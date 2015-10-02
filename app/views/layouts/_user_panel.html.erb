@@ -9,9 +9,14 @@
 
     <%= link_to 'Profile',  profile_path,      class: 'btn btn-primary btn-inline-block' %>
     <%= link_to 'Settings', edit_profile_path, class: 'btn btn-primary btn-inline-block' %>
-    <%= link_to 'Users',    users_path,        class: 'btn btn-primary btn-inline-block' %>
-
     <%= link_to 'Log Out',  logout_path, class: 'btn btn-danger btn-inline-block', method: :delete %>
+
+    <% if current_user.admin? %>
+      <hr/>
+      <div><strong>Admin Section</strong></div><br/>
+      <%= link_to 'Users', users_path, class: 'btn btn-primary btn-inline-block' %>
+      <%= link_to 'Flags', flags_path, class: 'btn btn-primary btn-inline-block'%>
+    <% end %>
 
 <% else %>
 

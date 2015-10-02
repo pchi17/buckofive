@@ -308,7 +308,7 @@ RSpec.describe PollsController, type: :controller do
         end
         it 'redirect_to root_path' do
           delete :destroy, id: poll.id
-          expect(subject).to redirect_to profile_path
+          expect(subject).to redirect_to flags_path
         end
       end
 
@@ -325,7 +325,7 @@ RSpec.describe PollsController, type: :controller do
 
           it 'redirect_to root_path' do
             delete :destroy, id: @poll.id
-            expect(subject).to redirect_to profile_path
+            expect(subject).to redirect_to flags_path
           end
         end
 

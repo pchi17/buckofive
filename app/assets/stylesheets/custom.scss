@@ -204,7 +204,6 @@ textarea {
 }
 
 #comments {
-  clear: both;
   list-style: none;
   padding: 0;
   li {
@@ -213,19 +212,23 @@ textarea {
     .portrait {
       float: left;
       margin: 5px 10px;
-      vertical-align: middle;
     }
     .user {
       font-weight: 700;
       margin-bottom: 5px;
     }
+    .content {
+      margin-left: 70px;
+      overflow: auto;
+      word-wrap: break-word;
+    }
     .timestamp {
-      margin-top: 5px;
-      color: #666;
+      margin-left: 70px;
+      color: #999;
     }
     .delete {
       float: right;
-      margin: 0px 20px
+      margin-right: 20px;
     }
   }
 }
