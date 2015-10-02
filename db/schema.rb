@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150930075347) do
+ActiveRecord::Schema.define(version: 20151001185329) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,24 +41,35 @@ ActiveRecord::Schema.define(version: 20150930075347) do
   add_index "authentications", ["user_id"], name: "index_authentications_on_user_id", using: :btree
 
   create_table "choices", force: :cascade do |t|
-    t.integer  "poll_id",                 null: false
-    t.string   "value",                   null: false
-    t.integer  "votes_count", default: 0, null: false
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.integer  "poll_id",                            null: false
+    t.string   "value",       limit: 50,             null: false
+    t.integer  "votes_count",            default: 0, null: false
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
   end
 
   add_index "choices", ["poll_id", "value"], name: "index_choices_on_poll_id_and_value", unique: true, using: :btree
   add_index "choices", ["poll_id"], name: "index_choices_on_poll_id", using: :btree
 
+  create_table "comments", force: :cascade do |t|
+    t.integer  "user_id",                null: false
+    t.integer  "poll_id",                null: false
+    t.string   "content",    limit: 150, null: false
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
+  add_index "comments", ["poll_id"], name: "index_comments_on_poll_id", using: :btree
+  add_index "comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
+
   create_table "polls", force: :cascade do |t|
-    t.integer  "user_id",                 null: false
-    t.string   "content",                 null: false
-    t.integer  "total_votes", default: 0, null: false
-    t.integer  "flags",       default: 0, null: false
+    t.integer  "user_id",                             null: false
+    t.string   "content",     limit: 250,             null: false
+    t.integer  "total_votes",             default: 0, null: false
+    t.integer  "flags",                   default: 0, null: false
     t.string   "picture"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   add_index "polls", ["content"], name: "index_polls_on_content", unique: true, using: :btree
@@ -90,6 +101,8 @@ ActiveRecord::Schema.define(version: 20150930075347) do
   add_foreign_key "accounts", "users", on_delete: :cascade
   add_foreign_key "authentications", "users", on_delete: :cascade
   add_foreign_key "choices", "polls", on_delete: :cascade
+  add_foreign_key "comments", "polls", on_delete: :cascade
+  add_foreign_key "comments", "users", on_delete: :cascade
   add_foreign_key "polls", "users", on_delete: :cascade
   add_foreign_key "votes", "choices", on_delete: :cascade
   add_foreign_key "votes", "users", on_delete: :cascade

@@ -4,7 +4,7 @@ RSpec.describe PollsController, type: :controller do
   let(:admin)            { create(:philip,   :with_account, :admin) }
   let(:activated_user)   { create(:mike,     :with_account, :activated) }
   let(:unactivated_user) { create(:stephens, :with_account) }
-  let(:poll) { build(:poll, user: admin) }
+  let(:poll) { build(:poll, creator: admin) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
   it { expect(subject).to use_before_action(:activated_current_user?) }
@@ -69,7 +69,6 @@ RSpec.describe PollsController, type: :controller do
           end
 
           it 'creates a @poll associated with current_user' do
-            expect(assigns(:poll).user).to eq(current_user)
             expect(assigns(:poll).creator).to eq(current_user)
           end
 
@@ -214,9 +213,9 @@ RSpec.describe PollsController, type: :controller do
   describe 'GET #index' do
     before(:all) do
       user = create(:philip, :with_account, :activated)
-      @poll1 = create(:poll, content: 'blah blah abc', user: user)
-      @poll2 = create(:poll, content: 'blah blah xyz', user: user)
-      @poll3 = create(:poll, content: 'blah blah ccc', user: user)
+      @poll1 = create(:poll, content: 'blah blah abc', creator: user)
+      @poll2 = create(:poll, content: 'blah blah xyz', creator: user)
+      @poll3 = create(:poll, content: 'blah blah ccc', creator: user)
     end
 
     after(:all) { DatabaseCleaner.clean_with(:deletion) }
@@ -317,7 +316,7 @@ RSpec.describe PollsController, type: :controller do
         before(:each) { login(activated_user) }
 
         context 'when deleting own poll' do
-          before(:each) { @poll = create(:poll, content: 'what is this?', user: activated_user) }
+          before(:each) { @poll = create(:poll, content: 'what is this?', creator: activated_user) }
           it 'deletes the poll' do
             expect {
               delete :destroy, id: @poll.id
@@ -339,7 +338,7 @@ RSpec.describe PollsController, type: :controller do
 
           it 'redirect_to root_path' do
             delete :destroy, id: poll.id
-            expect(subject).to redirect_to profile_path
+            expect(subject).to redirect_to @poll
           end
         end
       end

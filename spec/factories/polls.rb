@@ -18,7 +18,7 @@
 
 FactoryGirl.define do
   factory :poll do
-    user
+    creator
     content "Is admin cool?"
 
     after(:build) do |poll|

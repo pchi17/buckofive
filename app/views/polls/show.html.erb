@@ -1,10 +1,4 @@
 <% content_for :title, "Poll" %>
-<% unless logged_in? && current_user.activated? %>
-  <div class="alert alert-warning">
-    log in and activated your account to create and vote on polls.
-  </div>
-<% end %>
-
 <div class="poll">
   <div class="poll-question">
     <% if @poll.picture? %>
@@ -13,17 +7,26 @@
     <% end %>
     <%= @poll.content %>
   </div>
-
-  <% if logged_in? && current_user.activated && !@poll.voted_by?(current_user) %>
-    <%= render 'polls/partials/choices'%>
+  <% if logged_in? && current_user.activated? %>
+    <% if @poll.voted_by?(current_user) %>
+      <%= render 'polls/partials/results' %>
+    <% else %>
+      <%= render 'polls/partials/choices' %>
+    <% end %>
+    <%= link_to 'Flag for Abuse', poll_flag_path(@poll), method: :post, remote: true, data: { confirm: 'are you sure you want to flag this poll for abuse?' }, class: 'btn btn-danger' %>
+    <% if @poll.created_by?(current_user) || current_user.admin? %>
+      <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, data: { confirm: 'are you sure you want to delete this poll?'}, class: 'btn btn-danger' %>
+    <% end %>
+    <hr/>
+    <%= render 'polls/partials/new_comment'%>
+    <ul id="comments">
+      <%= render @comments %>
+    </ul>
+    <%= will_paginate @comments %>
   <% else %>
     <%= render 'polls/partials/results' %>
-  <% end %>
-
-  <% if logged_in? %>
-    <%= link_to 'Flag for Abuse', poll_flag_path(@poll), method: :post, remote: true, data: { confirm: 'are you sure?' }, class: 'btn btn-danger' %>
-    <% if @poll.created_by?(current_user) || current_user.admin? %>
-      <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, class: 'btn btn-danger' %>
-    <% end %>
+    <div class="alert alert-warning">
+      <%= link_to 'login', help_path(anchor: 'signup-login') %> and <%= link_to 'activate', help_path(anchor: 'activation') %> your account to create, vote and comment on polls.
+    </div>
   <% end %>
 </div>

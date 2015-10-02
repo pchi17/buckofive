@@ -17,8 +17,9 @@
 #
 
 class Poll < ActiveRecord::Base
-  belongs_to :user,  inverse_of: :polls
-  has_many :choices, inverse_of: :poll
+  belongs_to :creator, inverse_of: :polls, class_name: 'User', foreign_key: 'user_id'
+  has_many :choices,  inverse_of: :poll
+  has_many :comments, inverse_of: :poll
   has_many :votes, through: :choices
   accepts_nested_attributes_for :choices, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? }
 
@@ -28,15 +29,13 @@ class Poll < ActiveRecord::Base
 
   before_validation :strip_content, :check_choices
 
-  validates :user,    presence: true
+  validates :creator, presence: true
   validates :content, presence: true, length: { maximum: 250 }, uniqueness: { case_sensitive: false }
-  validate  :user_activated
+  validate  :creator_activated
   validate  :picture_size
 
-  alias creator user
-
   def get_choice_ids(user)
-    votes.where(user: user).pluck(:choice_id)
+    votes.where(voter: user).pluck(:choice_id)
   end
 
   def get_choices(user)
@@ -60,7 +59,7 @@ class Poll < ActiveRecord::Base
 
   class << self
     def created_by(user)
-      where(user: user)
+      where(creator: user)
     end
 
     def voted_by(user)
@@ -120,9 +119,9 @@ class Poll < ActiveRecord::Base
       end
     end
 
-    def user_activated
+    def creator_activated
       unless creator && creator.activated?
-        errors.add(:user, 'must be activated')
+        errors.add(:creator, 'must be activated')
       end
     end
 end

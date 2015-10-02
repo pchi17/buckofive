@@ -4,7 +4,7 @@ module ApplicationHelper
     title.blank? ? base : "#{title} | #{base}"
   end
 
-  def profile_picture(user, size = 80)
+  def profile_picture(user, size = 50)
     unless source = user.image
       gravatar_id = Digest::MD5::hexdigest(user.email)
       source      = "https://secure.gravatar.com/avatar/#{gravatar_id}?#{size}"

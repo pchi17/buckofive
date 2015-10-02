@@ -1,0 +1,7 @@
+$("ul#comments").prepend("<%= escape_javascript(render('comments/comment', comment: @comment))%>");
+var form    = $('form#new_comment');
+var content = form.find("#comment_content");
+form.find("#error_list").remove();
+form.find(".field_with_errors").children().unwrap();
+content.val("");
+content.focus();

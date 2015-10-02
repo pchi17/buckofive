@@ -99,3 +99,24 @@ var checkForErrors = function(e, form) {
     renderErrorMessage(form);
   }
 }
+
+// new comment
+var checkComment = function() {
+  var commentCount  = $("form#new_comment").find("span#comment-count");
+  var commentLength = function() {
+    var commentContent = $("form#new_comment").find("textarea#comment_content");
+    return $.trim(commentContent.val()).length;
+  };
+  commentCount.text(140 - commentLength());
+  var submitBtn = $("form#new_comment").find("input[type=submit]");
+
+  if(commentLength() > 140) {
+    submitBtn.attr("disabled", "disabled");
+    commentCount.addClass('invalid');
+    commentCount.removeClass('valid');
+  } else {
+    submitBtn.removeAttr("disabled");
+    commentCount.addClass('valid');
+    commentCount.removeClass('invalid');
+  }  
+};

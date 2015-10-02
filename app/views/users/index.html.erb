@@ -15,7 +15,7 @@
 <table class="table table-responsive table-hover">
   <% @users.each do |user| %>
     <tr>
-      <td><%= profile_picture(user, 50) %></td>
+      <td><%= profile_picture(user) %></td>
       <td class="left-align"><%= user.name %></td>
       <% if current_user.admin? %>
         <td class="center-align">

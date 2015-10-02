@@ -20,13 +20,15 @@ class User < ActiveRecord::Base
   attr_accessor :remember_token, :activation_token, :reset_token
   has_one  :account,         inverse_of: :user
   has_many :authentications, inverse_of: :user
-  has_many :polls,           inverse_of: :user
-  has_many :votes,           inverse_of: :user, dependent: :destroy
+  has_many :polls,           inverse_of: :creator
+  has_many :comments,        inverse_of: :user
+  has_many :votes,           inverse_of: :voter, dependent: :destroy
   has_many :choices, through: :votes
+
 
   accepts_nested_attributes_for :account
 
-  default_scope { order(name: :asc) }
+  default_scope lambda { order(name: :asc) }
 
   before_save { email.downcase! if email }
 

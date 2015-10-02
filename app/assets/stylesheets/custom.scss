@@ -39,6 +39,7 @@ $darker-twitter-color: #4c9bd6;
 body {
   font-family: Roboto;
   padding-top: 60px;
+  padding-bottom: 60px;
 }
 
 // header
@@ -59,6 +60,7 @@ header {
 
 // footer
 footer {
+  height: 40px;
   text-align: center;
   padding: 10px 0;
   small {
@@ -128,7 +130,9 @@ footer {
   }
   .left-align {
     text-align: left;
-    vertical-align: middle;
+  }
+  .right-align {
+    text-align: right;
   }
 }
 
@@ -139,7 +143,6 @@ textarea {
 
 .poll {
   box-shadow: 5px 5px 5px #888;
-  margin-top: 40px;
   padding: 20px;
 }
 .poll-question {
@@ -177,7 +180,52 @@ textarea {
   width: 15%;
 }
 
-input[type="file"] {
-  margin: 0 10px;
-  display: inline;
+#new_comment {
+  display: table;
+  width: 100%;
+  margin-top: 15px;
+  .form-group {
+    margin-bottom: 5px;
+  }
+  #comment-count {
+    position: relative;
+    margin-right: 10px;
+  }
+  #comment-submit {
+    float: right;
+    margin-bottom: 5px;
+  }
+  .valid {
+    color: #999;
+  }
+  .invalid {
+    color: $brand-danger;
+  }
+}
+
+#comments {
+  clear: both;
+  list-style: none;
+  padding: 0;
+  li {
+    padding: 5px;
+    border-top: 1px solid #aaa;
+    .portrait {
+      float: left;
+      margin: 5px 10px;
+      vertical-align: middle;
+    }
+    .user {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .timestamp {
+      margin-top: 5px;
+      color: #666;
+    }
+    .delete {
+      float: right;
+      margin: 0px 20px
+    }
+  }
 }

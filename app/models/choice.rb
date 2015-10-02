@@ -20,6 +20,7 @@ class Choice < ActiveRecord::Base
 
   belongs_to :poll,  inverse_of: :choices
   has_many   :votes, inverse_of: :choice
+  has_many   :voters, through: :votes, class_name: 'User', foreign_key: 'user_id'
 
   before_validation { value.strip! if value }
 

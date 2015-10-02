@@ -19,7 +19,7 @@ require 'rails_helper'
 
 RSpec.describe Choice, type: :model do
   let(:user) { create(:philip, :with_account, :activated) }
-  let(:poll) { build(:poll, user: user) }
+  let(:poll) { build(:poll, creator: user) }
   subject { poll.choices.first }
 
   it 'has valid factory' do

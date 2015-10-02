@@ -32,7 +32,9 @@ class PollsController < ApplicationController
   end
 
   def show
-    @poll = Poll.find(params[:id])
+    @poll     = Poll.find(params[:id])
+    @comment  = @poll.comments.build
+    @comments = @poll.comments.paginate(page: params[:page], per_page: 10)
   end
 
   def destroy
@@ -40,8 +42,10 @@ class PollsController < ApplicationController
     if @poll.created_by?(current_user) || current_user.admin?
       @poll.delete
       flash[:info] = 'poll deleted'
+      redirect_to profile_path
+    else
+      redirect_to @poll
     end
-    redirect_to profile_path
   end
 
   private

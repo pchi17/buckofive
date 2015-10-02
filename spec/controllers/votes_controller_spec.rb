@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe VotesController, type: :controller, isolation: true do
   let(:philip) { create(:philip, :with_account, :activated) }
   let(:mike)   { create(:mike,   :with_account) }
-  let(:poll)   { create(:poll, user: philip) }
+  let(:poll)   { create(:poll, creator: philip) }
   let(:choice) { poll.choices.first }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
@@ -61,7 +61,7 @@ RSpec.describe VotesController, type: :controller, isolation: true do
     context 'with duplicate vote' do
       it 'does not create a vote' do
         login(philip)
-        create(:vote, user: philip, choice: choice)
+        create(:vote, voter: philip, choice: choice)
         expect {
           post :create, poll_id: poll.id, choice_id: choice.id
         }.to_not change { Vote.count }

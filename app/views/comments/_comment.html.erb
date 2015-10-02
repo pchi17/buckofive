@@ -1,0 +1,9 @@
+<li id="comment-<%= comment.id %>">
+  <%= profile_picture(comment.user)%>
+  <div class="user"><%= comment.user.name %></div>
+  <div class="content"><%= comment.content %></div>
+  <span class="timestamp"><%= time_ago_in_words(comment.created_at) %></span>
+  <% if comment.created_by?(current_user) || current_user.admin? %>
+    <span class="delete"><%= link_to 'delete', poll_comment_path(@poll, comment), method: :delete, remote: true %></span>
+  <% end %>
+</li>

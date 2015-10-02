@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe AdminMailer, type: :mailer do
     let(:philip) { create(:philip, :with_account, :admin) }
-    let(:poll)   { create(:poll, user: philip) }
+    let(:poll)   { create(:poll, creator: philip) }
 
   describe 'flag_notification' do
     let(:mail) { AdminMailer.flag_notification(philip, poll) }

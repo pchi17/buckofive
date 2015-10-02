@@ -17,7 +17,7 @@
 #
 
 FactoryGirl.define do
-  factory :user do
+  factory :user, aliases: [:creator, :voter] do
     factory :philip do
       name 'Philip'
       email 'philip@example.com'

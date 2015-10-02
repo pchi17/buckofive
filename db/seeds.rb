@@ -19,7 +19,16 @@ User.create!(
     password_confirmation: 'coolkid'
   }
 )
-
+User.create!(
+  name:  'Stephens',
+  email: 'stephens@example.com',
+  activated: true,
+  admin:     true,
+  account_attributes: {
+    password:              'coolkid',
+    password_confirmation: 'coolkid'
+  }
+)
 # seed 30 normal users
 30.times do |i|
   User.create!(
@@ -34,8 +43,9 @@ User.create!(
 end
 
 # seed polls
-me   = User.find_by(email: 'philip@example.com')
-mike = User.find_by(email: 'mike@example.com')
+me       = User.find_by(email: 'philip@example.com')
+mike     = User.find_by(email: 'mike@example.com')
+stephens = User.find_by(email: 'stephens@example.com')
 
 me.polls.create!(content: 'Who will win Premier League this year?', choices_attributes: {
     '0' => { value: 'Arsenal' },
@@ -46,15 +56,27 @@ me.polls.create!(content: 'Who will win Premier League this year?', choices_attr
   }
 )
 
-mike.polls.create!(content: 'Will you drive a BMW?', choices_attributes: {
+mike.polls.create!(content: 'Is admin cool?', choices_attributes: {
     '0' => { value: 'yes' },
     '1' => { value: 'no' },
     '2' => { value: 'I dunno?'}
   }
 )
+stephens.polls.create(content: 'Are you going out tonight?', choices_attributes: {
+    '0' => { value: 'yes' },
+    '2' => { value: 'no' },
+    '3' => { value: 'maybe' }
+  }
+)
 
-User.where(activated: true).each do |user|
-  Poll.all.each do |poll|
-    poll.choices.sample.votes.create(user: user)
+User.where(activated: true).find_each do |user|
+  Poll.find_each do |poll|
+    poll.choices.sample.votes.create(voter: user)
+  end
+end
+
+User.where(activated: true).take(20).each do |user|
+  Poll.find_each do |poll|
+    user.comments.create!(poll: poll, content: Faker::Lorem.sentence)
   end
 end

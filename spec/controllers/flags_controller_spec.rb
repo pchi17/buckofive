@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe FlagsController, type: :controller do
   before(:all) do
     @philip = create(:philip, :with_account, :activated)
-    @poll   = create(:poll, user: @philip)
+    @poll   = create(:poll, creator: @philip)
   end
 
   before(:each) do |example|

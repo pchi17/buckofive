@@ -2,7 +2,7 @@ class CreateChoices < ActiveRecord::Migration
   def change
     create_table :choices do |t|
       t.references :poll,     null: false, index: true
-      t.string :value,        null: false
+      t.string     :value,    null: false, limit: 50
       t.integer :votes_count, null: false, default: 0
 
       t.timestamps null: false
