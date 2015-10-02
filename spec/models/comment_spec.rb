@@ -12,17 +12,17 @@ RSpec.describe Comment, type: :model do
 
   it { expect(subject).to validate_presence_of :user }
   it { expect(subject).to validate_presence_of :poll }
-  it { expect(subject).to validate_presence_of :content }
-  it { expect(subject).to validate_length_of(:content).is_at_most(140) }
+  it { expect(subject).to validate_presence_of :message }
+  it { expect(subject).to validate_length_of(:message).is_at_most(140) }
   it 'validates user is activated' do
     expect(build(:comment, user: mike, poll: poll)).to be_invalid
   end
 
   describe 'before_validation' do
-    it 'strips content' do
-      subject.content = "   spaces!  \r\n"
+    it 'strips message' do
+      subject.message = "   spaces!  \r\n"
       subject.save
-      expect(subject.content).to eq('spaces!')
+      expect(subject.message).to eq('spaces!')
     end
   end
 

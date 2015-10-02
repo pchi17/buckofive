@@ -77,6 +77,6 @@ end
 
 User.where(activated: true).take(20).each do |user|
   Poll.find_each do |poll|
-    user.comments.create!(poll: poll, content: Faker::Lorem.sentence)
+    user.comments.create!(poll: poll, message: Faker::Lorem.sentence)
   end
 end

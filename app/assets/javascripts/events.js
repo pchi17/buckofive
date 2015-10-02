@@ -1,3 +1,6 @@
+// note: because Turbolinks ignores document.ready event, binding events to specific elements may never get attached
+// therefore events are bind to the document itself.
+
 // signup form validations
 $(document).on("submit", "form#new_user", function(evt) {
   setupRemoveUnwrap();

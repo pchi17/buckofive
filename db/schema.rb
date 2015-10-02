@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 20151001185329) do
   create_table "comments", force: :cascade do |t|
     t.integer  "user_id",                null: false
     t.integer  "poll_id",                null: false
-    t.string   "content",    limit: 150, null: false
+    t.string   "message",    limit: 140, null: false
     t.datetime "created_at",             null: false
     t.datetime "updated_at",             null: false
   end

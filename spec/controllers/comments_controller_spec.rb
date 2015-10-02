@@ -17,7 +17,7 @@ RSpec.describe CommentsController, type: :controller do
         before(:each) do |example|
           login(mike)
           unless example.metadata[:skip_before]
-            post :create, poll_id: poll, comment: { content: 'hello' }
+            post :create, poll_id: poll, comment: { message: 'hello' }
           end
         end
         it 'creates finds the poll' do
@@ -28,7 +28,7 @@ RSpec.describe CommentsController, type: :controller do
         end
         it 'creates a new poll', skip_before: true do
           expect {
-            post :create, poll_id: poll, comment: { content: 'hello' }
+            post :create, poll_id: poll, comment: { message: 'hello' }
           }.to change { Comment.count }.by(1)
         end
         it { expect(subject).to redirect_to poll }
@@ -38,7 +38,7 @@ RSpec.describe CommentsController, type: :controller do
         before(:each) do |example|
           login(mike)
           unless example.metadata[:skip_before]
-            post :create, poll_id: poll, comment: { content: '   ' }
+            post :create, poll_id: poll, comment: { message: '   ' }
           end
         end
         it 'creates finds the poll' do
@@ -49,7 +49,7 @@ RSpec.describe CommentsController, type: :controller do
         end
         it 'creates a new poll', skip_before: true do
           expect {
-            post :create, poll_id: poll, comment: { content: '   ' }
+            post :create, poll_id: poll, comment: { message: '   ' }
           }.to_not change { Comment.count }
         end
         it { expect(subject).to render_template :'polls/show' }
@@ -60,7 +60,7 @@ RSpec.describe CommentsController, type: :controller do
         before(:each) do |example|
           login(mike)
           unless example.metadata[:skip_before]
-            post :create, poll_id: poll, comment: { content: 'hello' }, format: :js
+            post :create, poll_id: poll, comment: { message: 'hello' }, format: :js
           end
         end
         it 'creates finds the poll' do
@@ -71,7 +71,7 @@ RSpec.describe CommentsController, type: :controller do
         end
         it 'creates a new poll', skip_before: true do
           expect {
-            post :create, poll_id: poll, comment: { content: 'hello' }, format: :js
+            post :create, poll_id: poll, comment: { message: 'hello' }, format: :js
           }.to change { Comment.count }.by(1)
         end
         it { expect(subject).to render_template :create }

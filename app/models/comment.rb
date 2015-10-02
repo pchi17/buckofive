@@ -4,11 +4,11 @@ class Comment < ActiveRecord::Base
 
   default_scope lambda { order(created_at: :desc) }
 
-  before_validation { content.strip! if content }
+  before_validation { message.strip! if message }
 
   validates :user,    presence: true
   validates :poll,    presence: true
-  validates :content, presence: true, length: { maximum: 140 }
+  validates :message, presence: true, length: { maximum: 140 }
   validate  :user_activated
 
   def created_by?(user)

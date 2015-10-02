@@ -34,12 +34,8 @@ class Poll < ActiveRecord::Base
   validate  :creator_activated
   validate  :picture_size
 
-  def get_choice_ids(user)
-    votes.where(voter: user).pluck(:choice_id)
-  end
-
   def get_choices(user)
-    choice_ids   = get_choice_ids(user)
+    choice_ids = votes.where(voter: user).pluck(:choice_id)
     choices.rank_by_votes.each do |c|
       if choice_ids.include?(c.id)
         c.selected_by_user = true
@@ -50,7 +46,7 @@ class Poll < ActiveRecord::Base
   end
 
   def voted_by?(user)
-    get_choice_ids(user).present?
+    votes.where(voter: user).count > 0
   end
 
   def created_by?(user)
@@ -66,12 +62,18 @@ class Poll < ActiveRecord::Base
       joins(:votes).where("votes.user_id = ?", user.id)
     end
 
+    def commented_by(user)
+      joins(:comments).where("comments.user_id = ?", user.id)
+    end
+
     def filter_by(user, filter)
       case filter
       when 'created_by_me'
         created_by(user)
       when 'voted_by_me'
         voted_by(user)
+      when 'commented_by_me'
+        commented_by(user)
       else
         all
       end
