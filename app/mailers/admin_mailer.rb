@@ -4,9 +4,9 @@ class AdminMailer < ApplicationMailer
     mail to: receiver.email, subject: "poll #{@poll.id} flagged"
   end
 
-  def contact_message(sender_email, receiver_email, message)
-    @message = message
-    mail from: sender_email, to: receiver_email, subject: 'Message from a user of Buck O Five'
+  def contact_message(receiver, contact)
+    @message = contact.message
+    mail from: contact.sender_email, to: receiver.email, subject: 'Message from a user of Buck O Five'
   end
 
   class << self
@@ -16,9 +16,9 @@ class AdminMailer < ApplicationMailer
       end
     end
 
-    def send_contact_message(sender_email, message)
+    def send_contact_message(contact)
       User.admins.find_each do |admin|
-        contact_message(sender_email, admin.email, message).deliver_now
+        contact_message(admin, contact).deliver_now
       end
     end
   end

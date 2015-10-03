@@ -149,4 +149,4 @@ $(document).on("click", ".deleteChoice", function() {
 // new comment character count
 $(document).on("page:load ready keyup", checkComment);
 
-$(document).on('keyup', "textarea#comment_content", checkComment);
+$(document).on('keyup', "textarea#comment_message", checkComment);

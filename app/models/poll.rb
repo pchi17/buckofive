@@ -59,21 +59,27 @@ class Poll < ActiveRecord::Base
     end
 
     def voted_by(user)
-      joins(:votes).where("votes.user_id = ?", user.id)
+      distinct.joins(:votes).where("votes.user_id = ?", user.id)
+    end
+
+    def not_voted_by(user)
+      where("id NOT IN (?)", user.choices.group(:poll_id).pluck(:poll_id))
     end
 
     def commented_by(user)
-      joins(:comments).where("comments.user_id = ?", user.id)
+      distinct.joins(:comments).where("comments.user_id = ?", user.id)
     end
 
     def filter_by(user, filter)
       case filter
-      when 'created_by_me'
+      when 'created'
         created_by(user)
-      when 'voted_by_me'
+      when 'voted'
         voted_by(user)
-      when 'commented_by_me'
+      when 'commented'
         commented_by(user)
+      when 'fresh'
+        not_voted_by(user)
       else
         all
       end

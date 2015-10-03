@@ -104,7 +104,7 @@ var checkForErrors = function(e, form) {
 var checkComment = function() {
   var commentCount  = $("form#new_comment").find("span#comment-count");
   var commentLength = function() {
-    var commentContent = $("form#new_comment").find("textarea#comment_content");
+    var commentContent = $("form#new_comment").find("textarea#comment_message");
     return $.trim(commentContent.val()).length;
   };
   commentCount.text(140 - commentLength());
@@ -118,5 +118,5 @@ var checkComment = function() {
     submitBtn.removeAttr("disabled");
     commentCount.addClass('valid');
     commentCount.removeClass('invalid');
-  }  
+  }
 };
