@@ -17,3 +17,6 @@
 
 # Ignore development image uploads
 /public/uploads
+
+# Ignore annoying .DS_Store
+.DS_Store
