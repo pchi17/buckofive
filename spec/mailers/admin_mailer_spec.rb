@@ -27,9 +27,9 @@ RSpec.describe AdminMailer, type: :mailer do
   end
 
   describe 'contact_message' do
-    let(:mike) { create(:mike, :with_account) }
-    let(:msg)  { 'what is going on bro?' }
-    let(:mail) { AdminMailer.contact_message(mike.email, philip.email, msg)}
+    let(:mike)    { create(:mike, :with_account) }
+    let(:contact) { build(:contact, sender_email: mike.email) }
+    let(:mail) { AdminMailer.contact_message(philip, contact)}
 
     context 'when rendering header' do
       it 'renders the correct subject' do
@@ -45,7 +45,7 @@ RSpec.describe AdminMailer, type: :mailer do
 
     context 'when rendering the body' do
       it 'contains the poll_url' do
-        expect(mail.body.encoded).to match(msg)
+        expect(mail.body.encoded).to match(contact.message)
       end
     end
   end

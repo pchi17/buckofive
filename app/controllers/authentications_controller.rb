@@ -27,7 +27,7 @@ class AuthenticationsController < ApplicationController
           secret:   auth_hash.credentials.secret
         )
       end
-      redirect_to edit_profile_path
+      redirect_to profile_path
     else
       if @authentication = Authentication.find_by(provider: auth_hash.provider, uid: auth_hash.uid)
         @user = @authentication.user

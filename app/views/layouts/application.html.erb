@@ -11,7 +11,12 @@
     <div class="container">
       <%= link_to "Buck O Five", root_path, id: 'logo' %>
       <ul class="nav nav-pills navbar-right">
-        <li><%= link_to 'Home', root_path %></li>
+        <% if logged_in? %>
+          <li><%= link_to 'Home', profile_path %></li>
+          <li><%= link_to 'Log out', logout_path, method: :delete %></li>
+        <% else %>
+          <li><%= link_to 'Home', root_path %></li>
+        <% end %>
         <li><%= link_to 'About',   about_path %></li>
         <li><%= link_to 'Help',    help_path %></li>
         <li><%= link_to 'Contact', contact_path %></li>

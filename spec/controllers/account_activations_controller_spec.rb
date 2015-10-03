@@ -46,7 +46,7 @@ RSpec.describe AccountActivationsController, type: :controller do
           @mike = create(:mike, :with_account, :activated)
           @mike.create_activation_digest
         end
-        
+
         before(:each) do
           get :edit, id: @mike.activation_token, email: @mike.email
         end
@@ -88,7 +88,7 @@ RSpec.describe AccountActivationsController, type: :controller do
         expect(assigns(:user).reload.activated?).to be false
       end
 
-      it { expect(subject).to redirect_to edit_profile_path }
+      it { expect(subject).to redirect_to profile_path }
     end
 
     context 'with invalid email' do
@@ -98,8 +98,8 @@ RSpec.describe AccountActivationsController, type: :controller do
         expect(assigns(:user)).to be_nil
       end
 
-      it 'redirect_to edit_profile_path' do
-        expect(subject).to redirect_to edit_profile_path
+      it 'redirect_to profile_path' do
+        expect(subject).to redirect_to profile_path
       end
     end
   end

@@ -8,7 +8,4 @@ class ProfilesController < ApplicationController
       format.js
     end
   end
-
-  def edit
-  end
 end

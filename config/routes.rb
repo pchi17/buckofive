@@ -18,7 +18,7 @@ Rails.application.routes.draw do
   end
   resources :votes, only: :create
 
-  resource :profile, only: [:show, :edit] do
+  resource :profile, only: :show do
     resource :info,     only: [:edit, :update]
     resource :password, only: [:edit, :update]
   end

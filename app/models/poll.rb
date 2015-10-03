@@ -63,7 +63,8 @@ class Poll < ActiveRecord::Base
     end
 
     def not_voted_by(user)
-      where("id NOT IN (?)", user.choices.group(:poll_id).pluck(:poll_id))
+      voted_polls = user.choices.group(:poll_id).pluck(:poll_id)
+      voted_polls.empty? ? all : where("id NOT IN (?)", voted_polls)
     end
 
     def commented_by(user)

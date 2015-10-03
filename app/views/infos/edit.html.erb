@@ -1,8 +1,5 @@
 <% content_for :title, 'Edit Account' %>
-
-<%= render 'shared/edit_profile_buttons' %>
-
-<div class="col-md-5">
+<div class="col-md-7 col-md-offset-1">
   <%= form_for current_user, url: profile_info_path, method: :patch do |f| %>
     <hr/>
     <%= render 'shared/error_messages', object: f.object if current_user.errors.any? %>

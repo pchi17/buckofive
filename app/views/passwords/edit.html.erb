@@ -1,8 +1,5 @@
 <% content_for :title, 'Change Password' %>
-
-<%= render 'shared/edit_profile_buttons' %>
-
-<div class="col-md-5">
+<div class="col-md-7 col-md-offset-1">
   <%= form_for current_user.account, url: profile_password_path, method: :patch do |f| %>
     <hr/>
     <%= render 'shared/error_messages', object: f.object if f.object.errors.any? %>
