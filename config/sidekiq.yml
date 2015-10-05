@@ -1,0 +1,7 @@
+:verbose: true
+:concurrency: 25
+:timeout: 10
+:queues:
+  - urgent
+  - high
+  - default

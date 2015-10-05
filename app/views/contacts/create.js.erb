@@ -1,4 +1,3 @@
 $("#main-window div.alert").remove();
-$("#contact-form").remove();
 $("#main-window").prepend('<div class="alert alert-info">message sent</div>');
-$("#contact-form-column").append("<%= escape_javascript(render('contact_form')) %>");
+$("#contact_message").val('').focus();

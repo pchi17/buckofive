@@ -12,7 +12,7 @@ class UsersController < ApplicationController
     if @user.save
       login(@user)
       remember(@user) if params[:user][:remember_me] == '1'
-      @user.send_activation_email
+      ActivationMailWorker.perform_async(@user.id)
       flash[:warning] = 'please check your email to activate your account'
       redirect_to root_path
     else

@@ -2,7 +2,7 @@ class AccountActivationsController < ApplicationController
   before_action :logged_in_user?, only: :create
 
   def create
-    current_user.send_activation_email
+    ActivationMailWorker.perform_async(current_user.id)
     respond_to { |format| format.js }
   end
 

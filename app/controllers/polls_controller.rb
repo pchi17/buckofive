@@ -54,10 +54,10 @@ class PollsController < ApplicationController
   def flag
     @poll = Poll.find(params[:id])
     @poll.flag
-    AdminMailer.send_flag_notification(@poll)
+    FlagNotificationWorker.perform_async(@poll.id)
     respond_to do |format|
       format.html do
-        flash[:info] = 'poll flagged'
+        flash[:info] = 'poll flagged, admin will review the flag and take appropriate actions'
         redirect_to @poll
       end
       format.js

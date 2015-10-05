@@ -20,3 +20,6 @@
 
 # Ignore annoying .DS_Store
 .DS_Store
+
+# Ignore dump.rdb generated from running redis locally
+dump.rdb

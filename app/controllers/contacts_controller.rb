@@ -9,7 +9,7 @@ class ContactsController < ApplicationController
     respond_to do |format|
       format.html do
         if @contact.valid?
-          AdminMailer.send_contact_message(@contact)
+          ContactMessageWorker.perform_async(@contact.sender_email, @contact.message)
           flash[:success] = 'message sent, one of our admins will get back to you asap'
           redirect_to contact_path
         else
@@ -18,7 +18,7 @@ class ContactsController < ApplicationController
       end
       format.js do
         if @contact.valid?
-          AdminMailer.send_contact_message(@contact)
+          ContactMessageWorker.perform_async(@contact.sender_email, @contact.message)
           @contact = Contact.new
         else
           render :new
