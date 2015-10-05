@@ -6,23 +6,19 @@ class ContactsController < ApplicationController
 
   def create
     @contact = Contact.new(contact_params)
-    respond_to do |format|
-      format.html do
-        if @contact.valid?
-          AdminMailer.send_contact_message(@contact)
+    if @contact.valid?
+      ContactMessageWorker.perform_async(@contact.sender_email, @contact.message)
+      respond_to do |format|
+        format.html do
           flash[:success] = 'message sent, one of our admins will get back to you asap'
           redirect_to contact_path
-        else
-          render :new
         end
+        format.js
       end
-      format.js do
-        if @contact.valid?
-          AdminMailer.send_contact_message(@contact)
-          @contact = Contact.new
-        else
-          render :new
-        end
+    else
+      respond_to do |format|
+        format.html { render :new }
+        format.js   { render :new }
       end
     end
   end

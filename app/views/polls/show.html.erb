@@ -2,7 +2,7 @@
 <div class="poll">
   <div class="poll-question">
     <% if @poll.picture? %>
-      <%= image_tag @poll.picture.url, alt: 'poll picture' %>
+      <%= image_tag @poll.picture.url, alt: 'poll picture', class: 'poll-picture'%>
       <br/>
     <% end %>
     <%= @poll.content %>

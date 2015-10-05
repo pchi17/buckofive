@@ -23,13 +23,11 @@ RSpec.describe AccountActivationsController, type: :controller do
         login(@philip)
         post :create, format: :js unless example.metadata[:skip_before]
       end
-
-      it 'sends an activation email', skip_before: true do
+      it 'queues an ActivationMailWorker' do
         expect {
           post :create, format: :js
-        }.to change(ActionMailer::Base.deliveries, :size).by(1)
+        }.to change { ActivationMailWorker.jobs.size }.by(1)
       end
-
       it { expect(response.content_type).to eq(Mime::JS) }
     end
   end

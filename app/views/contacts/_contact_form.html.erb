@@ -1,14 +1,14 @@
-<%= form_for @contact, url: contact_path, html: { id: 'contact-form' }, remote: true do |f| %>
+<%= form_for @contact, url: contact_path, remote: true do |f| %>
   <%= render 'shared/error_messages', object: f.object if @contact.errors.any? %>
   <div class="form-group">
     <div class="input-group">
       <span class="input-group-addon">from:</span>
       <%= f.label :sender_email, class: 'sr-only' %>
-      <%= f.email_field :sender_email, class: 'form-control', placeholder: 'your email'%>
+      <%= f.email_field :sender_email, class: 'form-control', placeholder: 'your email', autofocus: true%>
     </div>
   </div>
   <div class="form-group">
-    <%= f.text_area :message, rows: 8, class: 'form-control', placeholder: 'Enter your message here', autofocus: true %>
+    <%= f.text_area :message, rows: 8, class: 'form-control', placeholder: 'Enter your message here' %>
   </div>
   <div class="form-group">
     <%= f.submit 'email admin', class: 'btn btn-success'%>

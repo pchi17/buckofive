@@ -37,11 +37,23 @@ RSpec.describe ContactsController, type: :controller do
         }.to change { AdminMailer.deliveries.size }.by(@admin_count)
       end
 
+      it 'queues a ContactMessageWorker', skip_before: true do
+        expect {
+          post :create, contact: @attrs
+        }.to change { ContactMessageWorker.jobs.size }.by(1)
+      end
+
       context 'with JS' do
         it 'emails all admins', skip_before: true do
           expect {
             post :create, contact: @attrs, format: :js
           }.to change { AdminMailer.deliveries.size }.by(@admin_count)
+        end
+
+        it 'queues a ContactMessageWorker', skip_before: true do
+          expect {
+            post :create, contact: @attrs, format: :js
+          }.to change { ContactMessageWorker.jobs.size }.by(1)
         end
       end
     end

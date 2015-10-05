@@ -8,7 +8,7 @@ class PasswordResetsController < ApplicationController
 
   def create
     if @user = User.find_by(email: params[:password_reset][:email])
-      @user.send_reset_email
+      ResetMailWorker.perform_async(@user.id)
       flash[:info] = 'please check your email for a password reset message'
       redirect_to login_path
     else

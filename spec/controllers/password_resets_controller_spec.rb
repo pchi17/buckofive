@@ -29,10 +29,10 @@ RSpec.describe PasswordResetsController, type: :controller do
     end
 
     context 'with a registered email' do
-      it 'sends a password_reset email' do
+      it 'queues a ResetMailWorker' do
         expect {
           post :create, password_reset: { email: @user.email }
-        }.to change(ActionMailer::Base.deliveries, :size).by(1)
+        }.to change { ResetMailWorker.jobs.size }.by(1)
       end
     end
 
@@ -42,14 +42,6 @@ RSpec.describe PasswordResetsController, type: :controller do
       it { expect(assigns(:user)).to be_nil }
       it { expect(subject).to set_flash[:danger] }
       it { expect(subject).to render_template :new }
-    end
-
-    context 'with a non registered email' do
-      it 'does not send a password_reset email' do
-        expect {
-          post :create, password_reset: { email: @user.email + 'xxx' }
-        }.to_not change(ActionMailer::Base.deliveries, :size)
-      end
     end
   end
 
