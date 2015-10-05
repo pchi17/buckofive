@@ -1,16 +1,13 @@
 <div class="poll-choices">
-  <%= form_tag votes_path, remote: true do %>
-    <%= hidden_field_tag :poll_id, @poll.id %>
+  <%= form_tag vote_poll_path, remote: true do %>
     <div class="form-group choice-btns">
-      <!-- <div class="btn-group choice-btns" data-toggle="buttons"> -->
-        <% @poll.choices.find_each do |c| %>
-          <label class="btn btn-default btn-inline-block">
-            <%= radio_button_tag :choice_id, c.id %>
-            &nbsp;
-            <%= c.value %>
-          </label>
-        <% end %>
-      <!-- </div> -->
+      <% @poll.choices.find_each do |c| %>
+        <label class="btn btn-default btn-inline-block">
+          <%= radio_button_tag :choice_id, c.id %>
+          &nbsp;
+          <%= c.value %>
+        </label>
+      <% end %>
     </div>
     <div class="form-group">
       <%= submit_tag 'Vote', class: 'btn btn-success btn-block' %>

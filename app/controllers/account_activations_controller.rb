@@ -11,15 +11,17 @@ class AccountActivationsController < ApplicationController
       if @user.activated?
         flash[:info] = 'your account is already activated'
         login(@user)
+        return redirect_to root_path
       end
+
       if @user.is_digest?(:activation, params[:id])
         @user.activate_account
         flash[:success] = 'account activated'
         login(@user)
+        return redirect_to root_path
       end
-    else
-      flash[:danger] = 'invalid activation link'
     end
+    flash[:danger] = 'invalid activation link'
     redirect_to root_path
   end
 end

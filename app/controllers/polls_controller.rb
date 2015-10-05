@@ -51,6 +51,30 @@ class PollsController < ApplicationController
   end
 
   # custom routes
+  def vote
+    @poll  = Poll.find(params[:id])
+    unless choice = Choice.find_by(id: params[:choice_id])
+      respond_to do |format|
+        format.html do
+          flash[:danger] = 'you must select a choice'
+          return redirect_to @poll
+        end
+        format.js { render json: nil }
+      end
+    else
+      @poll = choice.poll
+      User.transaction(isolation: :serializable) do
+        unless @poll.voted_by?(current_user)
+          current_user.votes.create(choice: choice)
+        end
+      end
+      respond_to do |format|
+        format.html { redirect_to @poll }
+        format.js   { @poll.reload }
+      end
+    end
+  end
+
   def flag
     @poll = Poll.find(params[:id])
     @poll.flag

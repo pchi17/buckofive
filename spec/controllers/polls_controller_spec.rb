@@ -360,6 +360,68 @@ RSpec.describe PollsController, type: :controller do
     end
   end
 
+  describe 'POST #vote', isolation: true do
+    let(:poll)   { create(:poll, creator: admin) }
+    let(:choice) { poll.choices.first }
+    context 'when not logged_in_user' do
+      before(:each) do
+        post :vote, id: poll.id, choice_id: choice.id
+      end
+
+      it { expect(subject).to set_flash[:info] }
+      it { expect(subject).to redirect_to login_path }
+    end
+
+    context 'when current_user is not activated' do
+      before(:each) do
+        login(unactivated_user)
+        post :vote, id: poll.id, choice_id: choice.id
+      end
+
+      it { expect(subject).to set_flash[:warning] }
+      it { expect(subject).to redirect_to help_path(anchor: 'activation') }
+    end
+
+    context 'with format.html' do
+      it 'creates a vote' do
+        login(activated_user)
+        expect {
+          post :vote, id: poll.id, choice_id: choice.id
+        }.to change { Vote.count }.by(1)
+      end
+    end
+
+    context 'with format.js' do
+      it 'creates a vote' do
+        login(activated_user)
+        expect {
+          xhr :post, :vote, id: poll.id, choice_id: choice.id
+        }.to change { Vote.count }.by(1)
+      end
+    end
+
+    context 'with invalid choice' do
+      it 'does not create a vote' do
+        login(activated_user)
+        poll
+        bad_choice = Choice.maximum(:id) + 1
+        expect {
+          post :vote, id: poll.id, choice_id: bad_choice
+        }.to_not change { Vote.count }
+      end
+    end
+
+    context 'with duplicate vote' do
+      it 'does not create a vote' do
+        login(activated_user)
+        create(:vote, voter: activated_user, choice: choice)
+        expect {
+          post :vote, id: poll.id, choice_id: choice.id
+        }.to_not change { Vote.count }
+      end
+    end
+  end
+
   describe 'POST #flag' do
     let(:poll1) { create(:poll, creator: admin, content: 'poll1', flags: 5) }
     let(:poll2) { create(:poll, creator: admin, content: 'poll2', flags: 7) }

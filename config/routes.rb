@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:create, :edit]
   resources :password_resets,     only: [:new, :create, :edit, :update]
   resources :polls, except: [:edit, :update] do
+    member     { post 'vote' }
     member     { post 'flag' }
     collection { get  'flags' }
     resources :comments, only: [:create, :destroy]
