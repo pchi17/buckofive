@@ -7,7 +7,7 @@ module ApplicationHelper
   def profile_picture(user, size = 50)
     unless source = user.image
       gravatar_id = Digest::MD5::hexdigest(user.email)
-      source      = "https://secure.gravatar.com/avatar/#{gravatar_id}?#{size}"
+      source      = "https://secure.gravatar.com/avatar/#{gravatar_id}?s=#{size}"
     end
     klass = user.activated? ? nil : ' user-nonactivated'
     image_tag(source, alt: user.name, class: "portrait#{klass}" ,size: "#{size}")
