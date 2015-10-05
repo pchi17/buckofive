@@ -1,15 +1,27 @@
-<%= content_for :title, 'Polls Index' %>
+<%= content_for :title, 'Home' %>
 
 <%= form_tag polls_path, id: 'poll-search-form', method: :get, remote: true do %>
   <div class="form-group">
     <%= label_tag :search_term, nil, class: 'sr-only' %>
     <div class="input-group">
-      <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for polls' %>
+      <%= text_field_tag :search_term, nil, class: 'form-control', placeholder: 'search for polls', tabindex: 1 %>
       <span class="input-group-btn">
-        <%= submit_tag 'search', class: 'btn btn-default' %>
+        <%= submit_tag 'search', class: 'btn btn-success', tabindex: 3 %>
       </span>
     </div>
   </div>
+
+  <% if logged_in? %>
+    <div class="form-group">
+      <select class="form-control" name="filter" tabindex="2">
+        <option value="all">All Polls</option>
+        <option value="created">Created by me</option>
+        <option value="voted">Voted by me</option>
+        <option value="commented">Commented by me</option>
+        <option value="fresh">Need my vote</option>
+      </select>
+    </div>
+  <% end %>
 
   <div id="poll-table"><%= render 'polls/partials/poll_table'%></div>
 <% end %>

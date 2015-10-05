@@ -30,7 +30,7 @@ RSpec.describe SessionsController, type: :controller do
         expect(session[:user_id]).to eq(assigns(:user).id)
       end
 
-      it { expect(response).to redirect_to profile_path }
+      it { expect(response).to redirect_to root_path }
     end
 
     context 'with valid email and password' do

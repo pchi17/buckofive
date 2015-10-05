@@ -59,7 +59,7 @@ RSpec.describe AccountActivationsController, type: :controller do
           expect(session[:user_id]).to eq(@mike.id)
         end
         it { expect(subject).to set_flash[:info] }
-        it { expect(subject).to redirect_to profile_path }
+        it { expect(subject).to redirect_to root_path }
       end
 
       context 'when the user is not activated' do
@@ -77,7 +77,7 @@ RSpec.describe AccountActivationsController, type: :controller do
           expect(session[:user_id]).to eq(@philip.id)
         end
         it { expect(subject).to set_flash[:success] }
-        it { expect(subject).to redirect_to profile_path }
+        it { expect(subject).to redirect_to root_path }
       end
     end
 
@@ -88,7 +88,7 @@ RSpec.describe AccountActivationsController, type: :controller do
         expect(assigns(:user).reload.activated?).to be false
       end
 
-      it { expect(subject).to redirect_to profile_path }
+      it { expect(subject).to redirect_to root_path }
     end
 
     context 'with invalid email' do
@@ -98,8 +98,8 @@ RSpec.describe AccountActivationsController, type: :controller do
         expect(assigns(:user)).to be_nil
       end
 
-      it 'redirect_to profile_path' do
-        expect(subject).to redirect_to profile_path
+      it 'redirect_to root_path' do
+        expect(subject).to redirect_to root_path
       end
     end
   end

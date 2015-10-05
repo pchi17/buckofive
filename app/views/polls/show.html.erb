@@ -13,7 +13,7 @@
     <% else %>
       <%= render 'polls/partials/choices' %>
     <% end %>
-    <%= link_to 'Flag for Abuse', poll_flag_path(@poll), method: :post, remote: true, data: { confirm: 'are you sure you want to flag this poll for abuse?' }, class: 'btn btn-danger' %>
+    <%= link_to 'Flag for Abuse', flag_poll_path(@poll), method: :post, remote: true, data: { confirm: 'are you sure you want to flag this poll for abuse?' }, class: 'btn btn-danger' %>
     <% if @poll.created_by?(current_user) || current_user.admin? %>
       <%= link_to 'Delete Poll', poll_path(@poll), method: :delete, data: { confirm: 'are you sure you want to delete this poll?'}, class: 'btn btn-danger' %>
     <% end %>

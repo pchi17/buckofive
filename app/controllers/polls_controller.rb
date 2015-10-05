@@ -1,6 +1,7 @@
 class PollsController < ApplicationController
   before_action :logged_in_user?,         except: [:index, :show]
   before_action :activated_current_user?, except: [:index, :show]
+  before_action :admin_user?, only: :flags
 
   def new
     @poll = current_user.polls.build
@@ -24,7 +25,8 @@ class PollsController < ApplicationController
   end
 
   def index
-    @polls = Poll.search(params[:search_term], sort_column, sort_direction, params[:page])
+    polls  = Poll.search(params[:search_term], sort_column, sort_direction, params[:page])
+    @polls = logged_in? ? polls.filter_by(current_user, params[:filter]) : polls
     respond_to do |format|
       format.html
       format.js
@@ -42,10 +44,28 @@ class PollsController < ApplicationController
     if @poll.created_by?(current_user) || current_user.admin?
       @poll.delete
       flash[:info] = 'poll deleted'
-      redirect_to flags_path
+      redirect_to flags_polls_path
     else
       redirect_to @poll
     end
+  end
+
+  # custom routes
+  def flag
+    @poll = Poll.find(params[:id])
+    @poll.flag
+    AdminMailer.send_flag_notification(@poll)
+    respond_to do |format|
+      format.html do
+        flash[:info] = 'poll flagged'
+        redirect_to @poll
+      end
+      format.js
+    end
+  end
+
+  def flags
+    @polls = Poll.flagged
   end
 
   private

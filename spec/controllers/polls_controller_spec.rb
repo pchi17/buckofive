@@ -1,13 +1,14 @@
 require 'rails_helper'
 
 RSpec.describe PollsController, type: :controller do
-  let(:admin)            { create(:philip,   :with_account, :admin) }
+  let!(:admin)            { create(:philip,   :with_account, :admin) }
   let(:activated_user)   { create(:mike,     :with_account, :activated) }
   let(:unactivated_user) { create(:stephens, :with_account) }
   let(:poll) { build(:poll, creator: admin) }
 
   it { expect(subject).to use_before_action(:logged_in_user?) }
   it { expect(subject).to use_before_action(:activated_current_user?) }
+  it { expect(subject).to use_before_action(:admin_user?) }
 
   describe 'GET #new' do
     context 'when logged in' do
@@ -211,12 +212,9 @@ RSpec.describe PollsController, type: :controller do
   end
 
   describe 'GET #index' do
-    before(:all) do
-      user = create(:philip, :with_account, :activated)
-      @poll1 = create(:poll, content: 'blah blah abc', creator: user)
-      @poll2 = create(:poll, content: 'blah blah xyz', creator: user)
-      @poll3 = create(:poll, content: 'blah blah ccc', creator: user)
-    end
+      let!(:poll1) { create(:poll, content: 'blah blah abc', creator: admin) }
+      let!(:poll2) { create(:poll, content: 'blah blah xyz', creator: admin) }
+      let!(:poll3) { create(:poll, content: 'blah blah ccc', creator: admin) }
 
     after(:all) { DatabaseCleaner.clean_with(:deletion) }
 
@@ -226,7 +224,7 @@ RSpec.describe PollsController, type: :controller do
         expect(assigns(:polls).count).to eq(3)
       end
       it 'defaults to sort by created_at desc' do
-        expect(assigns(:polls)).to eq([@poll3, @poll2, @poll1])
+        expect(assigns(:polls)).to eq([poll3, poll2, poll1])
       end
     end
 
@@ -236,7 +234,7 @@ RSpec.describe PollsController, type: :controller do
         expect(assigns(:polls).count).to eq(2)
       end
       it 'defaults to sort by created_at desc' do
-        expect(assigns(:polls)).to eq([@poll3, @poll1])
+        expect(assigns(:polls)).to eq([poll3, poll1])
       end
     end
 
@@ -246,7 +244,7 @@ RSpec.describe PollsController, type: :controller do
         expect(assigns(:polls).count).to eq(3)
       end
       it 'defaults to desc' do
-        expect(assigns(:polls)).to eq([@poll2, @poll3, @poll1])
+        expect(assigns(:polls)).to eq([poll2, poll3, poll1])
       end
     end
 
@@ -256,7 +254,7 @@ RSpec.describe PollsController, type: :controller do
         expect(assigns(:polls).count).to eq(3)
       end
       it 'defaults to desc' do
-        expect(assigns(:polls)).to eq([@poll1, @poll3, @poll2])
+        expect(assigns(:polls)).to eq([poll1, poll3, poll2])
       end
     end
 
@@ -306,9 +304,9 @@ RSpec.describe PollsController, type: :controller do
             delete :destroy, id: poll.id
           }.to change { Poll.count }.by(-1)
         end
-        it 'redirect_to root_path' do
+        it 'redirect_to polls_flags_path' do
           delete :destroy, id: poll.id
-          expect(subject).to redirect_to flags_path
+          expect(subject).to redirect_to flags_polls_path
         end
       end
 
@@ -325,7 +323,7 @@ RSpec.describe PollsController, type: :controller do
 
           it 'redirect_to root_path' do
             delete :destroy, id: @poll.id
-            expect(subject).to redirect_to flags_path
+            expect(subject).to redirect_to flags_polls_path
           end
         end
 
@@ -359,6 +357,56 @@ RSpec.describe PollsController, type: :controller do
 
       it { expect(subject).to set_flash[:warning] }
       it { expect(subject).to redirect_to help_path(anchor: 'activation') }
+    end
+  end
+
+  describe 'POST #flag' do
+    let(:poll1) { create(:poll, creator: admin, content: 'poll1', flags: 5) }
+    let(:poll2) { create(:poll, creator: admin, content: 'poll2', flags: 7) }
+    let(:poll3) { create(:poll, creator: admin, content: 'poll3', flags: 0) }
+    before(:each) do |example|
+      login(activated_user)
+      post :flag, id: poll3 unless example.metadata[:skip_before]
+    end
+
+    it 'increments the flag counter', skip_before: true do
+      expect {
+        post :flag, id: poll3, format: :js
+        poll3.reload
+      }.to change { poll3.flags }.by(1)
+    end
+
+    it 'notifies all admins with email', skip_before: true do
+      admin_count = User.admins.count
+      expect {
+        post :flag, id: poll3, format: :js
+      }.to change { ActionMailer::Base.deliveries.size }.by(admin_count)
+    end
+
+    it { expect(subject).to set_flash[:info] }
+    it { expect(subject).to redirect_to poll3 }
+
+  end
+
+  describe 'GET #flags' do
+    let!(:poll1) { create(:poll, creator: admin, content: 'poll1', flags: 5) }
+    let!(:poll2) { create(:poll, creator: admin, content: 'poll2', flags: 7) }
+    let!(:poll3) { create(:poll, creator: admin, content: 'poll3', flags: 0) }
+
+    context 'when logged in as admin' do
+      before(:each) { login(admin); get :flags }
+      it 'finds flagged polls and sorts them in desc order by flags' do
+        expect(assigns(:polls)).to eq([poll2, poll1])
+      end
+      it { expect(subject).to render_template :flags }
+    end
+
+    context 'when logged in as non admin' do
+      it 'redirects to profile_path' do
+        login(activated_user)
+        get :flags
+        expect(subject).to redirect_to root_path
+      end
     end
   end
 end

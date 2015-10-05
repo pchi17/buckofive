@@ -5,15 +5,13 @@
   <hr/>
     <% if current_user.activated? %>
       <%= link_to 'Create a Poll', new_poll_path, class: 'btn btn-success btn-inline-block' %>
-    <% end %>
-
-    <% unless current_user.activated? %>
+    <% else %>
       <%= link_to 'Resend Activation Email', account_activations_path, method: :post, remote: true,
           class: 'btn btn-warning btn-inline-block' %>
     <% end %>
 
-    <%= link_to 'Edit Account',    edit_profile_info_path,  class: 'btn btn-default btn-inline-block' %>
-    <%= link_to 'Change Password', edit_profile_password_path, class: 'btn btn-default btn-inline-block' %>
+    <%= link_to 'Edit Account',    edit_profile_info_path,     class: 'btn btn-primary btn-inline-block' %>
+    <%= link_to 'Change Password', edit_profile_password_path, class: 'btn btn-primary btn-inline-block' %>
     <%= twitter_button('btn-inline-block') %>
 
     <%= link_to 'Delete Account', user_path(current_user), method: :delete,
@@ -21,8 +19,8 @@
 
     <% if current_user.admin? %>
       <hr/>
-      <%= link_to 'Users', users_path, class: 'btn btn-primary btn-inline-block' %>
-      <%= link_to 'Flags', flags_path, class: 'btn btn-primary btn-inline-block'%>
+      <%= link_to 'Users', users_path,       class: 'btn btn-primary btn-inline-block' %>
+      <%= link_to 'Flags', flags_polls_path, class: 'btn btn-primary btn-inline-block' %>
     <% end %>
 
 <% else %>

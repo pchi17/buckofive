@@ -27,7 +27,7 @@ class AuthenticationsController < ApplicationController
           secret:   auth_hash.credentials.secret
         )
       end
-      redirect_to profile_path
+      redirect_to root_path
     else
       if @authentication = Authentication.find_by(provider: auth_hash.provider, uid: auth_hash.uid)
         @user = @authentication.user
@@ -60,7 +60,7 @@ class AuthenticationsController < ApplicationController
         remember(@user)
       end
       flash[:success] = "signed in with your #{auth_hash.provider} account"
-      friendly_forward_or profile_path
+      friendly_forward_or root_path
     end
   end
 

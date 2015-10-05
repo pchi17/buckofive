@@ -60,6 +60,6 @@ module SessionsHelper
     end
 
     def admin_user?
-      redirect_to profile_path unless current_user.admin?
+      redirect_to root_path unless current_user.admin?
     end
 end

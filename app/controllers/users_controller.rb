@@ -14,7 +14,7 @@ class UsersController < ApplicationController
       remember(@user) if params[:user][:remember_me] == '1'
       @user.send_activation_email
       flash[:warning] = 'please check your email to activate your account'
-      redirect_to profile_path
+      redirect_to root_path
     else
       render :new
     end

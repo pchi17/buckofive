@@ -5,9 +5,12 @@ class VotesController < ApplicationController
   def create
     @poll = Poll.find(params[:poll_id])
     unless choice = @poll.choices.find_by(id: params[:choice_id])
-      flash[:danger] = 'you must select a choice'
       respond_to do |format|
-        format.html { return redirect_to @poll }
+        format.html do
+          flash[:danger] = 'you must select a choice'
+          return redirect_to @poll
+        end
+        format.js { render json: nil }
       end
     else
       # I have not decided whether users should be allowed to choose more than 1 choice for each poll

@@ -20,6 +20,6 @@ class AccountActivationsController < ApplicationController
     else
       flash[:danger] = 'invalid activation link'
     end
-    redirect_to profile_path
+    redirect_to root_path
   end
 end

@@ -58,7 +58,7 @@ RSpec.describe UsersController, type: :controller do
       end
 
       it { expect(subject).to set_flash[:warning] }
-      it { expect(subject).to redirect_to profile_path }
+      it { expect(subject).to redirect_to root_path }
     end
 
     context 'with valid attributes' do
@@ -134,7 +134,7 @@ RSpec.describe UsersController, type: :controller do
       it 'redirect_to profile_path' do
         login(@mike)
         get :index
-        expect(subject).to redirect_to profile_path
+        expect(subject).to redirect_to root_path
       end
     end
 

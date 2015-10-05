@@ -51,7 +51,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to profile_path }
+          it { expect(subject).to redirect_to root_path }
         end
       end
 
@@ -79,7 +79,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to profile_path }
+          it { expect(subject).to redirect_to root_path }
         end
       end
     end

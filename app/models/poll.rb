@@ -53,6 +53,10 @@ class Poll < ActiveRecord::Base
     user_id == user.id
   end
 
+  def flag
+    increment!(:flags)
+  end
+
   class << self
     def created_by(user)
       where(creator: user)
