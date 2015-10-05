@@ -1,3 +1,5 @@
 $("#main-window div.alert").remove();
+$("#main-window div#error_list").remove();
+$("#main-window .field_with_errors").children().unwrap();
 $("#main-window").prepend('<div class="alert alert-info">message sent</div>');
 $("#contact_message").val('').focus();

@@ -1,3 +1,4 @@
 $("#main-window div.alert").remove();
-$("#contact-form").remove();
+$("#new_contact").remove();
 $("#contact-form-column").append("<%= escape_javascript(render('contact_form')) %>");
+$("#contact_sender_email").focus();

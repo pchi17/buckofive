@@ -38,16 +38,20 @@ RSpec.describe UsersController, type: :controller do
         end
       end
 
+      it 'builds a valid user' do
+        expect(assigns(:user)).to be_valid
+      end
+
       it 'creates a new User', skip_before: true do
         expect {
           post :create, user: attributes_for(:philip, account_attributes: attributes_for(:account))
-        }.to change(User, :count).by(1)
+        }.to change { User.count }.by(1)
       end
 
-      it 'sends an account activation email', skip_before: true do
+      it 'queues an ActivationMailWorker', skip_before: true do
         expect {
           post :create, user: attributes_for(:philip, account_attributes: attributes_for(:account))
-        }.to change(ActionMailer::Base.deliveries, :size).by(1)
+        }.to change { ActivationMailWorker.jobs.size }.by(1)
       end
 
       it 'assigns a valid user to @user' do

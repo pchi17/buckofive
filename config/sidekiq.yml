@@ -2,6 +2,7 @@
 :concurrency: 25
 :timeout: 10
 :queues:
+  - carrierwave
   - urgent
   - high
   - default

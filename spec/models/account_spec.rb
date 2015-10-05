@@ -1,3 +1,18 @@
+# == Schema Information
+#
+# Table name: accounts
+#
+#  user_id           :integer          not null, primary key
+#  password_digest   :string
+#  remember_digest   :string
+#  activation_digest :string
+#  reset_digest      :string
+#  activated_at      :datetime
+#  reset_sent_at     :datetime
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#
+
 require 'rails_helper'
 
 RSpec.describe Account, type: :model do

@@ -376,11 +376,10 @@ RSpec.describe PollsController, type: :controller do
       }.to change { poll3.flags }.by(1)
     end
 
-    it 'notifies all admins with email', skip_before: true do
-      admin_count = User.admins.count
+    it 'queues FlagNotificationWorker' do
       expect {
         post :flag, id: poll3, format: :js
-      }.to change { ActionMailer::Base.deliveries.size }.by(admin_count)
+      }.to change { FlagNotificationWorker.jobs.size }.by(1)
     end
 
     it { expect(subject).to set_flash[:info] }

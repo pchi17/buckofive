@@ -4,16 +4,12 @@
 #
 #  id          :integer          not null, primary key
 #  user_id     :integer          not null
-#  content     :string           not null
+#  content     :string(250)      not null
 #  total_votes :integer          default(0), not null
+#  flags       :integer          default(0), not null
 #  picture     :string
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
-#
-# Indexes
-#
-#  index_polls_on_content  (content) UNIQUE
-#  index_polls_on_user_id  (user_id)
 #
 
 class Poll < ActiveRecord::Base
@@ -24,6 +20,7 @@ class Poll < ActiveRecord::Base
   accepts_nested_attributes_for :choices, allow_destroy: true, reject_if: lambda { |a| a[:value].blank? }
 
   mount_uploader :picture, PollPhotoUploader
+  process_in_background :picture
 
   MINIMUM_CHOICES = 2
 

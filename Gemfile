@@ -17,6 +17,7 @@ gem 'carrierwave', '0.10.0'
 gem 'mini_magick', '4.2.9'
 gem 'fog', '1.32.0'
 gem 'sidekiq'
+gem 'carrierwave_backgrounder'
 gem 'annotate', '2.6.10'
 
 group :development, :test do
