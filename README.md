@@ -3,14 +3,13 @@
 
 An app designed to make voting easy and fun
 
-# How to run buckofive from your local machine #
+# Run buckofive from your local machine #
 
 ## Install  
 
 * Fork this repository
 * Clone this repository into desired directory, i.e. `desktop/buckofive`
-
-  change into project root directory `cd desktop/buckofive`
+* change into project root directory `cd desktop/buckofive`
 
 	run `bundle install [--without production]`
 
@@ -31,7 +30,7 @@ An app designed to make voting easy and fun
 
 	<code>brew install postgresql</code>
 
-	see <a href="http://www.postgresql.org/docs/9.4/static/index.html" target="_blank">postgresql documentation for more details on installation</a>
+	see <a href="http://www.postgresql.org/docs/9.4/static/index.html" target="_blank">postgresql documentation</a> for more details on installation
 
 
 ### Twitter signup and login
@@ -41,7 +40,7 @@ An app designed to make voting easy and fun
 * under settings enter `http://127.0.0.1:3000/auth/twitter/callback` for "Callback URL"
 * in `.env.json`, set "TWITTER_API_KEY"    to "Consumer Key"
 * in `.env.json`, set "TWITTER_API_SECRET" to "Consumer Secret"
-  do not use your access token and secrets.
+* do not use your access token and secrets.
 
 ### Amazon AWS S3
 
@@ -52,11 +51,8 @@ An app designed to make voting easy and fun
 * create a bucket using AWS Console and copy the bucket name into `.env.json`
 
 ### 3rd party software
-* run `brew install imagemagick`
-  you need imagemagick because carrierwave uses it for image processing.
-* run `brew install redis`
-  Redis is a non-relational database, a key-value data store. you need redis because
-  sidekiq uses it for data storage (queuing background jobs - sending emai, process image)
+* run `brew install imagemagick`, CarrierWave uses it for image processing.
+* run `brew install redis`, Redis is a non-relational database, a key-value data store. sidekiq uses it for data storage (queuing background jobs - sending emai, process image)
 
 ### Mandrill email service
 
@@ -70,9 +66,7 @@ An app designed to make voting easy and fun
 * In new terminal run `redis-server` to start redis-server so sidekiq can connect
 * In new terminal run `rails server` to start rails server
 * In new terminal run `bundle exec sidekiq -C config/sidekiq.yml` to start sidekiq
-
-* You can also user foreman to start both rails server and sidekiq, to use foreman,
-* Run `gem install foreman` and then `foreman start`.
-* DO NOT add `foreman` to `Gemfile`
-
+  * You can also user foreman to start both rails server and sidekiq, to use foreman,
+  * Run `gem install foreman` and then `foreman start`.
+  * DO NOT add `foreman` to `Gemfile`
 * In new terminal run `bundle exec guard` to have guard watch for changes that need to be tested.
