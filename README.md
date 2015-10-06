@@ -37,7 +37,7 @@ An app designed to make voting easy and fun
 
 * Users of this app may use Twitter to signup and login
 * visit <a href="https://apps.twitter.com/">Twitter developer site</a> to create a new app
-* under settings enter `http://127.0.0.1:3000/auth/twitter/callback` for "Callback URL"
+* under settings enter `http://127.0.0.1:3000/auth/twitter/callback` for "Callback URL", `localhost` will not work!
 * in `.env.json`, set "TWITTER_API_KEY"    to "Consumer Key"
 * in `.env.json`, set "TWITTER_API_SECRET" to "Consumer Secret"
 * do not use your access token and secrets.
@@ -66,7 +66,6 @@ An app designed to make voting easy and fun
 * In new terminal run `redis-server` to start redis-server so sidekiq can connect
 * In new terminal run `rails server` to start rails server
 * In new terminal run `bundle exec sidekiq -C config/sidekiq.yml` to start sidekiq
-  * You can also user foreman to start both rails server and sidekiq, to use foreman,
-  * Run `gem install foreman` and then `foreman start`.
+  * You can also user foreman to start both rails server and sidekiq, to use foreman, run `gem install foreman` and then `foreman start`.
   * DO NOT add `foreman` to `Gemfile`
 * In new terminal run `bundle exec guard` to have guard watch for changes that need to be tested.
