@@ -1,12 +1,12 @@
 <%= form_for [@poll, @comment], remote: true do |f| %>
-  <%= render 'shared/error_messages', object: f.object if f.object.errors.any? %>
+  <%= render_error_message(@comment) %>
   <div class="form-group">
     <%= f.label :message, class: 'sr-only'%>
     <%= f.text_area :message, rows: 2, class:'form-control', placeholder: 'post a comment' %>
   </div>
   <div id="comment-submit">
     <span id="comment-count">
-      <noscript>character limit: 150</noscript>
+      <noscript>character limit: 140</noscript>
     </span>
     <%= f.submit 'add comment', class: 'btn btn-success' %>
   </div>

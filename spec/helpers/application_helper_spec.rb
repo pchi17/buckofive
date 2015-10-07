@@ -14,4 +14,22 @@ RSpec.describe ApplicationHelper, type: :helper do
       end
     end
   end
+
+  describe '#render_error_message' do
+    context 'when passed a valid obj' do
+      it 'returns nil' do
+        philip = build(:philip, :with_account)
+        expect(philip).to be_valid
+        expect(render_error_message(philip)).to be_nil
+      end
+    end
+
+    context 'when passed an invalid obj' do
+      it 'does not return nil' do
+        philip = build(:philip)
+        expect(philip).to be_invalid
+        expect(render_error_message(philip)).to_not be_nil
+      end
+    end
+  end
 end

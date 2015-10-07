@@ -10,7 +10,10 @@ class CommentsController < ApplicationController
         format.html { redirect_to @poll }
         format.js
       else
-        format.html { render :'polls/show' }
+        format.html do
+          @comments = @poll.comments.paginate(page: params[:page], per_page: 10)
+          render :'polls/show'
+        end
         format.js   { render :new }
       end
     end

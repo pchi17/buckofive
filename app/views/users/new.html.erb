@@ -1,6 +1,6 @@
 <% content_for :title, 'Sign Up' %>
 <%= form_for @user do |f| %>
-  <%= render 'shared/error_messages', object: f.object if @user.errors.any? %>
+  <%= render_error_message(@user) %>
   <hr/>
   <div class="form-group">
     <%= f.label :name, class: 'sr-only' %>

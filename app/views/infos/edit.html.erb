@@ -2,8 +2,7 @@
 <div class="col-md-7 col-md-offset-1">
   <%= form_for current_user, url: profile_info_path, method: :patch do |f| %>
     <hr/>
-    <%= render 'shared/error_messages', object: f.object if current_user.errors.any? %>
-
+    <%= render_error_message(current_user) %>
     <div class="form-group">
       <%= f.label :email, class: 'sr-only' %>
       <%= f.email_field :email, class: 'form-control', placeholder: 'Email', autofocus: true %>

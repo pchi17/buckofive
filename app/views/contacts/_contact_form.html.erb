@@ -1,5 +1,5 @@
 <%= form_for @contact, url: contact_path, remote: true do |f| %>
-  <%= render 'shared/error_messages', object: f.object if @contact.errors.any? %>
+  <%= render_error_message(@contact) %>
   <div class="form-group">
     <div class="input-group">
       <span class="input-group-addon">from:</span>

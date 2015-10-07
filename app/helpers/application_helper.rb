@@ -20,6 +20,12 @@ module ApplicationHelper
     end
   end
 
+  def render_error_message(obj)
+    if obj.errors.any?
+      render 'shared/error_messages', object: obj
+    end
+  end
+
   # sorting a table
   def table_sort(attribute, title = nil)
     title ||= attribute.titleize

@@ -22,7 +22,7 @@ class PasswordResetsController < ApplicationController
 
   def update
     if params[:account][:password].blank?
-      flash[:danger] = 'password cannot be blank'
+      flash.now[:danger] = 'password cannot be blank'
       render :edit
     else
       if @user.account.update_attributes(password_params)
