@@ -25,24 +25,12 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
         after(:all) { DatabaseCleaner.clean_with(:deletion) }
 
-        it 'finds the correct @authentication' do
-          expect(assigns(:authentication)).to eq(@auth)
-        end
-
         it 'updates current_user name' do
           expect(current_user.name).to eq(auth_hash.info.nickname)
         end
 
-        it 'updates current_user image_url' do
+        it 'updates current_user image' do
           expect(current_user.image).to eq(auth_hash.info.image)
-        end
-
-        it 'updates @authentication token' do
-          expect(assigns(:authentication).token).to eq(auth_hash.credentials.token)
-        end
-
-        it 'updates @authentication secret' do
-          expect(assigns(:authentication).secret).to eq(auth_hash.credentials.secret)
         end
 
         it 'activates current_user if not already activated' do
@@ -87,7 +75,7 @@ RSpec.describe AuthenticationsController, type: :controller do
     context 'when not logged in' do
       before :each do |example|
         logout(current_user) if logged_in?
-        session[:forwarding_url] = profile_path
+        session[:forwarding_url] = about_path
         get :twitter unless example.metadata[:skip_before]
       end
 
@@ -98,10 +86,6 @@ RSpec.describe AuthenticationsController, type: :controller do
         end
 
         after(:all) { DatabaseCleaner.clean_with(:deletion) }
-
-        it 'finds the correct @authentication' do
-          expect(assigns(:authentication)).to eq(@auth)
-        end
 
         it 'finds the associated @user' do
           expect(assigns(:user)).to eq(@user)
@@ -129,7 +113,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to profile_path }
+          it { expect(subject).to redirect_to about_path }
         end
       end
 
@@ -181,7 +165,7 @@ RSpec.describe AuthenticationsController, type: :controller do
 
         context 'flash and redirect' do
           it { expect(subject).to set_flash[:success] }
-          it { expect(subject).to redirect_to profile_path }
+          it { expect(subject).to redirect_to about_path }
         end
       end
     end
