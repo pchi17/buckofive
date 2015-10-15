@@ -36,7 +36,7 @@ class PollsController < ApplicationController
   def show
     @poll     = Poll.find(params[:id])
     @comment  = @poll.comments.build
-    @comments = @poll.comments.paginate(page: params[:page], per_page: 10)
+    @comments = @poll.comments.includes(:user).paginate(page: params[:page], per_page: 10)
   end
 
   def destroy
@@ -53,25 +53,18 @@ class PollsController < ApplicationController
   # custom routes
   def vote
     @poll  = Poll.find(params[:id])
-    unless choice = Choice.find_by(id: params[:choice_id])
-      respond_to do |format|
-        format.html do
-          flash[:danger] = 'you must select a choice'
-          return redirect_to @poll
+    respond_to do |format|
+      if choice = @poll.choices.find_by(id: params[:choice_id])
+        User.transaction(isolation: :serializable) do
+          unless @poll.voted_by?(current_user)
+            current_user.votes.create(choice: choice)
+          end
         end
+        format.js { @poll.reload }
+      else
         format.js { render json: nil }
       end
-    else
-      @poll = choice.poll
-      User.transaction(isolation: :serializable) do
-        unless @poll.voted_by?(current_user)
-          current_user.votes.create(choice: choice)
-        end
-      end
-      respond_to do |format|
-        format.html { redirect_to @poll }
-        format.js   { @poll.reload }
-      end
+      format.html { redirect_to @poll }
     end
   end
 

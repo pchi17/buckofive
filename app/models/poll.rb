@@ -31,8 +31,12 @@ class Poll < ActiveRecord::Base
   validate  :creator_activated
   validate  :picture_size
 
+  def get_choice_ids(user)
+    votes.where(voter: user).pluck(:choice_id)
+  end
+
   def get_choices(user)
-    choice_ids = votes.where(voter: user).pluck(:choice_id)
+    choice_ids = get_choice_ids(user)
     choices.rank_by_votes.each do |c|
       if choice_ids.include?(c.id)
         c.selected_by_user = true
@@ -43,7 +47,7 @@ class Poll < ActiveRecord::Base
   end
 
   def voted_by?(user)
-    votes.where(voter: user).count > 0
+    get_choice_ids(user).any?
   end
 
   def created_by?(user)
