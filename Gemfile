@@ -19,6 +19,7 @@ gem 'fog', '1.32.0'
 gem 'sidekiq'
 gem 'carrierwave_backgrounder'
 gem 'annotate', '2.6.10'
+gem 'pry-rails'
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.3.0'
